@@ -1,0 +1,106 @@
+spring:
+  application:
+    name: world-tale-talk
+
+# dot-env 설정
+  config:
+    import: optional:file:.env[.properties]
+
+# 정적 리소스에 대해 캐시 사용 안함
+  web:
+    resources:
+      cache:
+        cache-control:
+          nocache: true
+          nostore: true
+          mustrevalidate: true
+
+# JPA 초기 INSERT 설정
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:db/data.sql
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update # 테이블 자동 생성
+    properties:
+      hibernate:
+        format_sql: true #쿼리문 보여주는 설정
+    show-sql: true #쿼리문 보여주는 설정
+
+  # OpenAI
+  ai:
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always # JdbcChatMemory 테이블 자동 생성
+
+    vectorstore:
+      pgvector:
+        initialize-schema: true # VectorStore 테이블 자동 생성 설정
+
+    # OpenAI API Key
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+      # 임베딩 모델 설정
+      embedding:
+        options:
+          model: text-embedding-3-small
+          dimensions: 1536 # 차원수
+      # LLM 모델 설정
+      chat:
+        options:
+          model: gpt-4o-mini
+
+# Upload Config
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 30MB
+      max-file-size: 10MB
+
+# JSON 설정 (날짜 변환 @JsonFormat)
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+#PostgreSQL 설정
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/world_tale_talk?currentSchema=public
+    username: postgres
+    password: postgres
+
+  # Redis 설정
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # Auth2 Google
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: {GOOGLE_CLINET_ID}
+            client-secret: {GOOGLE_CLINET_SECRET}
+            scope:
+              - email
+              - profile
+
+#Logging 설정
+logging:
+  level:
+    org:
+      springframework: INFO
+      springframework.ai: DEBUG
+    com:
+      worldtaletalk: DEBUG
+  pattern:
+    console: "%clr(%-5level){green} %clr(%logger{36}.%M\\(\\)){cyan}: %msg%n"

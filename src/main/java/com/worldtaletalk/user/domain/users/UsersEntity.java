@@ -1,0 +1,47 @@
+package com.worldtaletalk.user.domain.users;
+
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
+import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Entity
+@Getter
+@Builder
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
+public class UsersEntity extends BaseTimeEntity {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id private Long id; // PK
+
+    @Column(length = 20, unique = true, nullable = false)
+    private String nickname; // 닉네임
+
+    @Column(length = 50, unique = true, nullable = false)
+    private String email; // 이메일
+
+    @Column(length = 60) // null허용 이유 : 소셜로그인 할시 비밀번호 불필요
+    private String password; // 비밀번호
+
+    @Builder.Default
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER; // 관리자 / 회원
+
+    @Builder.Default
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status = UserStatus.ACTIVE; // 계정 활성화 여부
+
+
+    /* FK (부모) */
+    @ToString.Exclude
+    @OneToMany(mappedBy = "users")
+    private List<SocialAccountsEntity> socialAccounts;
+
+    /* FK (자식) */
+}
