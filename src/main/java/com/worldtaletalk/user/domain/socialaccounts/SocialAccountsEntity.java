@@ -1,6 +1,6 @@
 package com.worldtaletalk.user.domain.socialaccounts;
 
-import com.worldtaletalk.global.basetime.BaseTimeCreatedAtEntity;
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.user.domain.users.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,13 +14,13 @@ import lombok.*;
 @Table(name = "social_accounts",
         indexes = @Index(name = "idx_social_accounts_user_id", columnList = "user_id"),
         uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_id"}))
-public class SocialAccountsEntity extends BaseTimeCreatedAtEntity {
+public class SocialAccountsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private SocialProvider provider; // 소셜 로그인 제공사
+    private SocialProvider provider;
 
     @Column(length = 100, nullable = false)
     private String providerId; // 소셜 제공사 고유번호

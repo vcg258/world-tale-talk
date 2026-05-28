@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "user_suspensions", indexes = @Index(name = "idx_user_suspensions_user_id", columnList = "user_id"))
+@Table(name = "user_suspensions", indexes = {
+        @Index(name = "idx_user_suspensions_user_id", columnList = "user_id"),
+        @Index(name = "idx_user_suspensions_admin_id", columnList = "admin_id")
+})
 public class UserSuspensionsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;

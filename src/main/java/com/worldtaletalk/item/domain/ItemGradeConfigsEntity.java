@@ -16,8 +16,8 @@ public class ItemGradeConfigsEntity extends BaseTimeEntity {
     @Id private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
-    private ItemGrade grade; // 아이템 등급
+    @Column(nullable = false, unique = true, length = 15)
+    private ItemGrade grade;
 
     @Column(nullable = false)
     private int statSumMax; // 스텟 보정 최대치

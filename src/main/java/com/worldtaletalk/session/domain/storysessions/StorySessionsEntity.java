@@ -32,15 +32,17 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @Id private Long id;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private SessionStatus status= SessionStatus.IN_PROGRESS; // 세션 상태
+    private SessionStatus status = SessionStatus.IN_PROGRESS;
 
     @Builder.Default
     @Column(nullable = false)
-    private int currentTurn = 0; // 현재 턴 수
+    private int currentTurn = 0;
 
-    private EndingType endingType; // 도달한 엔딩 유형 (null = 아직 엔딩 아님)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 15)
+    private EndingType endingType;
 
     /* FK (부모) */
     @OneToMany(mappedBy = "storySession")

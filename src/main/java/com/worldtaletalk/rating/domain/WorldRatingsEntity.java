@@ -16,9 +16,9 @@ import org.hibernate.annotations.Check;
 @AllArgsConstructor
 @Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "world_id"}),
         indexes = {
-        @Index(name = "fk_world_ratings_user", columnList = "user_id"),
-        @Index(name = "fk_world_ratings_world", columnList = "world_id"),
-        @Index(name = "fk_world_ratings_session_id", columnList = "session_id"),
+        @Index(name = "idx_world_ratings_user_id", columnList = "user_id"),
+        @Index(name = "idx_world_ratings_world_id", columnList = "world_id"),
+        @Index(name = "idx_world_ratings_session_id", columnList = "session_id")
 })
 public class WorldRatingsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

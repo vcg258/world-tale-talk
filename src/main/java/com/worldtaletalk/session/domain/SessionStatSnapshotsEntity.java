@@ -1,6 +1,6 @@
 package com.worldtaletalk.session.domain;
 
-import com.worldtaletalk.global.basetime.BaseTimeCreatedAtEntity;
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "session_stat_snapshots")
-public class SessionStatSnapshotsEntity extends BaseTimeCreatedAtEntity {
+public class SessionStatSnapshotsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
 

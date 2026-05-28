@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "session_items", indexes = {
         @Index(name = "idx_session_items_session_id", columnList = "session_id"),
-        @Index(name = "idx_session_items_active", columnList = "is_active")
+        @Index(name = "idx_session_items_session_active", columnList = "session_id, is_active")
 })
 public class SessionItemsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +25,9 @@ public class SessionItemsEntity {
     @Column(length = Integer.MAX_VALUE, nullable = false)
     private String itemDescription; // LLM생성 아이템 설명
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ItemGrade itemGrade; // 아이템 등급
+    private ItemGrade grade;
 
     @Builder.Default
     @Column(nullable = false)

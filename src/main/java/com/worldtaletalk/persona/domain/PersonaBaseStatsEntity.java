@@ -9,8 +9,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "persona_base_stats", indexes
-        = @Index(name = "idx_persona_base_stats_persona_persona_id", columnList = "persona_id"))
+@Table(name = "persona_base_stats")
 public class PersonaBaseStatsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;

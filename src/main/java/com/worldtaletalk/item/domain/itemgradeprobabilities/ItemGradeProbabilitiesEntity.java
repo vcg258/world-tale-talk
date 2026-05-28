@@ -12,16 +12,17 @@ import org.hibernate.annotations.Check;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "item_grade_probabilities")
+@Table(name = "item_grade_probabilities",
+        uniqueConstraints = @UniqueConstraint(name = "item_grade_probabilities_phase_grade_key", columnNames = {"phase", "grade"}))
 public class ItemGradeProbabilitiesEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
     private PhaseType phase; // 진행도 구간
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
     private ItemGrade grade; // 아이템 등급
 

@@ -33,14 +33,14 @@ public class UsersEntity extends BaseTimeEntity {
     private String password; // 비밀번호
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER; // 관리자 / 회원
+    private UserRole role = UserRole.USER;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ACTIVE; // 계정 활성화 여부
+    private UserStatus status = UserStatus.ACTIVE;
 
 
     /* FK (부모) */

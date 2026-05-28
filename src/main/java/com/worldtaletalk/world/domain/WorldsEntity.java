@@ -28,8 +28,8 @@ public class WorldsEntity extends BaseTimeEntity {
     private String name; // 세계관 이름
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private WorldGenre genre; // 장르
+    @Column(nullable = false, length = 15)
+    private WorldGenre genre;
 
     @Column(length = Integer.MAX_VALUE, nullable = false)
     private String description; // 세계관 설명

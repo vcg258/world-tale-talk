@@ -1,6 +1,6 @@
 package com.worldtaletalk.chat.domain;
 
-import com.worldtaletalk.global.basetime.BaseTimeCreatedAtEntity;
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,18 +13,18 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "chat_messages", indexes = {
         @Index(name = "idx_chat_messages_session_id", columnList = "session_id"),
-        @Index(name = "idx_chat_messages_session_turn", columnList = "turn")
+        @Index(name = "idx_chat_messages_session_turn", columnList = "session_id, turn")
 })
-public class ChatMessagesEntity extends BaseTimeCreatedAtEntity {
+public class ChatMessagesEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
 
     @Column(nullable = false)
     private int turn; // 해당 메세지가 속한 턴
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ChatRole role; // 채팅 대상
+    private ChatRole role;
 
     @Column(length = Integer.MAX_VALUE, nullable = false)
     private String content; // 메시지 내용
