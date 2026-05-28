@@ -1,6 +1,11 @@
 package com.worldtaletalk.user.domain.users;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
+import com.worldtaletalk.notice.domain.NoticesEntity;
+import com.worldtaletalk.rating.domain.WorldRatingsEntity;
+import com.worldtaletalk.report.domain.ReportsEntity;
+import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.user.domain.UserSuspensionsEntity;
 import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,9 +44,27 @@ public class UsersEntity extends BaseTimeEntity {
 
 
     /* FK (부모) */
-    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<SocialAccountsEntity> socialAccounts;
 
-    /* FK (자식) */
+    @OneToMany(mappedBy = "users")
+    private List<UserSuspensionsEntity> suspensionsEntityUser;
+
+    @OneToMany(mappedBy = "admins")
+    private List<UserSuspensionsEntity> suspensionsEntityAdmin;
+
+    @OneToMany(mappedBy = "users")
+    private List<StorySessionsEntity> storySessions;
+
+    @OneToMany(mappedBy = "users")
+    private List<WorldRatingsEntity> worldRatings;
+
+    @OneToMany(mappedBy = "users")
+    private List<ReportsEntity> reporterUser;
+
+    @OneToMany(mappedBy = "admins")
+    private List<ReportsEntity> reporterAdmin;
+
+    @OneToMany(mappedBy = "admins")
+    private List<NoticesEntity> notices;
 }

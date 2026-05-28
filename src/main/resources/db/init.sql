@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS worlds
 (
     id           BIGSERIAL PRIMARY KEY,
     name         VARCHAR(50)   NOT NULL,              -- 세계관 이름
-    genre        VARCHAR(15)   NOT NULL,              -- 장르 : FANTASY | SF | MARTIAL_ARTS | MYSTERY
+    genre        world_genre   NOT NULL,              -- 장르 : FANTASY | SF | MARTIAL_ARTS | MYSTERY
     description  TEXT  NOT NULL,              -- 유저에게 보이는 카드 소개 텍스트
     setting_text TEXT          NOT NULL,              -- LLM System Prompt 주입용 세계관 설정집
     target_turn  INT           NOT NULL DEFAULT 20,   -- 메인 스토리 목표 턴 수
@@ -233,7 +233,7 @@ COMMENT ON COLUMN persona_base_stats.luck        IS '행운 초기값';
 CREATE TABLE IF NOT EXISTS item_grade_configs
 (
     id           BIGSERIAL PRIMARY KEY,
-    grade        VARCHAR(10) NOT NULL UNIQUE,        -- ItemGrade Enum: COMMON | RARE | EPIC | CURSED
+    grade        item_grade NOT NULL UNIQUE,        --  아이템 등급 : COMMON | RARE | EPIC | CURSED
     stat_sum_max INT         NOT NULL,               -- 스탯 보정 합산 최대치
     single_max   INT         NOT NULL,               -- 단일 스탯 보정 최대치
     single_min   INT         NOT NULL,               -- 단일 스탯 보정 최소치 (CURSED 는 음수)
@@ -248,12 +248,13 @@ COMMENT ON COLUMN item_grade_configs.single_max   IS '단일 스탯 보정 최�
 COMMENT ON COLUMN item_grade_configs.single_min   IS '단일 스탯 보정 최소치. CURSED 는 음수';
 COMMENT ON COLUMN item_grade_configs.can_negative IS '음수 보정 허용 여부';
 COMMENT ON COLUMN item_grade_configs.updated_at   IS '수정 일시';
+
 -- phase + grade 조합 UNIQUE, 동일 구간 내 전체 확률 합산은 100 이어야 함
 CREATE TABLE IF NOT EXISTS item_grade_probabilities
 (
     id          BIGSERIAL PRIMARY KEY,
-    phase       VARCHAR(10) NOT NULL, -- 진행도 구간 : EARLY | MID | LATE
-    grade       VARCHAR(10) NOT NULL, -- 아이템 등급 : COMMON | RARE | EPIC | CURSED
+    phase       phase_type NOT NULL, -- 진행도 구간 : EARLY | MID | LATE
+    grade       item_grade NOT NULL, -- 아이템 등급 : COMMON | RARE | EPIC | CURSED
     probability INT         NOT NULL CHECK (probability BETWEEN 0 AND 100),
     updated_at  TIMESTAMP   NOT NULL DEFAULT NOW(),
     UNIQUE (phase, grade)
@@ -275,9 +276,9 @@ CREATE TABLE IF NOT EXISTS story_sessions
     user_id      BIGINT      NOT NULL,
     world_id     BIGINT      NOT NULL,
     persona_id   BIGINT      NOT NULL,
-    status       VARCHAR(15) NOT NULL DEFAULT 'IN_PROGRESS', -- 세션 진행도 : IN_PROGRESS | ENDING | EPILOGUE | COMPLETED | ABANDONED
+    status session_status       NOT NULL DEFAULT 'IN_PROGRESS', -- 세션 진행도 : IN_PROGRESS | ENDING | EPILOGUE | COMPLETED | ABANDONED
     current_turn INT         NOT NULL DEFAULT 0,             -- 현재 턴 수 (진행도 계산에 사용)
-    ending_type  VARCHAR(10),                                -- 조건에 따른 엔딩구분 : TRUE | GOOD | BAD | SECRET | DARK (완료 시 기록)
+    ending_type  ending_type,                                -- 조건에 따른 엔딩구분 : TRUE | GOOD | BAD | SECRET | DARK (완료 시 기록)
     created_at   TIMESTAMP   NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP   NOT NULL DEFAULT NOW(),
     CONSTRAINT fk_story_sessions_user FOREIGN KEY (user_id) REFERENCES users (id),
@@ -365,7 +366,7 @@ CREATE TABLE IF NOT EXISTS chat_messages
     id          BIGSERIAL PRIMARY KEY,
     session_id  BIGINT      NOT NULL,
     turn        INT         NOT NULL,               -- 해당 메시지가 속한 턴 번호
-    role        VARCHAR(10) NOT NULL,               -- ChatRole Enum: USER | ASSISTANT
+    role      chat_role   NOT NULL,               -- 채팅 대상 : USER | ASSISTANT
     content     TEXT        NOT NULL,               -- 메시지 본문
     is_epilogue BOOLEAN     NOT NULL DEFAULT FALSE, -- 에필로그 구간 여부 (TRUE = 에필로그 대화내용, FALSE = 메인 스토리 대화내용)
     created_at  TIMESTAMP   NOT NULL DEFAULT NOW(),
@@ -394,7 +395,7 @@ CREATE TABLE IF NOT EXISTS session_items
     session_id       BIGINT       NOT NULL,
     item_name        VARCHAR(50) NOT NULL,              -- LLM 생성 아이템 이름
     item_description TEXT NOT NULL,              -- LLM 생성 아이템 설명
-    grade            VARCHAR(10)  NOT NULL,              -- 아이템 등급 : COMMON | RARE | EPIC | CURSED
+    grade            item_grade  NOT NULL,              -- 아이템 등급 : COMMON | RARE | EPIC | CURSED
     wisdom_bonus     INT          NOT NULL DEFAULT 0,    -- 지혜 보정치
     strength_bonus   INT          NOT NULL DEFAULT 0,    -- 힘 보정치
     agility_bonus    INT          NOT NULL DEFAULT 0,    -- 민첩 보정치
@@ -466,10 +467,10 @@ CREATE TABLE IF NOT EXISTS reports
 (
     id          BIGSERIAL PRIMARY KEY,
     reporter_id BIGINT       NOT NULL,
-    target_type VARCHAR(15)  NOT NULL,                   -- 신고 타입 : REVIEW | CHAT_MESSAGE
+    target_type report_target_type  NOT NULL,                   -- 신고 타입 : REVIEW | CHAT_MESSAGE
     target_id   BIGINT       NOT NULL,                   -- 신고 대상 ID
     reason      TEXT NOT NULL,                   -- 신고 사유
-    status      VARCHAR(10)  NOT NULL DEFAULT 'PENDING', -- 신고 상태 : PENDING | RESOLVED | DISMISSED
+    status      report_status  NOT NULL DEFAULT 'PENDING', -- 신고 상태 : PENDING | RESOLVED | DISMISSED
     handled_by  BIGINT,                                  -- 처리한 관리자 (처리 전 NULL)
     handled_at  TIMESTAMP,                               -- 처리 일시 (처리 전 NULL)
     created_at  TIMESTAMP    NOT NULL DEFAULT NOW(),

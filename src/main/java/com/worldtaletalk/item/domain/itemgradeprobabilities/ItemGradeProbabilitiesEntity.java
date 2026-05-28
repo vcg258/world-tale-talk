@@ -1,0 +1,31 @@
+package com.worldtaletalk.item.domain.itemgradeprobabilities;
+
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
+import com.worldtaletalk.item.domain.ItemGrade;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Check;
+
+@Entity
+@Getter
+@Builder
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Table(name = "item_grade_probabilities")
+public class ItemGradeProbabilitiesEntity extends BaseTimeEntity {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id private Long id;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PhaseType phase; // 진행도 구간
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ItemGrade grade; // 아이템 등급
+
+    @Check(constraints = "probability BETWEEN 0 AND 100")
+    @Column(nullable = false)
+    private int probability; // 아이템 등급 확률 (동일 구간 합산 100으로 정함)
+}

@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "social_accounts",
         indexes = @Index(name = "idx_social_accounts_user_id", columnList = "user_id"),
@@ -23,7 +23,7 @@ public class SocialAccountsEntity extends BaseTimeCreatedAtEntity {
     private SocialProvider provider; // 소셜 로그인 제공사
 
     @Column(length = 100, nullable = false)
-    private String provider_id; // 소셜 제공사 고유번호
+    private String providerId; // 소셜 제공사 고유번호
 
     /* FK (자식) */
     @ToString.Exclude
