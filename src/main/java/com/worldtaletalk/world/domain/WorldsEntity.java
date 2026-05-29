@@ -3,7 +3,7 @@ package com.worldtaletalk.world.domain;
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.rating.domain.WorldRatingsEntity;
-import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.session.domain.StorySessionsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

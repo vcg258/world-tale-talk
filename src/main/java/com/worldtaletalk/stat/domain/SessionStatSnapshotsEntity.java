@@ -1,7 +1,7 @@
-package com.worldtaletalk.session.domain;
+package com.worldtaletalk.stat.domain;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
-import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.session.domain.StorySessionsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

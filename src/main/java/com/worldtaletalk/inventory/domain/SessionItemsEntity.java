@@ -1,7 +1,7 @@
 package com.worldtaletalk.inventory.domain;
 
 import com.worldtaletalk.item.domain.ItemGrade;
-import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.session.domain.StorySessionsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

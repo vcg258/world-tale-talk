@@ -4,7 +4,7 @@ import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.notice.domain.NoticesEntity;
 import com.worldtaletalk.rating.domain.WorldRatingsEntity;
 import com.worldtaletalk.report.domain.ReportsEntity;
-import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.user.domain.UserSuspensionsEntity;
 import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import jakarta.persistence.*;

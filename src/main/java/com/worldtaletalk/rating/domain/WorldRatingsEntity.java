@@ -1,7 +1,7 @@
 package com.worldtaletalk.rating.domain;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
-import com.worldtaletalk.session.domain.storysessions.StorySessionsEntity;
+import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.user.domain.users.UsersEntity;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import jakarta.persistence.*;

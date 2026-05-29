@@ -1,12 +1,12 @@
-package com.worldtaletalk.session.domain.storysessions;
+package com.worldtaletalk.session.domain;
 
 import com.worldtaletalk.chat.domain.ChatMessagesEntity;
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.inventory.domain.SessionItemsEntity;
 import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.rating.domain.WorldRatingsEntity;
-import com.worldtaletalk.session.domain.SessionStatLogsEntity;
-import com.worldtaletalk.session.domain.SessionStatSnapshotsEntity;
+import com.worldtaletalk.stat.domain.SessionStatLogsEntity;
+import com.worldtaletalk.stat.domain.SessionStatSnapshotsEntity;
 import com.worldtaletalk.user.domain.users.UsersEntity;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import jakarta.persistence.*;

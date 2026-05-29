@@ -1,4 +1,4 @@
-package com.worldtaletalk.session.domain.storysessions;
+package com.worldtaletalk.session.domain;
 
 // StorySessionsEntity
 public enum EndingType {
