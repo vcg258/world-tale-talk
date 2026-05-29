@@ -35,36 +35,44 @@ public class UsersEntity extends BaseTimeEntity {
     @Builder.Default
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+    private UserRole role = UserRole.USER; // 권한 (USER, ADMIN)
 
     @Builder.Default
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status = UserStatus.ACTIVE; // 계정 상태 (ACTIVE, SUSPENDED, DELETED)
 
 
     /* FK (부모) */
+    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<SocialAccountsEntity> socialAccounts;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<UserSuspensionsEntity> suspensionsEntityUser;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "admins")
     private List<UserSuspensionsEntity> suspensionsEntityAdmin;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<StorySessionsEntity> storySessions;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<WorldRatingsEntity> worldRatings;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "users")
     private List<ReportsEntity> reporterUser;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "admins")
     private List<ReportsEntity> reporterAdmin;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "admins")
     private List<NoticesEntity> notices;
 }

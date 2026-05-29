@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "reports", indexes = {
         @Index(name = "idx_reports_status", columnList = "status"),
         @Index(name = "idx_reports_reporter_id", columnList = "reporter_id"),
@@ -24,18 +24,18 @@ public class ReportsEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ReportTargetType targetType;
+    private ReportTargetType targetType; // 신고 대상 종류 (REVIEW, CHAT_MESSAGE)
 
     @Column(nullable = false)
-    private Long targetId;
+    private Long targetId; // 신고 대상 PK
 
     @Column(length = Integer.MAX_VALUE, nullable = false)
-    private String reason;
+    private String reason; // 신고 사유
 
     @Builder.Default
     @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ReportStatus status = ReportStatus.PENDING;
+    private ReportStatus status = ReportStatus.PENDING; // 처리 상태 (PENDING, RESOLVED, DISMISSED)
 
     private LocalDateTime handledAt; // 처리 일시 (처리전 null)
 

@@ -9,8 +9,8 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "notices",
         indexes = {
         @Index(name = "idx_notices_is_active", columnList = "is_active"),
@@ -28,7 +28,7 @@ public class NoticesEntity extends BaseTimeEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean isActive = true; // 공지 공개 / 비공개 여부
+    private boolean isActive = false; // 공지 공개 / 비공개 여부 (false = 비공개)
 
     /* FK (자식) */
     @ToString.Exclude

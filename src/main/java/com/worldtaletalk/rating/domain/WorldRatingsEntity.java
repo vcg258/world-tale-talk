@@ -12,8 +12,8 @@ import org.hibernate.annotations.Check;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "world_id"}),
         indexes = {
         @Index(name = "idx_world_ratings_user_id", columnList = "user_id"),
@@ -29,7 +29,7 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     private short score; // 별점 (1 ~ 5점)
 
     @Column(length = 100)
-    private String review; // 한줄 리뷰
+    private String review; // 한줄 리뷰 (선택)
 
     /* FK (자식) */
     @ToString.Exclude

@@ -18,8 +18,8 @@ import java.util.List;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "story_sessions",
         indexes = {
         @Index(name = "idx_story_sessions_user_id", columnList = "user_id"),
@@ -34,29 +34,34 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @Builder.Default
     @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private SessionStatus status = SessionStatus.IN_PROGRESS;
+    private SessionStatus status = SessionStatus.IN_PROGRESS; // 세션 상태 (IN_PROGRESS, ENDING, EPILOGUE, COMPLETED, ABANDONED)
 
     @Builder.Default
     @Column(nullable = false)
-    private int currentTurn = 0;
+    private int currentTurn = 0; // 현재 턴 수
 
     @Enumerated(EnumType.STRING)
     @Column(length = 15)
-    private EndingType endingType;
+    private EndingType endingType; // 도달한 엔딩 유형 (null = 아직 엔딩 아님)
 
     /* FK (부모) */
+    @ToString.Exclude
     @OneToMany(mappedBy = "storySession")
     private List<SessionStatLogsEntity> sessionStatLogEntities;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "storySession")
     private List<ChatMessagesEntity> chatMessagesEntities;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "storySession")
     private List<SessionItemsEntity> sessionItemsEntities;
 
-    @OneToOne(mappedBy = "storySession")
-    private WorldRatingsEntity worldRatings;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "storySession")
+    private List<WorldRatingsEntity> worldRatings;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "storySession")
     private SessionStatSnapshotsEntity sessionStatSnapshotsEntities;
 

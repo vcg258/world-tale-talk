@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_suspensions", indexes = {
         @Index(name = "idx_user_suspensions_user_id", columnList = "user_id"),
         @Index(name = "idx_user_suspensions_admin_id", columnList = "admin_id")

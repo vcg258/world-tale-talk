@@ -9,8 +9,8 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "social_accounts",
         indexes = @Index(name = "idx_social_accounts_user_id", columnList = "user_id"),
         uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_id"}))
@@ -20,7 +20,7 @@ public class SocialAccountsEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private SocialProvider provider;
+    private SocialProvider provider; // 소셜 로그인 제공사 (GOOGLE, KAKAO, NAVER)
 
     @Column(length = 100, nullable = false)
     private String providerId; // 소셜 제공사 고유번호

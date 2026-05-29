@@ -1,0 +1,16 @@
+package com.worldtaletalk.notice.dto;
+
+import com.worldtaletalk.user.dto.UsersDTO;
+import lombok.*;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class NoticesDTO {
+    private Long id;
+    private UsersDTO adminsId; // 관리자 FK
+    private String title; // 공지 제목
+    private String content; // 공지 본문
+    private boolean isActive; // 공지 공개 / 비공개 여부
+}

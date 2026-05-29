@@ -9,8 +9,8 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "session_items", indexes = {
         @Index(name = "idx_session_items_session_id", columnList = "session_id"),
         @Index(name = "idx_session_items_session_active", columnList = "session_id, is_active")
@@ -27,7 +27,7 @@ public class SessionItemsEntity {
 
     @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ItemGrade grade;
+    private ItemGrade grade; // 아이템 등급
 
     @Builder.Default
     @Column(nullable = false)
@@ -54,9 +54,9 @@ public class SessionItemsEntity {
     private boolean isActive = true; // 아이템 보유여부 (true 보유)
 
     @Column(nullable = false)
-    private Integer gainedAtTurn; // 아이템 흭득한 턴
+    private Integer gainedAtTurn; // 아이템 획득한 턴
 
-    private Integer droppedAtTurn; // 버린 턴
+    private Integer droppedAtTurn; // 버린 턴 (null 이면 보유 중)
 
     /* FK (자식) */
     @ToString.Exclude

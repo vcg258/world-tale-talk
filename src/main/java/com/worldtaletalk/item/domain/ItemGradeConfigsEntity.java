@@ -8,8 +8,8 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "item_grade_configs")
 public class ItemGradeConfigsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,7 @@ public class ItemGradeConfigsEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true, length = 15)
-    private ItemGrade grade;
+    private ItemGrade grade; // 아이템 등급 (COMMON, RARE, EPIC, CURSED)
 
     @Column(nullable = false)
     private int statSumMax; // 스텟 보정 최대치

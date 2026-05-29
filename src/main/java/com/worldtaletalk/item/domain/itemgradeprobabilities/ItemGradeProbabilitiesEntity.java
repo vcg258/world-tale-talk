@@ -10,8 +10,8 @@ import org.hibernate.annotations.Check;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "item_grade_probabilities",
         uniqueConstraints = @UniqueConstraint(name = "item_grade_probabilities_phase_grade_key", columnNames = {"phase", "grade"}))
 public class ItemGradeProbabilitiesEntity extends BaseTimeEntity {

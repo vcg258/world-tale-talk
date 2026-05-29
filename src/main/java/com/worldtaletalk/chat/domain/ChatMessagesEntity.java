@@ -9,8 +9,8 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "chat_messages", indexes = {
         @Index(name = "idx_chat_messages_session_id", columnList = "session_id"),
         @Index(name = "idx_chat_messages_session_turn", columnList = "session_id, turn")
@@ -24,14 +24,14 @@ public class ChatMessagesEntity extends BaseTimeEntity {
 
     @Column(nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
-    private ChatRole role;
+    private ChatRole role; // 발화 주체 (USER, ASSISTANT)
 
     @Column(length = Integer.MAX_VALUE, nullable = false)
     private String content; // 메시지 내용
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean isEpilogue = false; // 에필로그 구간 여부(true = 에필로그구간임)
+    private boolean isEpilogue = false; // 에필로그 구간 여부 (true = 에필로그 구간)
 
     /* FK (자식) */
     @ToString.Exclude

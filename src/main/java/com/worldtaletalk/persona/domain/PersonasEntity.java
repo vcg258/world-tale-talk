@@ -12,8 +12,8 @@ import java.util.List;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "personas", indexes = @Index(name = "idx_personas_world_id", columnList = "world_id"))
 public class PersonasEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +30,14 @@ public class PersonasEntity extends BaseTimeEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean isActive = true; // 활성화 여부 (True 활성화)
+    private boolean isActive = false; // 활성화 여부 (false = 비공개)
 
     /* FK (부모) */
+    @ToString.Exclude
     @OneToOne(mappedBy = "persona")
     private PersonaBaseStatsEntity personaBaseStats;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "personas")
     private List<StorySessionsEntity> storySessions;
 
