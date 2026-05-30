@@ -1,7 +1,6 @@
 package com.worldtaletalk.inventory.dto;
 
 import com.worldtaletalk.item.domain.ItemGrade;
-import com.worldtaletalk.session.dto.StorySessionsDTO;
 import lombok.*;
 
 @Data
@@ -10,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class SessionItemsDTO {
     private Long id;
-    private StorySessionsDTO storySession; // 플레이 세션 FK
+    private Long storySessionId; // 플레이 세션 FK
     private String itemName; // LLM생성 아이템 이름
     private String itemDescription; // LLM생성 아이템 설명
     private ItemGrade grade; // 아이템 등급

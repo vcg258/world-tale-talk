@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class PersonaBaseStatsDTO {
     private Long id;
-    private PersonasDTO persona; // 페르소나 FK
+    private Long personaId; // 페르소나 FK
     private int wisdom; // 지혜
     private int strength; // 힘
     private int agility; // 민첩

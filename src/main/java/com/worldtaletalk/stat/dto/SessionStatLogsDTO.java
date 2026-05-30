@@ -1,6 +1,5 @@
 package com.worldtaletalk.stat.dto;
 
-import com.worldtaletalk.session.dto.StorySessionsDTO;
 import lombok.*;
 
 @Data
@@ -9,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class SessionStatLogsDTO {
     private Long id;
-    private StorySessionsDTO storySession; // 세션 FK
+    private Long storySessionId; // 세션 FK
     private int turn; // 스텟 변화가 발생한 턴
     private int wisdomDelta; // 지혜 변화량
     private int strengthDelta; // 힘 변화량
