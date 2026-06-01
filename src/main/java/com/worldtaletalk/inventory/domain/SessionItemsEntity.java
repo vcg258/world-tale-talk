@@ -50,8 +50,8 @@ public class SessionItemsEntity {
     private int luckBonus = 0; // 행운 보정치
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isActive = true; // 아이템 보유여부 (true 보유)
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true; // 아이템 보유여부 (true 보유)
 
     @Column(nullable = false)
     private Integer gainedAtTurn; // 아이템 획득한 턴

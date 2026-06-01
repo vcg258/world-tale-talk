@@ -90,8 +90,8 @@ spring:
       client:
         registration:
           google:
-            client-id: {GOOGLE_CLINET_ID}
-            client-secret: {GOOGLE_CLINET_SECRET}
+            client-id: ${GOOGLE_CLINET_ID}
+            client-secret: ${GOOGLE_CLINET_SECRET}
             scope:
               - email
               - profile
@@ -103,6 +103,6 @@ logging:
       springframework: INFO
       springframework.ai: DEBUG
     com:
-      worldtaletalk: DEBUG
+      worldtaletalk: INFO
   pattern:
     console: "%clr(%-5level){green} %clr(%logger{36}.%M\\(\\)){cyan}: %msg%n"

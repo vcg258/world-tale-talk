@@ -15,8 +15,8 @@ public class WorldsDTO {
     private WorldGenre genre; // 세계관 장르
     private String description; // 세계관 설명
     private String settingText; // 시스템 프롬프트 (LLM 주입용)
-    private int targetTurn; // 메인 스토리 목표 턴 수
-    private boolean isActive; // 메인 화면 활성화 여부 (false 유저에게 보여주지 않음)
+    private Integer targetTurn; // 메인 스토리 목표 턴 수
+    private Boolean active; // 메인 화면 활성화 여부 (false 유저에게 보여주지 않음)
     private BigDecimal ratingAvg; // 평균 평점
-    private int playCount; // 전체 플레이 수
+    private Integer playCount; // 전체 플레이 수
 }

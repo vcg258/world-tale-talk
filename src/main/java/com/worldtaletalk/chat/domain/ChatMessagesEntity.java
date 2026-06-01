@@ -30,8 +30,8 @@ public class ChatMessagesEntity extends BaseTimeEntity {
     private String content; // 메시지 내용
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isEpilogue = false; // 에필로그 구간 여부 (true = 에필로그 구간)
+    @Column(name = "is_epilogue", nullable = false)
+    private boolean epilogue = false; // 에필로그 구간 여부 (true = 에필로그 구간)
 
     /* FK (자식) */
     @ToString.Exclude

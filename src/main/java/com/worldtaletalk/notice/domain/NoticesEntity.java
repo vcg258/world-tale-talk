@@ -27,8 +27,8 @@ public class NoticesEntity extends BaseTimeEntity {
     private String content; // 공지 본문
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isActive = false; // 공지 공개 / 비공개 여부 (false = 비공개)
+    @Column(name = "is_active", nullable = false)
+    private boolean active = false; // 공지 공개 / 비공개 여부 (false = 비공개)
 
     /* FK (자식) */
     @ToString.Exclude

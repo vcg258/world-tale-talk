@@ -29,8 +29,8 @@ public class PersonasEntity extends BaseTimeEntity {
     private String background; // 페르소나 배경(LLM 주입용)
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isActive = false; // 활성화 여부 (false = 비공개)
+    @Column(name = "is_active", nullable = false)
+    private boolean active = false; // 활성화 여부 (false = 비공개)
 
     /* FK (부모) */
     @ToString.Exclude

@@ -13,5 +13,5 @@ public class ChatMessagesDTO{
     private int turn; // 해당 메세지가 속한 턴
     private ChatRole role; // 발화 주체
     private String content; // 메시지 내용
-    private boolean isEpilogue; // 에필로그 구간 여부(true = 에필로그구간임)
+    private boolean epilogue; // 에필로그 구간 여부(true = 에필로그구간임)
 }

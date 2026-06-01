@@ -18,7 +18,7 @@ public class SessionItemsDTO {
     private int agilityBonus; // 민첩 보정치
     private int charismaBonus; // 카리스마 보정치
     private int luckBonus; // 행운 보정치
-    private boolean isActive; // 아이템 보유여부 (true 보유)
+    private boolean active; // 아이템 보유여부 (true 보유)
     private Integer gainedAtTurn; // 아이템 흭득한 턴
     private Integer droppedAtTurn; // 버린 턴
 }

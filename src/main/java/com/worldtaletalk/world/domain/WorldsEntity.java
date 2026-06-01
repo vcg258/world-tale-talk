@@ -42,8 +42,8 @@ public class WorldsEntity extends BaseTimeEntity {
     private int targetTurn = 20; // 메인 스토리 목표 턴 수
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean isActive = false; // 메인 화면 활성화 여부 (false = 비공개)
+    @Column(name = "is_active", nullable = false)
+    private boolean active = false; // 메인 화면 활성화 여부 (false = 비공개)
 
     @Builder.Default
     @Column(precision = 3, scale = 2, nullable = false)
@@ -65,5 +65,71 @@ public class WorldsEntity extends BaseTimeEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "world")
     private List<WorldRatingsEntity> worldRatings;
+
+    /**
+     * 세계관 생성 (정적 메서드)
+     * @param name 이름
+     * @param genre 장르
+     * @param description 설명
+     * @param settingText LLM 프롬프트
+     * @param targetTurn 엔딩 턴수
+     * @param active 활성화 여부
+     * @return 세계관
+     */
+    public static WorldsEntity createWorld(
+            String name,
+            WorldGenre genre,
+            String description,
+            String settingText,
+            int targetTurn,
+            boolean active
+    ) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("세계관 이름은 필수 값입니다.");
+        }
+        if (genre == null) {
+            throw new IllegalArgumentException("세계관 장르는 필수 값입니다.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("세계관 설명은 필수 값입니다.");
+        }
+        if (settingText == null || settingText.isBlank()) {
+            throw new IllegalArgumentException("세계관 프롬프트는 필수 값입니다.");
+        }
+
+        return WorldsEntity.builder()
+                .name(name)
+                .genre(genre)
+                .description(description)
+                .settingText(settingText)
+                .targetTurn(targetTurn)
+                .active(active)
+                .build();
+    }
+
+    /**
+     * 업데이트 도메인 메서드 (World)
+     * @param name 이름
+     * @param genre 장르
+     * @param description 설명
+     * @param settingText LLM 프롬프트
+     * @param targetTurn 엔딩 턴수
+     * @param active 활성화 여부
+     */
+    public void modifyInformationByWorld(
+            String name,
+            WorldGenre genre,
+            String description,
+            String settingText,
+            int targetTurn,
+            boolean active
+    ) {
+        this.name = name;
+        this.genre = genre;
+        this.description = description;
+        this.settingText = settingText;
+        this.targetTurn = targetTurn;
+        this.active = active;
+    }
 
 }
