@@ -76,22 +76,19 @@ public class PersonasBaseStatsEntity {
      * @param agility 민첩
      * @param charisma 카리스마
      * @param luck 행운
-     * @param persona 페르소나 정보
      */
     public void modifyInformation(
             int wisdom,
             int strength,
             int agility,
             int charisma,
-            int luck,
-            PersonasEntity persona
+            int luck
     ) {
         this.wisdom = wisdom;
         this.strength = strength;
         this.agility = agility;
         this.charisma = charisma;
         this.luck = luck;
-        this.persona = persona;
     }
 
 }

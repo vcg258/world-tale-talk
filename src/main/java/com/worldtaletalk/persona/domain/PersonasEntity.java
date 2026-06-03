@@ -5,6 +5,8 @@ import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -34,7 +36,8 @@ public class PersonasEntity extends BaseTimeEntity {
 
     /* FK (부모) */
     @ToString.Exclude
-    @OneToOne(mappedBy = "persona")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true)
     private PersonasBaseStatsEntity personaBaseStats;
 
     @ToString.Exclude
@@ -56,7 +59,15 @@ public class PersonasEntity extends BaseTimeEntity {
             String background,
             boolean active
     ) {
-
+        if (name == null || name.isBlank()) {
+            throw new IllegalStateException("페르소나 이름 필수 값");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalStateException("페르소나 설명 필수 값");
+        }
+        if (background == null || background.isBlank()) {
+            throw new IllegalStateException("페르소나 LLM주입 값 필수");
+        }
         return PersonasEntity.builder()
                 .name(name)
                 .description(description)

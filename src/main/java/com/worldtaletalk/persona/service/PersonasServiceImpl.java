@@ -60,4 +60,14 @@ public class PersonasServiceImpl implements PersonasService {
         log.info("페르소나 등록 : {}", persona);
         personasRepository.save(persona);
     }
+
+    /**
+     * 페르소나 삭제 (CASCADE로 인해 페르소나 삭제 하면 관련 페르소나 스텟 같이 제거)
+     * @param id PK
+     */
+    @Override
+    public void removePersona(Long id) {
+        personasRepository.deleteById(id);
+        log.info("페르소나 제거 완료 personaId : {}", id);
+    }
 }

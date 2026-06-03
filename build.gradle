@@ -65,6 +65,8 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '-XX:+EnableDynamicAgentLoading'
+    jvmArgs '-Xshare:off'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

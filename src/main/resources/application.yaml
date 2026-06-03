@@ -83,6 +83,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+      repositories:
+        enabled: false # 레디스 로그 때문에 잠시 끔
 
   # Auth2 Google
   security:

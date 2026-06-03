@@ -19,8 +19,21 @@ public interface PersonasBaseStatsService {
     PersonasBaseStatsDTO getPersonasBaseStats(Long id);
 
     /**
+     * FK로 페르소나 스텟 단건 조회
+     * @param id FK
+     * @return 페르소나 스텟
+     */
+    PersonasBaseStatsDTO getPersonasBaseStatsByPersonaId(Long id);
+
+    /**
      * 해당 페르소나 기본 스텟 생성
      * @param personasBaseStatsDTO 페르소나 기본스텟 정보
      */
     void addPersonaBaseStats(PersonasBaseStatsDTO personasBaseStatsDTO);
+
+    /**
+     * 해당 페르소나 스텟 수정
+     * @param personasBaseStatsDTO 기본스텟 정보
+     */
+    void modifyPersonaBaseStats(PersonasBaseStatsDTO personasBaseStatsDTO);
 }

@@ -32,4 +32,9 @@ class PersonasServiceImplTest {
                 .build();
         personasService.addPersona(personasDTO);
     }
+
+    @Test
+    void removePersona() {
+        personasService.removePersona(5L);
+    }
 }

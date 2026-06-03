@@ -23,6 +23,11 @@ class PersonasBaseStatsServiceImplTest {
     }
 
     @Test
+    void getPersonasBaseStatsByPersonaId() {
+        log.info(personasBaseStatsService.getPersonasBaseStatsByPersonaId(1L));
+    }
+
+    @Test
     void addPersonaBaseStats() {
         PersonasBaseStatsDTO baseStatsDTO = PersonasBaseStatsDTO.builder()
                 .personaId(5L)
@@ -33,6 +38,19 @@ class PersonasBaseStatsServiceImplTest {
                 .luck(8)
                 .build();
         personasBaseStatsService.addPersonaBaseStats(baseStatsDTO);
+    }
+
+    @Test
+    void modifyPersonaBaseStats() {
+        PersonasBaseStatsDTO baseStatsDTO = PersonasBaseStatsDTO.builder()
+                .id(7L)
+                .wisdom(10)
+                .strength(10)
+                .agility(10)
+                .charisma(10)
+                .luck(10)
+                .build();
+        personasBaseStatsService.modifyPersonaBaseStats(baseStatsDTO);
     }
 
 }
