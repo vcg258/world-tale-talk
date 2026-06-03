@@ -66,6 +66,7 @@ public class WorldsEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "world")
     private List<WorldRatingsEntity> worldRatings;
 
+    /* 도메인 행위 메서드 */
     /**
      * 세계관 생성 (정적 메서드)
      * @param name 이름

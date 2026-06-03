@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonaBaseStatsDTO {
+public class PersonasBaseStatsDTO {
     private Long id;
     private Long personaId; // 페르소나 FK
     private int wisdom; // 지혜

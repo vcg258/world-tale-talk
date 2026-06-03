@@ -35,7 +35,7 @@ public class PersonasEntity extends BaseTimeEntity {
     /* FK (부모) */
     @ToString.Exclude
     @OneToOne(mappedBy = "persona")
-    private PersonaBaseStatsEntity personaBaseStats;
+    private PersonasBaseStatsEntity personaBaseStats;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "personas")
@@ -47,4 +47,22 @@ public class PersonasEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "world_id", nullable = false, foreignKey = @ForeignKey(name = "fk_personas_world"))
     private WorldsEntity world;
+
+    /* 도메인 행위 메서드 */
+    public static PersonasEntity addPersona(
+            WorldsEntity worldsEntity,
+            String name,
+            String description,
+            String background,
+            boolean active
+    ) {
+
+        return PersonasEntity.builder()
+                .name(name)
+                .description(description)
+                .background(background)
+                .active(active)
+                .world(worldsEntity)
+                .build();
+    }
 }
