@@ -80,4 +80,25 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "persona_id", nullable = false, foreignKey = @ForeignKey(name = "fk_story_sessions_persona"))
     private PersonasEntity personas;
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 세션 생성 (새게임)
+     * @param users 유저 정보 FK
+     * @param worlds 세계관 정보 FK
+     * @param personas 페르소나 정보 FK
+     * @return 생성할 새션 정보
+     */
+    public static StorySessionsEntity createSession(
+            UsersEntity users,
+            WorldsEntity worlds,
+            PersonasEntity personas
+    ) {
+        return StorySessionsEntity.builder()
+                .users(users)
+                .worlds(worlds)
+                .personas(personas)
+                .build();
+    }
 }
