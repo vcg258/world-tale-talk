@@ -6,12 +6,13 @@ import com.worldtaletalk.persona.dto.PersonasBaseStatsDTO;
 import com.worldtaletalk.persona.mapper.PersonasBaseStatsMapper;
 import com.worldtaletalk.persona.repository.PersonasBaseStatsRepository;
 import com.worldtaletalk.persona.repository.PersonasRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Log4j2
 @Service
@@ -39,7 +40,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStats(Long id) {
         PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findById(id).orElseThrow(() ->
-                new IllegalStateException("해당 스텟이 존재하지 않음"));
+                new NoSuchElementException("해당 스텟이 존재하지 않음"));
         return personasBaseStatsMapper.toDTO(baseStats);
     }
 
@@ -51,7 +52,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStatsByPersonaId(Long id) {
         PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findByPersonaId(id).orElseThrow(() ->
-                new IllegalStateException("해당 페르소나의 스텟이 존재하지 않음"));
+                new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않음"));
         return personasBaseStatsMapper.toDTO(baseStats);
     }
 
@@ -62,7 +63,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Override
     public void addPersonaBaseStats(PersonasBaseStatsDTO personasBaseStatsDTO) {
         PersonasEntity persona = personasRepository.findById(personasBaseStatsDTO.getPersonaId()).orElseThrow(() ->
-                new IllegalStateException("해당 페르소나 없음"));
+                new NoSuchElementException("해당 페르소나 없음"));
 
         PersonasBaseStatsEntity baseStats = PersonasBaseStatsEntity.createPersonaBaseStats(
                 personasBaseStatsDTO.getWisdom(),
@@ -86,7 +87,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     public void modifyPersonaBaseStats(PersonasBaseStatsDTO personasBaseStatsDTO) {
 
         PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findById(personasBaseStatsDTO.getId()).orElseThrow(() ->
-                new IllegalStateException("해당 페르소나 스텟이 존재 하지 않음"));
+                new NoSuchElementException("해당 페르소나 스텟이 존재 하지 않음"));
 
         baseStats.modifyInformation(
                 personasBaseStatsDTO.getWisdom() != null ? personasBaseStatsDTO.getWisdom() : baseStats.getWisdom(),

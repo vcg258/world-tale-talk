@@ -25,6 +25,12 @@ public interface PersonasService {
     void addPersona(PersonasDTO personasDTO);
 
     /**
+     * 페르소나 수정
+     * @param personasDTO 페르소나 정보를 바꿀 DTO
+     */
+    void modifyPersona(PersonasDTO personasDTO);
+
+    /**
      * 페르소나 삭제 (CASCADE로 인해 페르소나 삭제 하면 관련 페르소나 스텟 같이 제거)
      * @param id PK
      */

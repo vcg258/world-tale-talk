@@ -95,10 +95,36 @@ public class StorySessionsEntity extends BaseTimeEntity {
             WorldsEntity worlds,
             PersonasEntity personas
     ) {
+        if (users == null || worlds == null || personas == null) {
+            throw new IllegalArgumentException("회원과 세계관, 페르소나는 필수 값입니다.");
+        }
         return StorySessionsEntity.builder()
                 .users(users)
                 .worlds(worlds)
                 .personas(personas)
                 .build();
+    }
+
+    /**
+     * 다음턴 넘어갈때 턴수 상승
+     */
+    public void turnUp() {
+        this.currentTurn++;
+    }
+
+    /**
+     * 세션 상태 변경
+     * @param sessionStatus 세션 상태 ENUM
+     */
+    public void changeInformationByStorySession(SessionStatus sessionStatus) {
+        this.status = sessionStatus;
+    }
+
+    /**
+     * 세션 엔딩 변경
+     * @param endingType 세션 상태 ENUM
+     */
+    public void changeInformationByEndingType(EndingType endingType) {
+        this.endingType = endingType;
     }
 }

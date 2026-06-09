@@ -23,6 +23,9 @@ public class UsersEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id; // PK
 
+    @Column(length = 30, unique = true) // null허용 이유 : 소셜로그인 할시 아이디 불필요
+    private String login_id; // 로그인 아이디
+
     @Column(length = 20, unique = true, nullable = false)
     private String nickname; // 닉네임
 

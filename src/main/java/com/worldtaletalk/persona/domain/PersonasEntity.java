@@ -52,6 +52,16 @@ public class PersonasEntity extends BaseTimeEntity {
     private WorldsEntity world;
 
     /* 도메인 행위 메서드 */
+
+    /**
+     * 페르소나 생성
+     * @param worldsEntity 세계관 정보 FK
+     * @param name 페르소나 이름
+     * @param description 페르소나 설명
+     * @param background 페르소나 배경 LLM 프롬프트
+     * @param active 페르소나 활성화 유무
+     * @return 페르소나
+     */
     public static PersonasEntity addPersona(
             WorldsEntity worldsEntity,
             String name,
@@ -60,13 +70,13 @@ public class PersonasEntity extends BaseTimeEntity {
             boolean active
     ) {
         if (name == null || name.isBlank()) {
-            throw new IllegalStateException("페르소나 이름 필수 값");
+            throw new IllegalArgumentException("페르소나 이름 필수 값");
         }
         if (description == null || description.isBlank()) {
-            throw new IllegalStateException("페르소나 설명 필수 값");
+            throw new IllegalArgumentException("페르소나 설명 필수 값");
         }
         if (background == null || background.isBlank()) {
-            throw new IllegalStateException("페르소나 LLM주입 값 필수");
+            throw new IllegalArgumentException("페르소나 LLM주입 값 필수");
         }
         return PersonasEntity.builder()
                 .name(name)
@@ -75,5 +85,27 @@ public class PersonasEntity extends BaseTimeEntity {
                 .active(active)
                 .world(worldsEntity)
                 .build();
+    }
+
+    /**
+     * 페르소나 수정
+     * @param worldsEntity 세계관 정보 FK
+     * @param name 페르소나 이름
+     * @param description 페르소나 설명
+     * @param background 페르소나 배경 LLM 프롬프트
+     * @param active 페르소나 활성화 유무
+     */
+    public void modifyInformationByPersona(
+            WorldsEntity worldsEntity,
+            String name,
+            String description,
+            String background,
+            boolean active
+    ) {
+        this.name = name;
+        this.description = description;
+        this.background = background;
+        this.active = active;
+        this.world = worldsEntity;
     }
 }

@@ -37,7 +37,7 @@ spring:
       memory:
         repository:
           jdbc:
-            initialize-schema: always # JdbcChatMemory 테이블 자동 생성
+            initialize-schema: never # JdbcChatMemory 테이블 자동 생성
 
     vectorstore:
       pgvector:

@@ -9,8 +9,11 @@ import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -38,7 +41,7 @@ public class PersonasServiceImpl implements PersonasService {
     @Override
     public PersonasDTO getPersona(Long id) {
         PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
-                new IllegalStateException("해당 페르소나 없음"));
+                new NoSuchElementException("해당 페르소나 없음"));
         return personasMapper.toDTO(persona);
     }
 
@@ -49,7 +52,7 @@ public class PersonasServiceImpl implements PersonasService {
     @Override
     public void addPersona(PersonasDTO personasDTO) {
         WorldsEntity worldsEntity = worldsRepository.findById(personasDTO.getWorldId()).orElseThrow(() ->
-                new IllegalStateException("해당 세계관은 존재하지 않음"));
+                new NoSuchElementException("해당 세계관은 존재하지 않음"));
         PersonasEntity persona = PersonasEntity.addPersona(
                 worldsEntity,
                 personasDTO.getName(),
@@ -57,8 +60,37 @@ public class PersonasServiceImpl implements PersonasService {
                 personasDTO.getBackground(),
                 personasDTO.getActive()
         );
-        log.info("페르소나 등록 : {}", persona);
-        personasRepository.save(persona);
+        PersonasEntity save = personasRepository.save(persona);
+        log.info("페르소나 등록 : {}", save);
+    }
+
+    /**
+     * 페르소나 수정
+     * @param personasDTO 페르소나 정보를 바꿀 DTO
+     */
+    @Transactional
+    @Override
+    public void modifyPersona(PersonasDTO personasDTO) {
+        PersonasEntity persona = personasRepository.findById(personasDTO.getId()).orElseThrow(() ->
+                new NoSuchElementException("해당 페르소나는 존재하지 않습니다."));
+
+        WorldsEntity world = persona.getWorld();
+
+        // 매개변수 perosna.getWorld() 가 null이 아닐경우 (값을 안넣으면 기존 값 유지를 위함)
+        if (personasDTO.getWorldId() != null) {
+            world = worldsRepository.findById(personasDTO.getWorldId()).orElseThrow(() ->
+                    new NoSuchElementException("해당 세계관은 존재하지 않습니다."));
+        }
+
+        persona.modifyInformationByPersona(
+                world,
+                personasDTO.getName() != null ? personasDTO.getName() : persona.getName(),
+                personasDTO.getDescription() != null ? personasDTO.getDescription() : persona.getDescription(),
+                personasDTO.getBackground()  != null ? personasDTO.getBackground() : persona.getBackground(),
+                personasDTO.getActive() != null ? personasDTO.getActive() : persona.isActive()
+        );
+        PersonasEntity save = personasRepository.save(persona);
+        log.info("페르소나 수정 완료 : {}", save);
     }
 
     /**

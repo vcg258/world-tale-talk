@@ -7,8 +7,10 @@ import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Log4j2
 @Service
@@ -35,7 +37,7 @@ public class WorldsServiceImpl implements WorldsService {
     @Override
     public WorldsDTO getWorldById(Long id) {
         WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
-                new IllegalStateException("지정한 세계관이 없습니다."));
+                new NoSuchElementException("지정한 세계관이 없습니다."));
 
         return worldsMapper.toDTO(world);
     }
@@ -55,18 +57,19 @@ public class WorldsServiceImpl implements WorldsService {
                 worldsDTO.getActive()
         );
 
-        log.info("세계관 생성완료 : {}", world);
-        worldsRepository.save(world);
+        WorldsEntity save = worldsRepository.save(world);
+        log.info("세계관 생성완료 : {}", save);
     }
 
     /**
      * 세꼐관 수정
      * @param worldsDTO 수정할 세계관 정보
      */
+    @Transactional
     @Override
     public void modifyWorld(WorldsDTO worldsDTO) {
         WorldsEntity worlds = worldsRepository.findById(worldsDTO.getId()).orElseThrow(() ->
-                new IllegalStateException("수정할 세계관을 찾을 수 없습니다."));
+                new NoSuchElementException("수정할 세계관을 찾을 수 없습니다."));
 
         worlds.modifyInformationByWorld(
                 worldsDTO.getName() != null ? worldsDTO.getName() : worlds.getName(),
@@ -77,7 +80,17 @@ public class WorldsServiceImpl implements WorldsService {
                 worldsDTO.getActive() != null ? worldsDTO.getActive() : worlds.isActive()
         );
 
-        log.info("세계관 수정 내역 : {}",  worlds);
-        worldsRepository.save(worlds);
+        WorldsEntity save = worldsRepository.save(worlds);
+        log.info("세계관 수정 내역 : {}",  save);
+    }
+
+    /**
+     * 세계관 삭제
+     * @param id PK
+     */
+    @Override
+    public void deleteWorld(Long id) {
+        worldsRepository.deleteById(id);
+        log.info("세계관 삭제 : {}", id);
     }
 }

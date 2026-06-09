@@ -1,5 +1,7 @@
 package com.worldtaletalk.session.service;
 
+import com.worldtaletalk.session.domain.EndingType;
+import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -32,5 +34,20 @@ class StorySessionsServiceImplTest {
                 .build();
 
         storySessionsService.createStorySession(storySessionsDTO);
+    }
+
+    @Test
+    void modifyStorySessionByStatus() {
+        storySessionsService.modifyStorySessionByStatus(1L, SessionStatus.EPILOGUE);
+    }
+
+    @Test
+    void modifyStorySessionByEndingType() {
+        storySessionsService.modifyStorySessionByEndingType(1L, EndingType.TRUE);
+    }
+
+    @Test
+    void deleteStorySession() {
+        storySessionsService.deleteStorySessionByStatus(1L);
     }
 }

@@ -34,6 +34,16 @@ class PersonasServiceImplTest {
     }
 
     @Test
+    void modifyPersona() {
+        PersonasDTO personasDTO = PersonasDTO.builder()
+                .id(1L)
+                .worldId(2L)
+                .active(true)
+                .build();
+        personasService.modifyPersona(personasDTO);
+    }
+
+    @Test
     void removePersona() {
         personasService.removePersona(5L);
     }

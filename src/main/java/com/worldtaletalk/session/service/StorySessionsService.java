@@ -1,5 +1,7 @@
 package com.worldtaletalk.session.service;
 
+import com.worldtaletalk.session.domain.EndingType;
+import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 
 import java.util.List;
@@ -24,5 +26,23 @@ public interface StorySessionsService {
      */
     void createStorySession(StorySessionsDTO storySessionsDTO);
 
+    /**
+     * 세션상태 변경
+     * @param id PK
+     * @param status 새션 상태
+     */
+    void modifyStorySessionByStatus(Long id, SessionStatus status);
 
+    /**
+     * 세션 엔딩 결정
+     * @param id PK
+     * @param endingType 엔딩
+     */
+    void modifyStorySessionByEndingType(Long id, EndingType endingType);
+
+    /**
+     * 세션 삭제
+     * @param id PK
+     */
+    void deleteStorySessionByStatus(Long id);
 }

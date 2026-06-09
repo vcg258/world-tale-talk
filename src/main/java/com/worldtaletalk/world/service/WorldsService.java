@@ -29,4 +29,10 @@ public interface WorldsService {
      * @param worldsDTO 수정할 세계관 정보
      */
     void modifyWorld(WorldsDTO worldsDTO);
+
+    /**
+     * 세계관 삭제
+     * @param id PK
+     */
+    void deleteWorld(Long id);
 }

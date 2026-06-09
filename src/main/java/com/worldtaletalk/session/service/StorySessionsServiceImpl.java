@@ -3,6 +3,8 @@ package com.worldtaletalk.session.service;
 import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.persona.repository.PersonasRepository;
 import com.worldtaletalk.session.StorySessionsMapper;
+import com.worldtaletalk.session.domain.EndingType;
+import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
@@ -13,9 +15,10 @@ import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Log4j2
 @Service
@@ -45,7 +48,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Override
     public StorySessionsDTO getStorySession(Long id) {
         StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
-                new IllegalStateException("해당 세션은 존재 하지 않습니다."));
+                new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
         return storySessionsMapper.toDTO(storySession);
     }
 
@@ -56,13 +59,13 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Override
     public void createStorySession(StorySessionsDTO storySessionsDTO) {
         UsersEntity user = usersRepository.findById(storySessionsDTO.getUserId()).orElseThrow(() ->
-                new IllegalStateException("해당 유저는 찾을 수 없습니다."));
+                new NoSuchElementException("해당 유저는 찾을 수 없습니다."));
 
         WorldsEntity world = worldsRepository.findById(storySessionsDTO.getWorldId()).orElseThrow(() ->
-                new IllegalStateException("해당 세계관은 찾을 수 없습니다."));
+                new NoSuchElementException("해당 세계관은 찾을 수 없습니다."));
 
         PersonasEntity persona = personasRepository.findById(storySessionsDTO.getPersonaId()).orElseThrow(() ->
-                new IllegalStateException("해당 페르소나는 찾을 수 없습니다."));
+                new NoSuchElementException("해당 페르소나는 찾을 수 없습니다."));
 
         StorySessionsEntity storySessions = StorySessionsEntity.createSession(
                 user,
@@ -71,5 +74,49 @@ public class StorySessionsServiceImpl implements StorySessionsService {
         );
         storySessionsRepository.save(storySessions);
         log.info("세션 생성 : {}", storySessions);
+    }
+
+    /**
+     * 세션상태 변경
+     * @param id     PK
+     * @param status 새션 상태
+     */
+    @Transactional
+    @Override
+    public void modifyStorySessionByStatus(Long id, SessionStatus status) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+
+        storySession.changeInformationByStorySession(status);
+
+        StorySessionsEntity save = storySessionsRepository.save(storySession);
+        log.info("세션 진행 상태 변경 : {}", save);
+    }
+
+    /**
+     * 세션 엔딩 결정
+     * @param id         PK
+     * @param endingType 엔딩
+     */
+    @Transactional
+    @Override
+    public void modifyStorySessionByEndingType(Long id, EndingType endingType) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+
+        storySession.changeInformationByEndingType(endingType);
+
+        StorySessionsEntity save = storySessionsRepository.save(storySession);
+        log.info("세션 엔딩 결정 : {}", save);
+    }
+
+    /**
+     * 세션 삭제
+     * @param id PK
+     */
+    @Override
+    public void deleteStorySessionByStatus(Long id) {
+        storySessionsRepository.deleteById(id);
+        log.info("세션 삭제 : {}", id);
     }
 }
