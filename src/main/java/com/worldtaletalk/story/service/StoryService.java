@@ -1,5 +1,7 @@
 package com.worldtaletalk.story.service;
 
+import com.worldtaletalk.story.dto.TurnProcessResult;
+
 public interface StoryService {
 
     /**
@@ -10,5 +12,5 @@ public interface StoryService {
      * - 채팅 메시지 저장
      * - 엔딩 조건 판별
      */
-    void processStory(Long sessionId, String userInput);
+    TurnProcessResult processStory(Long sessionId, String userInput);
 }
