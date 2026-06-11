@@ -2,10 +2,10 @@ package com.worldtaletalk.story.service;
 
 import com.worldtaletalk.persona.domain.PersonasBaseStatsEntity;
 import com.worldtaletalk.persona.domain.PersonasEntity;
-import com.worldtaletalk.persona.repository.PersonasBaseStatsRepository;
 import com.worldtaletalk.persona.repository.PersonasRepository;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
+import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
@@ -35,8 +35,8 @@ public class StoryAiServiceImpl implements StoryAiService {
     private final VectorStore vectorStore;
     private final WorldsRepository worldsRepository;
     private final PersonasRepository personasRepository;
-    private final PersonasBaseStatsRepository personasBaseStatsRepository;
     private final StorySessionsRepository storySessionsRepository;
+    private final SessionStatsService sessionStatsService;
 
     /**
      * 세계관 삭제
@@ -171,8 +171,8 @@ public class StoryAiServiceImpl implements StoryAiService {
         WorldsEntity world = storySession.getWorlds();
         PersonasEntity persona = storySession.getPersonas();
 
-        PersonasBaseStatsEntity personasBaseStat = personasBaseStatsRepository.findByPersonaId(persona.getId()).orElseThrow(() ->
-                new NoSuchElementException("해당 페르소나의 스텟을 찾을 수 없습니다."));
+        // 현재 스텟을 조회 (현재 스텟으로 인해 LLM이 스토리 진행을 하기 위함)
+        Map<String, Integer> currentStats = sessionStatsService.getCurrentStats(sessionId);
 
         // 세계관 조회를 위한 메타데이터 필터
         FilterExpressionBuilder b = new FilterExpressionBuilder();
@@ -231,14 +231,25 @@ public class StoryAiServiceImpl implements StoryAiService {
     [규칙]
     1. 소설 본문(story)은 2~4문단으로 작성하세요.
     2. 선택지(choices)는 반드시 3개를 제시하세요.
-    3. 스탯 변화(statChanges)는 각 스탯별로 -2~+2 범위로 지정하세요.
-    4. 아이템 이벤트(itemEvent)는 자연스러울 때만 생성하고 없으면 null입니다.
-    5. 엔딩 조건(endingFlag)은 목표 턴에 근접하거나 중요한 사건 발생 시 true로 설정하세요.
+    3. statChanges 에는 유저의 이번 행동에 대한 스탯 변화를 담으세요.
+       유저 입력이 선택지 선택이면 빈 객체 {} 로 반환하세요.
+    4. statChangesByChoice 에는 선택지 번호별 스탯 변화를 담으세요.
+       키는 반드시 choice1, choice2, choice3 입니다.
+    5. 두 필드의 스탯 키는 반드시 wisdom, strength, agility, charisma, luck 만 사용하고
+       각 값은 -2에서 +2 범위입니다.
+    6. statChanges 와 statChangesByChoice 는 항상 두 필드 모두 반환하세요.
+       해당 없으면 빈 객체 {} 로 반환하세요.
+    7. 아이템 이벤트(itemEvent)는 자연스러울 때만 생성하고 없으면 null입니다.
+    8. 엔딩 조건(endingFlag)은 목표 턴에 근접하거나 중요한 사건 발생 시 true로 설정하세요.
+    9. 현재 스탯 수치를 스토리 전개에 반영하세요.
+       높은 스탯은 해당 능력이 빛나는 전개로, 낮은 스탯은 약점이 드러나는 전개로 표현하세요.
+       예를 들어 행운이 높으면 우연한 발견이나 기회가 찾아오고
+       힘이 낮으면 힘으로 해결하기 어려운 상황이 됩니다.
     """.formatted(
                 world.getName(), worldContext,
                 persona.getName(), personaContext,
-                personasBaseStat.getWisdom(), personasBaseStat.getStrength(),
-                personasBaseStat.getAgility(), personasBaseStat.getCharisma(), personasBaseStat.getLuck(),
+                currentStats.get("wisdom"), currentStats.get("strength"),
+                currentStats.get("agility"), currentStats.get("charisma"), currentStats.get("luck"),
                 storySession.getCurrentTurn(), world.getTargetTurn()
         );
 
@@ -251,7 +262,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
         log.info("스토리: {}", result.getStory());
         log.info("선택지: {}", result.getChoices());
-        log.info("스탯 변화: {}", result.getStatChanges());
+        log.info("스탯 변화: {}", result.getStatChangesByChoice());
         log.info("아이템 이벤트: {}", result.getItemEvent());
         log.info("엔딩 플래그: {}", result.isEndingFlag());
 

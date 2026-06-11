@@ -5,12 +5,11 @@ import com.worldtaletalk.story.dto.TurnProcessResult;
 public interface StoryService {
 
     /**
-     * 스토리 진행 (유저 입력 처리 총괄)
-     * - RAG 검색
-     * - LLM 호출
-     * - 스탯/아이템 처리
-     * - 채팅 메시지 저장
-     * - 엔딩 조건 판별
+     * LLM 호출후 스텟 / 아이템 / 엔딩 / 턴수 처리
+     * @param sessionId 세션 PK
+     * @param userInput 유저 프롬프트
+     * @param choiceNumber 선택지 선택
+     * @return 로직 처리된 세션 정보
      */
-    TurnProcessResult processStory(Long sessionId, String userInput);
+    TurnProcessResult processStory(Long sessionId, String userInput, Integer choiceNumber);
 }

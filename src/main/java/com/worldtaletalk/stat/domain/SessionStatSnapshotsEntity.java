@@ -37,4 +37,34 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
     @JoinColumn(name = "session_id", nullable = false, unique = true,
             foreignKey = @ForeignKey(name = "fk_session_stat_snapshots_session"))
     private StorySessionsEntity storySession;
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 스텟 스냅샷
+     * @param wisdom 지혜
+     * @param strength 힘
+     * @param agility 민첩
+     * @param charisma 카르스마
+     * @param luck 행운
+     * @param storySession 세션 FK
+     * @return 스탯 스냅샷
+     */
+    public static SessionStatSnapshotsEntity createSessionStatSnapshots(
+            int wisdom,
+            int strength,
+            int agility,
+            int charisma,
+            int luck,
+            StorySessionsEntity storySession
+    ) {
+        return SessionStatSnapshotsEntity.builder()
+                .wisdom(wisdom)
+                .strength(strength)
+                .agility(agility)
+                .charisma(charisma)
+                .luck(luck)
+                .storySession(storySession)
+                .build();
+    }
 }

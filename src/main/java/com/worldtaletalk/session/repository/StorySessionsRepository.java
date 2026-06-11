@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface StorySessionsRepository extends JpaRepository<StorySessionsEntity, Long> {
+    // 진행중인 세션만 조회
     @Query("SELECT s FROM StorySessionsEntity s WHERE s.id = :id AND s.status = SessionStatus.IN_PROGRESS")
     Optional<StorySessionsEntity> findByState(@Param("id") Long id);
 }
