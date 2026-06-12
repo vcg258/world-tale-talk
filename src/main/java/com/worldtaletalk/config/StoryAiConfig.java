@@ -3,9 +3,11 @@ package com.worldtaletalk.config;
 import com.worldtaletalk.story.memory.CustomChatMemory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 @Configuration
 public class StoryAiConfig {
@@ -18,7 +20,10 @@ public class StoryAiConfig {
     @Bean
     public ChatClient chatClient(ChatModel chatModel, CustomChatMemory customChatMemory) {
         return ChatClient.builder(chatModel)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(customChatMemory).build())
+                .defaultAdvisors(
+                        MessageChatMemoryAdvisor.builder(customChatMemory).build(),
+                        new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1)
+                )
                 .build();
     }
 }

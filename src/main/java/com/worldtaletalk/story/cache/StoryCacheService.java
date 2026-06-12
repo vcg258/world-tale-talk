@@ -1,12 +1,14 @@
 package com.worldtaletalk.story.cache;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Map;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class StoryCacheService {
@@ -16,7 +18,7 @@ public class StoryCacheService {
     private static final String CHOICE_STAT_KEY = "story:session:%d:choices";
 
     // 레디스 보관 시간
-    private static final Duration CACSH_TTL = Duration.ofHours(24); // TODO 일단 24시간 지정 필요하면 수정
+    private static final Duration CACHE_TTL = Duration.ofHours(24); // TODO 일단 24시간 지정 필요하면 수정
 
     /**
      * 직전 턴 선택지별 스텟 변화량 저장
@@ -25,7 +27,8 @@ public class StoryCacheService {
      */
     public void saveChoiceStats(Long sessionId, Map<String, Map<String, Integer>> choiceChangesByChoices) {
         String key = CHOICE_STAT_KEY.formatted(sessionId);
-        redisTemplate.opsForValue().set(key, choiceChangesByChoices, CACSH_TTL);
+        redisTemplate.opsForValue().set(key, choiceChangesByChoices, CACHE_TTL);
+        log.info("선택지 스텟 캐시 저장 sessionId : {}", sessionId);
     }
 
     /**
@@ -33,6 +36,7 @@ public class StoryCacheService {
      * @param sessionId 세션 PK
      * @return 선택지별 스텟 변화 (없다? null)
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Map<String, Integer>> getChoiceStats(Long sessionId) {
         String key = CHOICE_STAT_KEY.formatted(sessionId);
         Object value = redisTemplate.opsForValue().get(key);
@@ -46,6 +50,7 @@ public class StoryCacheService {
     public void deleteSessionCache(Long sessionId) {
         String key = CHOICE_STAT_KEY.formatted(sessionId);
         redisTemplate.delete(key);
+        log.info("세션 캐시 삭제 sessionId : {}", sessionId);
     }
 
 }

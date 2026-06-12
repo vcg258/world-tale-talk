@@ -27,4 +27,10 @@ public interface SessionStatsService {
      * @return 저장된 스냅샷
      */
     SessionStatSnapshotsDTO addSnapshot(Long sessionId);
+
+    /**
+     * 스텟 로그 삭제 (LLM호출 실패시 보상용)
+     * @param statLogId 스텟 로그 PK
+     */
+    void deleteStatLog(Long statLogId);
 }

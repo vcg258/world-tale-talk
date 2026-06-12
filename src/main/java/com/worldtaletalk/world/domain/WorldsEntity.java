@@ -97,6 +97,9 @@ public class WorldsEntity extends BaseTimeEntity {
         if (settingText == null || settingText.isBlank()) {
             throw new IllegalArgumentException("세계관 프롬프트는 필수 값입니다.");
         }
+        if (targetTurn < 10) { // TODO 필요시 수정
+            throw new IllegalArgumentException("목표 턴 수는 10 이상이어야 합니다.");
+        }
 
         return WorldsEntity.builder()
                 .name(name)

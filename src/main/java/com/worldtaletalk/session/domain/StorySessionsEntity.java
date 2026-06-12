@@ -113,6 +113,15 @@ public class StorySessionsEntity extends BaseTimeEntity {
     }
 
     /**
+     * 만약 LLM 호출을 실패 했을 경우 원상복구 차원
+     */
+    public void turnDown() {
+        if (this.currentTurn > 0) {
+            this.currentTurn--;
+        }
+    }
+
+    /**
      * 세션 상태 변경
      * @param sessionStatus 세션 상태 ENUM
      */

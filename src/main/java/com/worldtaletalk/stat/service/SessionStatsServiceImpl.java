@@ -134,4 +134,16 @@ public class SessionStatsServiceImpl implements SessionStatsService {
 
         return sessionStatSnapshotsMapper.toDTO(save);
     }
+
+    /**
+     * 스텟 로그 삭제 (LLM호출 실패시 보상용)
+     *
+     * @param statLogId 스텟 로그 PK
+     */
+    @Transactional
+    @Override
+    public void deleteStatLog(Long statLogId) {
+        sessionStatLogsRepository.deleteById(statLogId);
+        log.info("스텟 로그 삭제 statLogId : {}", statLogId);
+    }
 }

@@ -1,5 +1,6 @@
 package com.worldtaletalk.inventory.domain;
 
+import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.item.domain.ItemGrade;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import lombok.*;
         @Index(name = "idx_session_items_session_id", columnList = "session_id"),
         @Index(name = "idx_session_items_session_active", columnList = "session_id, is_active")
 })
-public class SessionItemsEntity {
+public class SessionItemsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id;
 
@@ -63,4 +64,52 @@ public class SessionItemsEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false, foreignKey = @ForeignKey(name = "fk_session_items_session"))
     private StorySessionsEntity storySession;
+
+    /* 도메인 행동 메서드 */
+
+    /**
+     * 아이템 생성
+     * @param itemName 아이템 이름
+     * @param itemDescription 아이템 설명
+     * @param grade 아이템 등급
+     * @param wisdomBonus 추가 지혜
+     * @param strengthBonus 추가 힘
+     * @param agilityBonus 추가 민첩
+     * @param charismaBonus 추가 카리스마
+     * @param luckBonus 추가 행운
+     * @param gainedAtTurn 흭득 턴
+     * @return 아이템
+     */
+    public static SessionItemsEntity createItem(
+            String itemName,
+            String itemDescription,
+            ItemGrade grade,
+            int wisdomBonus,
+            int strengthBonus,
+            int agilityBonus,
+            int charismaBonus,
+            int luckBonus,
+            int gainedAtTurn
+    ) {
+        return SessionItemsEntity.builder()
+                .itemName(itemName)
+                .itemDescription(itemDescription)
+                .grade(grade)
+                .wisdomBonus(wisdomBonus)
+                .strengthBonus(strengthBonus)
+                .agilityBonus(agilityBonus)
+                .charismaBonus(charismaBonus)
+                .luckBonus(luckBonus)
+                .gainedAtTurn(gainedAtTurn)
+                .build();
+    }
+
+    /**
+     * 아이템 버림
+     * @param turn 버린 턴
+     */
+    public void dropItem(int turn) {
+        this.active = false;
+        this.droppedAtTurn = turn;
+    }
 }

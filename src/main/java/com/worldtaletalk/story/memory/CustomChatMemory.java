@@ -50,7 +50,7 @@ public class CustomChatMemory implements ChatMemory {
 
             ChatMessagesEntity chatMessage = ChatMessagesEntity.builder()
                     .storySession(storySession)
-                    .turn(storySession.getCurrentTurn()) // TODO StoryService에서 실제 턴 수 주입 예정
+                    .turn(storySession.getCurrentTurn())
                     .role(role)
                     .content(message.getText())
                     .epilogue(false) // 기본값: 메인 스토리

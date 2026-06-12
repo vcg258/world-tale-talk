@@ -3,7 +3,6 @@ package com.worldtaletalk.story.service;
 import com.worldtaletalk.story.dto.TurnProcessResult;
 
 public interface StoryService {
-
     /**
      * LLM 호출후 스텟 / 아이템 / 엔딩 / 턴수 처리
      * @param sessionId 세션 PK
