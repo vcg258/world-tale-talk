@@ -2,12 +2,12 @@ package com.worldtaletalk.world.service;
 
 import com.worldtaletalk.world.domain.WorldGenre;
 import com.worldtaletalk.world.dto.WorldsDTO;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@Log4j2
+@Slf4j
 @SpringBootTest
 class WorldsServiceImplTest {
     @Autowired private WorldsService worldsService;

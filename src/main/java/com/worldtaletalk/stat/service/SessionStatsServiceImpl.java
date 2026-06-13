@@ -13,7 +13,7 @@ import com.worldtaletalk.stat.dto.SessionStatSnapshotsDTO;
 import com.worldtaletalk.stat.repository.SessionStatLogsRepository;
 import com.worldtaletalk.stat.repository.SessionStatSnapshotsRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-@Log4j2
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionStatsServiceImpl implements SessionStatsService {

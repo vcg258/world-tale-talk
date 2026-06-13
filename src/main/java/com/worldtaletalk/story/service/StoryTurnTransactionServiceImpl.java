@@ -1,6 +1,7 @@
 package com.worldtaletalk.story.service;
 
 import com.worldtaletalk.inventory.dto.SessionItemsDTO;
+import com.worldtaletalk.inventory.service.SessionItemsService;
 import com.worldtaletalk.item.domain.ItemGrade;
 import com.worldtaletalk.item.domain.itemgradeprobabilities.ItemGradeProbabilitiesEntity;
 import com.worldtaletalk.item.domain.itemgradeprobabilities.PhaseType;
@@ -22,13 +23,13 @@ import com.worldtaletalk.story.dto.TurnProcessResult;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Log4j2
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionService {
@@ -37,6 +38,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     private final StorySessionsRepository storySessionsRepository;
     private final SessionStatsService sessionStatsService;
     private final StoryCacheService storyCacheService;
+    private final SessionItemsService sessionItemsService;
     private final StorySessionsMapper storySessionsMapper;
 
     // LLM이 이상한 키값 검증을 위한 페르소나 스텟 상수
@@ -103,30 +105,24 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
             log.info("스텟 로그 저장 완료 turn : {}, 적용 스텟 : {}", state.getCurrentTurn(), appliedStates);
         }
 
-        // 스텟, 아이템 처리
+        // 스텟, 아이템, 엔딩 도달 처리
         StorySessionsDTO storySessionsDTO = storySessionsMapper.toDTO(state);
         TurnProcessResult turnProcessResult = applyStoryResult(storySessionsDTO, llmTurnResult);
-
-        // 엔딩
         SessionStatSnapshotsDTO sessionStatSnapshotsDTO = null;
+
         if (turnProcessResult.getEndingType() != null) {
             state.changeInformationByStorySession(SessionStatus.ENDING);
             state.changeInformationByEndingType(turnProcessResult.getEndingType());
             sessionStatSnapshotsDTO = sessionStatsService.addSnapshot(sessionId);
             log.info("엔딩 도달 sessionId : {}, endingType : {}", sessionId, turnProcessResult.getEndingType());
-        }
-
-        // 이번 응답으로 선택지별 다음 턴용으로 레디스에 스텟 저장
-        storyCacheService.saveChoiceStats(sessionId, clampStatChanges(llmTurnResult.getStatChangesByChoice()));
-
-        // 엔딩 도달 레디스 캐시 삭제
-        if (turnProcessResult.getEndingType() != null) {
             storyCacheService.deleteSessionCache(sessionId);
+        } else { // 이번 응답으로 선택지별 다음 턴용으로 레디스에 스텟 저장
+            storyCacheService.saveChoiceStats(sessionId, clampStatChanges(llmTurnResult.getStatChangesByChoice()));
         }
 
         StorySessionsEntity save = storySessionsRepository.save(state);
 
-        // 최신값이 갱신 되기전에 RDB에 저장 될 수 있으니 확실하게 저장
+        // 최신값이 갱신 되기전에 DTO변환이 될 수 있으니 확실하게 변환후 저장
         StorySessionsDTO latestSession = storySessionsMapper.toDTO(save);
 
         log.info("턴 처리 완료 sessionId : {}, currentTurn : {}", sessionId, state.getCurrentTurn());
@@ -191,8 +187,9 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     private Map<String, Integer> clampSingleStat(Map<String, Integer> rawStat) {
         Map<String, Integer> clamped = new HashMap<>();
         for (String key : STAT_KEYS) {
-            // 벨류값이 null이 더라도 0으로 디폴트 값 지정 : 만약 키값이 없다 0 확정
-            Integer value = rawStat != null ? rawStat.getOrDefault(key, 0) : 0;
+            // 맵 자체가 null 이거나 키가 없거나 값이 명시적 null 인 경우 모두 0 처리
+            Integer raw = rawStat != null ? rawStat.get(key) : null;
+            int value = raw != null ? raw : 0;
             // LLM이 범위 초과 일시 -2 ~ 2 로 범위 지정
             clamped.put(key, Math.clamp(value, -2, 2));
         }
@@ -256,7 +253,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         }
         ItemGrade boostedGrade = contextToGrade(itemContext);
 
-        Map<ItemGrade, Integer> weightMap = new HashMap<>();
+        // 사실 크게 의미는 없어보이긴한데 그냥 순서보장 하기 위해서 HashMap -> LinkedHashMap으로 변경
+        Map<ItemGrade, Integer> weightMap = new LinkedHashMap<>();
         for (ItemGradeProbabilitiesEntity entity : probabilities) {
             // TODO 아이템힌트가 떳을시 확률 2배 필요하면 수정
             int weight = entity.getGrade() == boostedGrade ? entity.getProbability() * 2 : entity.getProbability();
@@ -308,14 +306,33 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         Long removeItemId = null;
 
         if (llmTurnResult.getItemEvent() != null && llmTurnResult.getItemEvent().getType() != ItemEventType.NULL) {
-            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(),  storySessionsDTO);
+            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO);
             log.info("아이템 이벤트 type : {}, 힌트 : {}, 확정 등급 : {}",
                     llmTurnResult.getItemEvent().getType(), llmTurnResult.getItemEvent().getItemContext(), itemGrade);
 
             if (llmTurnResult.getItemEvent().getType() == ItemEventType.GAIN) {
-                // TODO 인벤토리 서비스 미구현 구현후 생성로직 추가
+                // 아이템 생성 (등급 설정 기반 보정치 랜덤 생성)
+                sessionItemsDTO = sessionItemsService.addItem(
+                        storySessionsDTO.getId(),
+                        storySessionsDTO.getCurrentTurn(),
+                        llmTurnResult.getItemEvent().getItemName(),
+                        llmTurnResult.getItemEvent().getItemDescription(),
+                        itemGrade
+                );
+                log.info("아이템 획득 itemName : {}, grade : {}", sessionItemsDTO.getItemName(), sessionItemsDTO.getGrade());
+
             } else if (llmTurnResult.getItemEvent().getType() == ItemEventType.LOSE) {
-                // TODO 인벤토리 서비스 미구현 구현후 버림로직 추가
+                // 아이템 버림 (이름 매칭, LLM 환각으로 없는 아이템일 수 있어서 null 허용)
+                removeItemId = sessionItemsService.dropItem(
+                        storySessionsDTO.getId(),
+                        llmTurnResult.getItemEvent().getItemName(),
+                        storySessionsDTO.getCurrentTurn()
+                );
+                if (removeItemId != null) {
+                    log.info("아이템 소실 itemId : {}, itemName : {}", removeItemId, llmTurnResult.getItemEvent().getItemName());
+                } else {
+                    log.warn("아이템 소실 실패 (보유하지 않은 아이템) itemName : {}", llmTurnResult.getItemEvent().getItemName());
+                }
             }
         }
 

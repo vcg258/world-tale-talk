@@ -6,7 +6,7 @@ import com.worldtaletalk.chat.repository.ChatMessagesRepository;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomChatMemory implements ChatMemory {

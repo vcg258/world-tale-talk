@@ -89,7 +89,8 @@ public class SessionItemsEntity extends BaseTimeEntity {
             int agilityBonus,
             int charismaBonus,
             int luckBonus,
-            int gainedAtTurn
+            int gainedAtTurn,
+            StorySessionsEntity storySession
     ) {
         return SessionItemsEntity.builder()
                 .itemName(itemName)
@@ -101,6 +102,7 @@ public class SessionItemsEntity extends BaseTimeEntity {
                 .charismaBonus(charismaBonus)
                 .luckBonus(luckBonus)
                 .gainedAtTurn(gainedAtTurn)
+                .storySession(storySession)
                 .build();
     }
 

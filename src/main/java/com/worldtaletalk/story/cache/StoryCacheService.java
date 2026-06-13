@@ -1,14 +1,14 @@
 package com.worldtaletalk.story.cache;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StoryCacheService {

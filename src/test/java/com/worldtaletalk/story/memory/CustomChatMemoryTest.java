@@ -1,6 +1,6 @@
 package com.worldtaletalk.story.memory;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@Log4j2
+@Slf4j
 @SpringBootTest
 class CustomChatMemoryTest {
     @Autowired private CustomChatMemory customChatMemory;
