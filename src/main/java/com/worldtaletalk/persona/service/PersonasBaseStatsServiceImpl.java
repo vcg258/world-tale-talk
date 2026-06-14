@@ -26,6 +26,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
      * 페르소나 스텟 여러건 조회
      * @return 페르소나 스텟
      */
+    @Transactional(readOnly = true)
     @Override
     public List<PersonasBaseStatsDTO> getPersonasBaseStatsList() {
         List<PersonasBaseStatsEntity> personasBaseStatsList = personasBaseStatsRepository.findAll();
@@ -37,6 +38,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
      * @param id PK
      * @return 페르소나 스텟
      */
+    @Transactional(readOnly = true)
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStats(Long id) {
         PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findById(id).orElseThrow(() ->
@@ -49,6 +51,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
      * @param id FK
      * @return 페르소나 스텟
      */
+    @Transactional(readOnly = true)
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStatsByPersonaId(Long id) {
         PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findByPersonaId(id).orElseThrow(() ->
@@ -60,6 +63,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
      * 해당 페르소나 기본 스텟 생성
      * @param personasBaseStatsDTO 페르소나 기본스텟 정보
      */
+    @Transactional
     @Override
     public void addPersonaBaseStats(PersonasBaseStatsDTO personasBaseStatsDTO) {
         PersonasEntity persona = personasRepository.findById(personasBaseStatsDTO.getPersonaId()).orElseThrow(() ->

@@ -17,12 +17,12 @@ class StorySessionsServiceImplTest {
 
     @Test
     void getStorySessions() {
-        storySessionsService.getStorySessions().forEach(log::info);
+        storySessionsService.getStorySessions().forEach(dto -> log.info("{}", dto));
     }
 
     @Test
     void getStorySession() {
-        log.info(storySessionsService.getStorySession(1L));
+        log.info("{}", storySessionsService.getStorySession(1L));
     }
 
     @Test

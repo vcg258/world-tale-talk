@@ -6,6 +6,8 @@ import com.worldtaletalk.item.domain.ItemGrade;
 import com.worldtaletalk.item.domain.itemgradeprobabilities.ItemGradeProbabilitiesEntity;
 import com.worldtaletalk.item.domain.itemgradeprobabilities.PhaseType;
 import com.worldtaletalk.item.repository.ItemGradeProbabilitiesRepository;
+import com.worldtaletalk.persona.domain.PersonasBaseStatsEntity;
+import com.worldtaletalk.persona.repository.PersonasBaseStatsRepository;
 import com.worldtaletalk.session.StorySessionsMapper;
 import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
@@ -40,11 +42,17 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     private final StoryCacheService storyCacheService;
     private final SessionItemsService sessionItemsService;
     private final StorySessionsMapper storySessionsMapper;
+    private final PersonasBaseStatsRepository personasBaseStatsRepository;
 
     // LLM이 이상한 키값 검증을 위한 페르소나 스텟 상수
     private static final List<String> STAT_KEYS = List.of("wisdom", "strength", "agility", "charisma", "luck");
     // LLM이 이상한 키값 검증을 위한 페르소나 선택지 상수
     private static final List<String> CHOICE_KEYS = List.of("choice1", "choice2", "choice3");
+
+    // 엔딩 판별값 TODO 밸런스 조정 필요시 수정
+    private static final int GOOD_THRESHOLD = 20;   // 델타 합산 +20 이상 -> GOOD
+    private static final int BAD_THRESHOLD = -20;   // 델타 합산 -20 이하 -> BAD
+    private static final int SECRET_RARE_ITEM_MIN = 3; // EPIC 또는 CURSED 아이템 보유 최소 수량 -> SECRET
 
     /**
      * 턴 시작 처리 (세션 검증, 턴 증가, 선택지 스텟 로그 저장)
@@ -158,7 +166,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         log.warn("LLM 호출 실패 보상 처리 완료 sessionId : {}", sessionId);
     }
 
-    /* Helper Methode */
+    /* Helper Methods */
 
     /**
      * 스텟 로그를 DTO로 반환 하기 위한 메서드
@@ -280,25 +288,84 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     }
 
     /**
-     * 엔딩 결정 메서드
-     * @param storySessionsDTO 세션 정보
-     * @param llmTurnResult LLM이 임의로 할당한 스텟, 아이템, 엔딩, 턴 정보
-     * @return 엔딩 결정
+     * 엔딩 타입 판별 (스탯 합산 + 아이템 보너스 까지 포함)
+     * SECRET -> DARK -> GOOD -> BAD -> TRUE 로 판별함 이유 : 히든과 흑화 엔딩조건 둘다 해당할 경우 충돌 가능성이 있기 때문
+     * @param sessionId  세션 PK
+     * @param personaId  페르소나 PK (기본 스탯 조회용)
+     * @param endingFlag LLM 엔딩 트리거 여부
+     * @return 결정된 엔딩 타입 (endingFlag=false면 null)
      */
-    private EndingType resolveEndingType(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult) {
-        // 엔딩 조건 미충족
-        if (!llmTurnResult.isEndingFlag()) {
-            return null;
+    private EndingType resolveEndingType(Long sessionId, Long personaId, boolean endingFlag) {
+        if (!endingFlag) return null;
+
+        // 페르소나 기본 스탯
+        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findByPersonaId(personaId).orElseThrow(() ->
+                new NoSuchElementException("해당 페르소나의 기본 스탯이 존재하지 않습니다."));
+
+        // 현재 스탯
+        Map<String, Integer> currentStats = sessionStatsService.getCurrentStats(sessionId);
+
+        // 보유 중인 인벤토리
+        List<SessionItemsDTO> inventory = sessionItemsService.getInventory(sessionId);
+
+        // 아이템 보너스 합산 -> 최종 스탯 계산
+        Map<String, Integer> itemBonuses = SessionItemsDTO.sumBonuses(inventory);
+        int finalWisdom   = currentStats.get("wisdom")   + itemBonuses.get("wisdom");
+        int finalStrength = currentStats.get("strength") + itemBonuses.get("strength");
+        int finalAgility  = currentStats.get("agility")  + itemBonuses.get("agility");
+        int finalCharisma = currentStats.get("charisma") + itemBonuses.get("charisma");
+        int finalLuck     = currentStats.get("luck")     + itemBonuses.get("luck");
+
+        // 기본 스탯 합산
+        int baseTotal = baseStats.getWisdom() + baseStats.getStrength() + baseStats.getAgility()
+                      + baseStats.getCharisma() + baseStats.getLuck();
+
+        // 최종 스탯 합산 및 delta 계산
+        int finalTotal = finalWisdom + finalStrength + finalAgility + finalCharisma + finalLuck;
+        int deltaSum = finalTotal - baseTotal;
+
+        log.info("엔딩 판별 시작 sessionId: {}, baseTotal: {}, finalTotal: {}, deltaSum: {}",
+                sessionId, baseTotal, finalTotal, deltaSum);
+
+        // EPIC 또는 CURSED 아이템 보유 수량 (히든 엔딩 조건 일단은 에픽이나 저주 아이템 3개 이상 보유시로 지정함)
+        long rareItemCount = inventory.stream()
+                .filter(item -> item.getGrade() == ItemGrade.EPIC || item.getGrade() == ItemGrade.CURSED)
+                .count();
+        if (rareItemCount >= SECRET_RARE_ITEM_MIN) {
+            log.info("엔딩 판별 결과 SECRET (희귀 아이템 {}개 보유)", rareItemCount);
+            return EndingType.SECRET;
         }
 
-        return EndingType.TRUE; // TODO 일단 기본 엔딩만 다른건 스텟로직 구현후 다른 엔딩 추가
+        // 지혜 + 카리스마 최종값이 기본값 합산 이하 (음수)
+        int baseWcSum   = baseStats.getWisdom() + baseStats.getCharisma();
+        int finalWcSum  = finalWisdom + finalCharisma;
+        if (finalWcSum <= baseWcSum) {
+            log.info("엔딩 판별 결과 DARK (지혜+카리스마 delta: {})", finalWcSum - baseWcSum);
+            return EndingType.DARK;
+        }
+
+        // GOOD : 전체 delta 합산 기준치 이상
+        if (deltaSum >= GOOD_THRESHOLD) {
+            log.info("엔딩 판별 결과 GOOD (deltaSum: {})", deltaSum);
+            return EndingType.GOOD;
+        }
+
+        // BAD : 전체 delta 합산 기준치 이하
+        if (deltaSum <= BAD_THRESHOLD) {
+            log.info("엔딩 판별 결과 BAD (deltaSum: {})", deltaSum);
+            return EndingType.BAD;
+        }
+
+        // TRUE : 어떤 조건도 해당 없는 기본 엔딩
+        log.info("엔딩 판별 결과 TRUE (deltaSum: {})", deltaSum);
+        return EndingType.TRUE;
     }
 
     /**
-     * 아이템, 엔딩 검증 처리
-     * @param storySessionsDTO 세션정보
-     * @param llmTurnResult LLM이 임의로 할당한 스텟, 아이템, 엔딩, 턴 정보
-     * @return 검증된 정보
+     * 아이템 이벤트 처리 + 엔딩 판별
+     * @param storySessionsDTO 세션 정보
+     * @param llmTurnResult    LLM 응답 파싱 결과
+     * @return 턴 처리 결과
      */
     private TurnProcessResult applyStoryResult(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult) {
         // 아이템 처리 로직
@@ -336,8 +403,12 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
             }
         }
 
-        // 엔딩 타입 판별
-        EndingType endingType = resolveEndingType(storySessionsDTO, llmTurnResult);
+        // 엔딩 타입 판별 (아이템 처리 완료 후 - 이번 턴 획득 아이템도 반영됨)
+        EndingType endingType = resolveEndingType(
+                storySessionsDTO.getId(),
+                storySessionsDTO.getPersonaId(),
+                llmTurnResult.isEndingFlag()
+        );
 
         return TurnProcessResult.builder()
                 .session(storySessionsDTO)

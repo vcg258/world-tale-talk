@@ -41,4 +41,19 @@ public class StoryServiceImpl implements StoryService {
         return storyTurnTransactionService.completeTurn(sessionId, choiceNumber, statLogsDTO, llmTurnResult);
     }
 
+    /**
+     * LLM 호출 (에필로그)
+     * @param sessionId 세션 PK
+     * @param userInput 유저 프롬프트
+     * @return 에필로그 이야기
+     */
+    @Override
+    public String processEpilogue(Long sessionId, String userInput) {
+        try {
+            return storyAiService.generateEpilogue(sessionId, userInput);
+        } catch (Exception e) {
+            log.error("에필로그 생성 실패 sessionId: {}", sessionId, e);
+            throw new IllegalStateException("에필로그 생성 실패", e);
+        }
+    }
 }

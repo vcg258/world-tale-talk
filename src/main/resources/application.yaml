@@ -17,6 +17,7 @@ spring:
 
 # JPA 설정
   jpa:
+    open-in-view: false # DDD 서비스 레이어 트랜잭션 경계 명확화
     hibernate:
       ddl-auto: validate # Migration(Flyway) 사용으로 JPA에서 테이블 자동 생성을 하지 않음
     properties:
@@ -75,8 +76,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/world_tale_talk?currentSchema=public
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   # Redis 설정
   data:

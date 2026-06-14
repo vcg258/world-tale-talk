@@ -29,4 +29,17 @@ public class ItemGradeProbabilitiesEntity extends BaseTimeEntity {
     @Check(constraints = "probability BETWEEN 0 AND 100")
     @Column(nullable = false)
     private int probability; // 아이템 등급 확률 (동일 구간 합산 100으로 정함)
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 아이템 등급 확률 수정 (관리자)
+     * @param probability 확률 (0~100)
+     */
+    public void updateProbability(int probability) {
+        if (probability < 0 || probability > 100) {
+            throw new IllegalArgumentException("확률은 0에서 100 사이여야 합니다.");
+        }
+        this.probability = probability;
+    }
 }

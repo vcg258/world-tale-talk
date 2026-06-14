@@ -26,7 +26,7 @@ class CustomChatMemoryTest {
 
     @Test
     void get() {
-        customChatMemory.get("1").forEach(log::info);
+        customChatMemory.get("1").forEach(msg -> log.info("{}", msg));
     }
 
     @Test

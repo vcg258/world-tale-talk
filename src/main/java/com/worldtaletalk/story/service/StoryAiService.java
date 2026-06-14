@@ -23,4 +23,12 @@ public interface StoryAiService {
      * @return LLM 응답 파싱 결과
      */
     LlmTurnResult generateStory(Long sessionId, String userInput);
+
+    /**
+     * 메인 스토리 이후 에필로그 스토리 생성
+     * @param sessionId 세션 PK
+     * @param userInput 유저 입력
+     * @return LLM 응답 결과 (String)
+     */
+    String generateEpilogue(Long sessionId, String userInput);
 }

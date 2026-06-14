@@ -29,11 +29,11 @@ class SessionStatsServiceImplTest {
 
     @Test
     void getCurrentStats() {
-        log.info(sessionStatsService.getCurrentStats(1L));
+        log.info("{}", sessionStatsService.getCurrentStats(1L));
     }
 
     @Test
     void addSnapshot() {
-        log.info(sessionStatsService.addSnapshot(4L));
+        log.info("{}", sessionStatsService.addSnapshot(4L));
     }
 }

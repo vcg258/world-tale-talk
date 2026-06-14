@@ -34,6 +34,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * 세션 여러건 조회
      * @return 세션s
      */
+    @Transactional(readOnly = true)
     @Override
     public List<StorySessionsDTO> getStorySessions() {
         List<StorySessionsEntity> storySessionsEntityList = storySessionsRepository.findAll();
@@ -45,6 +46,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * @param id PK
      * @return 세션
      */
+    @Transactional(readOnly = true)
     @Override
     public StorySessionsDTO getStorySession(Long id) {
         StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
@@ -56,6 +58,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * 세션 생성 (새게임)
      * @param storySessionsDTO 세션 정보
      */
+    @Transactional
     @Override
     public void createStorySession(StorySessionsDTO storySessionsDTO) {
         UsersEntity user = usersRepository.findById(storySessionsDTO.getUserId()).orElseThrow(() ->
@@ -114,6 +117,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * 세션 삭제
      * @param id PK
      */
+    @Transactional
     @Override
     public void deleteStorySessionByStatus(Long id) {
         storySessionsRepository.deleteById(id);

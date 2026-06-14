@@ -13,12 +13,12 @@ class PersonasServiceImplTest {
 
     @Test
     void getPersonasList() {
-        personasService.getPersonasList().forEach(log::info);
+        personasService.getPersonasList().forEach(dto -> log.info("{}", dto));
     }
 
     @Test
     void getPersona() {
-        log.info(personasService.getPersona(1L));
+        log.info("{}", personasService.getPersona(1L));
     }
 
     @Test

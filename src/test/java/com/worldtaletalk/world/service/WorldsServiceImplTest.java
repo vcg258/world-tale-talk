@@ -14,12 +14,12 @@ class WorldsServiceImplTest {
 
     @Test
     void getAllWorlds() {
-        worldsService.getAllWorlds().forEach(log::info);
+        worldsService.getAllWorlds().forEach(dto -> log.info("{}", dto));
     }
 
     @Test
     void getWorldById() {
-        log.info(worldsService.getWorldById(1L));
+        log.info("{}", worldsService.getWorldById(1L));
     }
 
     @Test

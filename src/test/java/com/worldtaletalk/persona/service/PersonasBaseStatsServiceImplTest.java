@@ -14,17 +14,17 @@ class PersonasBaseStatsServiceImplTest {
 
     @Test
     void getPersonasBaseStatsList() {
-        personasBaseStatsService.getPersonasBaseStatsList().forEach(log::info);
+        personasBaseStatsService.getPersonasBaseStatsList().forEach(dto -> log.info("{}", dto));
     }
 
     @Test
     void getPersonasBaseStats() {
-        log.info(personasBaseStatsService.getPersonasBaseStats(1L));
+        log.info("{}", personasBaseStatsService.getPersonasBaseStats(1L));
     }
 
     @Test
     void getPersonasBaseStatsByPersonaId() {
-        log.info(personasBaseStatsService.getPersonasBaseStatsByPersonaId(1L));
+        log.info("{}", personasBaseStatsService.getPersonasBaseStatsByPersonaId(1L));
     }
 
     @Test

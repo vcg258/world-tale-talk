@@ -1,5 +1,6 @@
 package com.worldtaletalk.world.service;
 
+import com.worldtaletalk.story.service.StoryAiService;
 import com.worldtaletalk.world.WorldsMapper;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.dto.WorldsDTO;
@@ -18,11 +19,13 @@ import java.util.NoSuchElementException;
 public class WorldsServiceImpl implements WorldsService {
     private final WorldsRepository worldsRepository;
     private final WorldsMapper worldsMapper;
+    private final StoryAiService storyAiService;
 
     /**
      * 세계관 전체 조회
      * @return 세계관들
      */
+    @Transactional(readOnly = true)
     @Override
     public List<WorldsDTO> getAllWorlds() {
         List<WorldsEntity> worlds = worldsRepository.findAll();
@@ -34,6 +37,7 @@ public class WorldsServiceImpl implements WorldsService {
      * @param id PK
      * @return 세계관
      */
+    @Transactional(readOnly = true)
     @Override
     public WorldsDTO getWorldById(Long id) {
         WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
@@ -46,6 +50,7 @@ public class WorldsServiceImpl implements WorldsService {
      * 세계관 생성
      * @param worldsDTO 세계관 정보
      */
+    @Transactional
     @Override
     public void addWorld(WorldsDTO worldsDTO) {
         WorldsEntity world = WorldsEntity.createWorld(
@@ -58,6 +63,7 @@ public class WorldsServiceImpl implements WorldsService {
         );
 
         WorldsEntity save = worldsRepository.save(world);
+        storyAiService.indexWorld(save.getId()); // ETL: 벡터 인덱스 생성
         log.info("세계관 생성완료 : {}", save);
     }
 
@@ -81,6 +87,7 @@ public class WorldsServiceImpl implements WorldsService {
         );
 
         WorldsEntity save = worldsRepository.save(worlds);
+        storyAiService.indexWorld(save.getId()); // ETL: 벡터 인덱스 갱신 (기존 청크 삭제 후 재등록)
         log.info("세계관 수정 내역 : {}",  save);
     }
 
@@ -88,8 +95,10 @@ public class WorldsServiceImpl implements WorldsService {
      * 세계관 삭제
      * @param id PK
      */
+    @Transactional
     @Override
     public void deleteWorld(Long id) {
+        storyAiService.deleteWorldIndex(id); // ETL: 벡터 인덱스 삭제
         worldsRepository.deleteById(id);
         log.info("세계관 삭제 : {}", id);
     }

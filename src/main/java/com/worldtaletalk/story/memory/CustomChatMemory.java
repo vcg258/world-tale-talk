@@ -3,6 +3,7 @@ package com.worldtaletalk.story.memory;
 import com.worldtaletalk.chat.domain.ChatMessagesEntity;
 import com.worldtaletalk.chat.domain.ChatRole;
 import com.worldtaletalk.chat.repository.ChatMessagesRepository;
+import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class CustomChatMemory implements ChatMemory {
                     .turn(storySession.getCurrentTurn())
                     .role(role)
                     .content(message.getText())
-                    .epilogue(false) // 기본값: 메인 스토리
+                    .epilogue(storySession.getStatus() == SessionStatus.EPILOGUE) // true = 에필로그 / false = 메인 스토리
                     .build();
 
             ChatMessagesEntity save = chatMessagesRepository.save(chatMessage);
@@ -62,14 +63,21 @@ public class CustomChatMemory implements ChatMemory {
     }
 
     /**
-     * 커스텀 ChatMemory 조회 (is_epilogue = false 인 메인 스토리 메시지만)
+     * 커스텀 ChatMemory 조회
      * @param conversationId 세션 PK (String)
-     * @return 메인 스토리 메시지 목록
+     * @return 메시지 목록
      */
     @Override
     public List<Message> get(@NonNull String conversationId) {
-        List<ChatMessagesEntity> chatMessages = chatMessagesRepository
-                .findAllSessionId(Long.parseLong(conversationId));
+        Long sessionId = Long.parseLong(conversationId);
+        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId)
+                .orElseThrow(() -> new NoSuchElementException("해당 세션을 찾을 수 없음"));
+
+        // 에필로그 여부 확인후 전체 조회를 하던 아니면 메인 메세지만 조회 TODO 이거 최적화 필요하긴함
+        List<ChatMessagesEntity> chatMessages =
+                storySession.getStatus() == SessionStatus.EPILOGUE ?
+                        chatMessagesRepository.findAllByStorySessionId(sessionId) :
+                        chatMessagesRepository.findAllSessionId(sessionId);
 
         return chatMessages.stream()
                 .map(entity -> {

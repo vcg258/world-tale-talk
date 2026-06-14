@@ -15,7 +15,7 @@ class StoryServiceImplTest {
 
     @Test
     void processStory() {
-//        storyAiService.indexWorld(2L);
+        storyAiService.indexWorld(2L);
         storyService.processStory(2L, "나는 누구지?", null);
     }
 }

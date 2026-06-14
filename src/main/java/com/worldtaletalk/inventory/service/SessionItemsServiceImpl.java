@@ -4,7 +4,7 @@ import com.worldtaletalk.inventory.SessionItemsMapper;
 import com.worldtaletalk.inventory.domain.SessionItemsEntity;
 import com.worldtaletalk.inventory.dto.SessionItemsDTO;
 import com.worldtaletalk.inventory.repository.SessionItemsRepository;
-import com.worldtaletalk.item.ItemGradeConfigsMapper;
+import com.worldtaletalk.item.mapper.ItemGradeConfigsMapper;
 import com.worldtaletalk.item.domain.ItemGrade;
 import com.worldtaletalk.item.domain.ItemGradeConfigsEntity;
 import com.worldtaletalk.item.dto.ItemGradeConfigsDTO;
@@ -99,6 +99,7 @@ public class SessionItemsServiceImpl implements SessionItemsService {
      * @param sessionId 세션 PK
      * @return 보유 아이템 목록
      */
+    @Transactional(readOnly = true)
     @Override
     public List<SessionItemsDTO> getInventory(Long sessionId) {
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
@@ -133,7 +134,7 @@ public class SessionItemsServiceImpl implements SessionItemsService {
             int max = Math.min(itemGradeConfigsDTO.getSingleMax(), budget);
 
             int value;
-            if (itemGradeConfigsDTO.isCanNegative() && random.nextBoolean()) {
+            if (itemGradeConfigsDTO.getCanNegative() && random.nextBoolean()) {
                 // 음수 허용 등급 (CURSED 같은 저주 아이템) - singleMin 기준으로 음수 생성
                 value = -random.nextInt(Math.abs(itemGradeConfigsDTO.getSingleMin()) + 1);
             } else {

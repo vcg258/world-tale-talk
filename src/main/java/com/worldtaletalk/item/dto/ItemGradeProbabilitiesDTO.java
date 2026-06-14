@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemGradeProbabilities {
+public class ItemGradeProbabilitiesDTO {
     private Long id;
     private PhaseType phase; // 진행도 구간
     private ItemGrade grade; // 아이템 등급

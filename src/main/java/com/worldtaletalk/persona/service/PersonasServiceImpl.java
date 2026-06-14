@@ -27,6 +27,7 @@ public class PersonasServiceImpl implements PersonasService {
      * 페르소나 여러건 조회
      * @return 페르소나
      */
+    @Transactional(readOnly = true)
     @Override
     public List<PersonasDTO> getPersonasList() {
         List<PersonasEntity> personasList = personasRepository.findAll();
@@ -38,6 +39,7 @@ public class PersonasServiceImpl implements PersonasService {
      * @param id FK
      * @return 페르소나
      */
+    @Transactional(readOnly = true)
     @Override
     public PersonasDTO getPersona(Long id) {
         PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
@@ -49,6 +51,7 @@ public class PersonasServiceImpl implements PersonasService {
      * 페르소나 추가
      * @param personasDTO 페르소나 정보
      */
+    @Transactional
     @Override
     public void addPersona(PersonasDTO personasDTO) {
         WorldsEntity worldsEntity = worldsRepository.findById(personasDTO.getWorldId()).orElseThrow(() ->
@@ -97,6 +100,7 @@ public class PersonasServiceImpl implements PersonasService {
      * 페르소나 삭제 (CASCADE로 인해 페르소나 삭제 하면 관련 페르소나 스텟 같이 제거)
      * @param id PK
      */
+    @Transactional
     @Override
     public void removePersona(Long id) {
         personasRepository.deleteById(id);

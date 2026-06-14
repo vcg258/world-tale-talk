@@ -20,11 +20,11 @@ class SessionItemsServiceImplTest {
 
     @Test
     void dropItem() {
-        log.info(sessionItemsService.dropItem(2L, "검", 10));
+        sessionItemsService.dropItem(2L, "검", 10);
     }
 
     @Test
     void getInventory() {
-        sessionItemsService.getInventory(2L).forEach(log::info);
+        sessionItemsService.getInventory(2L).forEach(dto -> log.info("{}", dto));
     }
 }
