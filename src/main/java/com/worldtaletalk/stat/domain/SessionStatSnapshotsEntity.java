@@ -31,6 +31,9 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private int luck; // 엔딩 시점 행운
 
+    @Column(length = Integer.MAX_VALUE) // null 허용 이유 : LLM이 메인스토리 요약을 해주기때문에 트랜잭션 밖에 있어야함
+    private String storySummary; // 엔딩 시점 메인 스토리 요약본
+
     /* FK (자식) */
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
@@ -41,7 +44,7 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
     /* 도메인 행위 메서드 */
 
     /**
-     * 스텟 스냅샷
+     * 스텟 스냅샷 생성
      * @param wisdom 지혜
      * @param strength 힘
      * @param agility 민첩
@@ -66,5 +69,13 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
                 .luck(luck)
                 .storySession(storySession)
                 .build();
+    }
+
+    /**
+     * 엔딩이후 메인 스토리 요약
+     * @param summary 메인스토리 요약 히스토리
+     */
+    public void modifySnapshotSummary(String summary) {
+        this.storySummary = summary;
     }
 }

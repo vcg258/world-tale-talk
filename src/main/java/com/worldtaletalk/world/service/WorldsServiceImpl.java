@@ -63,12 +63,12 @@ public class WorldsServiceImpl implements WorldsService {
         );
 
         WorldsEntity save = worldsRepository.save(world);
-        storyAiService.indexWorld(save.getId()); // ETL: 벡터 인덱스 생성
+        storyAiService.indexWorld(save.getId()); // ETL : 벡터 인덱스 생성
         log.info("세계관 생성완료 : {}", save);
     }
 
     /**
-     * 세꼐관 수정
+     * 세계관 수정
      * @param worldsDTO 수정할 세계관 정보
      */
     @Transactional
@@ -87,7 +87,7 @@ public class WorldsServiceImpl implements WorldsService {
         );
 
         WorldsEntity save = worldsRepository.save(worlds);
-        storyAiService.indexWorld(save.getId()); // ETL: 벡터 인덱스 갱신 (기존 청크 삭제 후 재등록)
+        storyAiService.indexWorld(save.getId()); // ETL : 벡터 인덱스 갱신 (기존 청크 삭제 후 재등록)
         log.info("세계관 수정 내역 : {}",  save);
     }
 
@@ -98,7 +98,7 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional
     @Override
     public void deleteWorld(Long id) {
-        storyAiService.deleteWorldIndex(id); // ETL: 벡터 인덱스 삭제
+        storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         worldsRepository.deleteById(id);
         log.info("세계관 삭제 : {}", id);
     }

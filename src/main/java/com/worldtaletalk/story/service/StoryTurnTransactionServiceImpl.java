@@ -52,7 +52,6 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     // 엔딩 판별값 TODO 밸런스 조정 필요시 수정
     private static final int GOOD_THRESHOLD = 20;   // 델타 합산 +20 이상 -> GOOD
     private static final int BAD_THRESHOLD = -20;   // 델타 합산 -20 이하 -> BAD
-    private static final int SECRET_RARE_ITEM_MIN = 3; // EPIC 또는 CURSED 아이템 보유 최소 수량 -> SECRET
 
     /**
      * 턴 시작 처리 (세션 검증, 턴 증가, 선택지 스텟 로그 저장)
@@ -293,9 +292,11 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @param sessionId  세션 PK
      * @param personaId  페르소나 PK (기본 스탯 조회용)
      * @param endingFlag LLM 엔딩 트리거 여부
+     * @param hiddenEventFlag LLM 히든 엔딩 트리거 여부
      * @return 결정된 엔딩 타입 (endingFlag=false면 null)
      */
-    private EndingType resolveEndingType(Long sessionId, Long personaId, boolean endingFlag) {
+    private EndingType resolveEndingType(Long sessionId, Long personaId, boolean endingFlag, boolean hiddenEventFlag) {
+        if (hiddenEventFlag) return EndingType.SECRET; // 히든은 LLM이 이벤트 발생여부만 확인하고 엔딩을 결정짓기때문에 밑에 로직은 필요없어서 제일 위로 올림
         if (!endingFlag) return null;
 
         // 페르소나 기본 스탯
@@ -327,16 +328,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         log.info("엔딩 판별 시작 sessionId: {}, baseTotal: {}, finalTotal: {}, deltaSum: {}",
                 sessionId, baseTotal, finalTotal, deltaSum);
 
-        // EPIC 또는 CURSED 아이템 보유 수량 (히든 엔딩 조건 일단은 에픽이나 저주 아이템 3개 이상 보유시로 지정함)
-        long rareItemCount = inventory.stream()
-                .filter(item -> item.getGrade() == ItemGrade.EPIC || item.getGrade() == ItemGrade.CURSED)
-                .count();
-        if (rareItemCount >= SECRET_RARE_ITEM_MIN) {
-            log.info("엔딩 판별 결과 SECRET (희귀 아이템 {}개 보유)", rareItemCount);
-            return EndingType.SECRET;
-        }
-
-        // 지혜 + 카리스마 최종값이 기본값 합산 이하 (음수)
+        // DARK : 지혜 + 카리스마 최종값이 기본값 합산 이하 (음수)
         int baseWcSum   = baseStats.getWisdom() + baseStats.getCharisma();
         int finalWcSum  = finalWisdom + finalCharisma;
         if (finalWcSum <= baseWcSum) {
@@ -407,7 +399,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         EndingType endingType = resolveEndingType(
                 storySessionsDTO.getId(),
                 storySessionsDTO.getPersonaId(),
-                llmTurnResult.isEndingFlag()
+                llmTurnResult.isEndingFlag(),
+                llmTurnResult.isHiddenEventFlag()
         );
 
         return TurnProcessResult.builder()

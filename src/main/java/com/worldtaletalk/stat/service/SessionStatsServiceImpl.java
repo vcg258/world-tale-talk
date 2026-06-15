@@ -146,4 +146,18 @@ public class SessionStatsServiceImpl implements SessionStatsService {
         sessionStatLogsRepository.deleteById(statLogId);
         log.info("스텟 로그 삭제 statLogId : {}", statLogId);
     }
+
+    /**
+     * 엔딩 이후 메인스토리 요약
+     * @param sessionId 세션 PK
+     * @param summary   요약
+     */
+    @Transactional
+    @Override
+    public void modifySummary(Long sessionId, String summary) {
+        SessionStatSnapshotsEntity sessionStatSnapshot = sessionStatSnapshotsRepository.findByIdWithStorySessions(sessionId)
+                .orElseThrow(() -> new NoSuchElementException("해당 스냅샷은 존재 하지 않습니다."));
+        sessionStatSnapshot.modifySnapshotSummary(summary);
+        sessionStatSnapshotsRepository.save(sessionStatSnapshot);
+    }
 }

@@ -31,4 +31,11 @@ public interface StoryAiService {
      * @return LLM 응답 결과 (String)
      */
     String generateEpilogue(Long sessionId, String userInput);
+
+    /**
+     * 엔딩 이후 메인스토리 요약
+     * @param sessionId 세션PK
+     * @return 메인스토리 요약
+     */
+    String modifyMainSummary(Long sessionId);
 }

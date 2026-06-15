@@ -20,4 +20,5 @@ public class LlmTurnResult {
     private Map<String, Map<String, Integer>> statChangesByChoice; // 스탯 변화량 (선택지 별 Redis에 캐싱) ex) {"choice1": {"wisdom": 2, "strength": -1}, "choice2": {...}, "choice3": {...}}
     private LlmItemEvent itemEvent; // 아이템 이벤트 (null은 아이템 흭득 없음)
     private boolean endingFlag; // 엔딩 조건 충족 여부
+    private boolean hiddenEventFlag; // 히든 이벤트 발생 여부 (히든 이벤트 발생 했을시 히든 엔딩 확정)
 }

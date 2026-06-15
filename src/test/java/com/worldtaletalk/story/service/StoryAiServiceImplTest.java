@@ -24,4 +24,9 @@ class StoryAiServiceImplTest {
     void generateEpilogue() {
         log.info(storyAiService.generateEpilogue(1L, "하이"));
     }
+
+    @Test
+    void modifyMainSammary() {
+        storyAiService.modifyMainSummary(1L);
+    }
 }

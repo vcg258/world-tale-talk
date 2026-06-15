@@ -68,6 +68,7 @@ public class CustomChatMemory implements ChatMemory {
      * @return 메시지 목록
      */
     @Override
+    @Transactional(readOnly = true)
     public List<Message> get(@NonNull String conversationId) {
         Long sessionId = Long.parseLong(conversationId);
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId)

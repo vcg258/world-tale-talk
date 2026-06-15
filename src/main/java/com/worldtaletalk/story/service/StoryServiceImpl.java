@@ -1,6 +1,7 @@
 package com.worldtaletalk.story.service;
 
 import com.worldtaletalk.stat.dto.SessionStatLogsDTO;
+import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
 import com.worldtaletalk.story.dto.TurnProcessResult;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.*;
 public class StoryServiceImpl implements StoryService {
     private final StoryAiService storyAiService;
     private final StoryTurnTransactionService storyTurnTransactionService;
+    private final SessionStatsService sessionStatsService;
 
     /**
      * LLM 호출후 스텟 / 아이템 / 엔딩 / 턴수 처리 (LLM호출 실패했을시 트랜잭션 적용을 위해 기능따로 분리)
@@ -37,8 +39,14 @@ public class StoryServiceImpl implements StoryService {
             throw new IllegalStateException("스토리 생성 실패 턴 롤백", e);
         }
 
-        // 트랜잭션 2
-        return storyTurnTransactionService.completeTurn(sessionId, choiceNumber, statLogsDTO, llmTurnResult);
+        TurnProcessResult result = storyTurnTransactionService.completeTurn(sessionId, choiceNumber, statLogsDTO, llmTurnResult);
+        if (result.getEndingType() != null) {
+            String summary = storyAiService.modifyMainSummary(sessionId);
+            // 트랜잭션 2
+            sessionStatsService.modifySummary(sessionId, summary);
+            log.info("메인스토리 요약 저장 완료 sessionId: {}", sessionId);
+        }
+        return result;
     }
 
     /**

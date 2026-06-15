@@ -33,4 +33,11 @@ public interface SessionStatsService {
      * @param statLogId 스텟 로그 PK
      */
     void deleteStatLog(Long statLogId);
+
+    /**
+     * 엔딩 이후 메인스토리 요약
+     * @param sessionId 세션 PK
+     * @param summary 요약
+     */
+    void modifySummary(Long sessionId, String summary);
 }
