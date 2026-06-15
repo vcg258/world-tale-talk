@@ -7,7 +7,7 @@ import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.rating.domain.WorldRatingsEntity;
 import com.worldtaletalk.stat.domain.SessionStatLogsEntity;
 import com.worldtaletalk.stat.domain.SessionStatSnapshotsEntity;
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,7 +69,7 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_story_sessions_user"))
-    private UsersEntity users;
+    private UserEntity users;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -91,7 +91,7 @@ public class StorySessionsEntity extends BaseTimeEntity {
      * @return 생성할 새션 정보
      */
     public static StorySessionsEntity createSession(
-            UsersEntity users,
+            UserEntity users,
             WorldsEntity worlds,
             PersonasEntity personas
     ) {

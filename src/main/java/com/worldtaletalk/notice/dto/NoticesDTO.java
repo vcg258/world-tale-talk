@@ -3,6 +3,8 @@ package com.worldtaletalk.notice.dto;
 import com.worldtaletalk.user.dto.UsersDTO;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,4 +15,6 @@ public class NoticesDTO {
     private String title; // 공지 제목
     private String content; // 공지 본문
     private boolean active; // 공지 공개 / 비공개 여부
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

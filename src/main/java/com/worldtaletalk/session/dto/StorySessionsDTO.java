@@ -4,6 +4,8 @@ import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class StorySessionsDTO {
     private SessionStatus status; // 세션 상태
     private int currentTurn; // 현재 턴 수
     private EndingType endingType; // 도달한 엔딩 유형
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

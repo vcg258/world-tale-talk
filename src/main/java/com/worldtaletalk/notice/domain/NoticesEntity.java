@@ -1,7 +1,7 @@
 package com.worldtaletalk.notice.domain;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,5 +34,5 @@ public class NoticesEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_notices_admin"))
-    private UsersEntity admins;
+    private UserEntity admins;
 }

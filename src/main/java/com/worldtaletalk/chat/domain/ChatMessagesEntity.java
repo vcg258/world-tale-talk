@@ -38,31 +38,4 @@ public class ChatMessagesEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false, foreignKey = @ForeignKey(name = "fk_chat_messages_session"))
     private StorySessionsEntity storySession;
-
-    /* 도메인 행위 메서드 */
-
-    /**
-     * 커스텀 ChatMemory 추가
-     * @param turn 해당 메세지가 속한 턴
-     * @param role 발화 주체
-     * @param content 메세지 내용
-     * @param epilogue 에필로그 여부
-     * @param storySession 사용자 세션 FK
-     * @return ChatMemory 정보
-     */
-    public static ChatMessagesEntity createChatMessagesEntity(
-            int turn,
-            ChatRole role,
-            String content,
-            boolean epilogue,
-            StorySessionsEntity storySession
-    ) {
-        return ChatMessagesEntity.builder()
-                .turn(turn)
-                .role(role)
-                .content(content)
-                .epilogue(epilogue)
-                .storySession(storySession)
-                .build();
-    }
 }

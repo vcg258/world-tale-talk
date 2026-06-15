@@ -2,6 +2,8 @@ package com.worldtaletalk.persona.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,4 +15,6 @@ public class PersonasDTO{
     private String description; // 페르소나 소개
     private String background; // 페르소나 배경(LLM 주입용)
     private Boolean active; // 활성화 여부 (True 활성화)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

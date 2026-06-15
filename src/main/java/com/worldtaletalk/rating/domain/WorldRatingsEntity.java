@@ -2,7 +2,7 @@ package com.worldtaletalk.rating.domain;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,7 +35,7 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_world_ratings_user"))
-    private UsersEntity users;
+    private UserEntity users;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)

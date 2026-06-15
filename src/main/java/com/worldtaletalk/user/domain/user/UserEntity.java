@@ -1,4 +1,4 @@
-package com.worldtaletalk.user.domain.users;
+package com.worldtaletalk.user.domain.user;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
 import com.worldtaletalk.notice.domain.NoticesEntity;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-public class UsersEntity extends BaseTimeEntity {
+public class UserEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private Long id; // PK
 

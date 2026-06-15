@@ -2,6 +2,8 @@ package com.worldtaletalk.stat.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,4 +17,6 @@ public class SessionStatSnapshotsDTO {
     private int charisma; // 엔딩 시점 카리스마
     private int luck; // 엔딩 시점 행운
     private String storySummary; // 엔딩 시점 메인 스토리 요약본
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

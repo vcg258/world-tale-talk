@@ -19,5 +19,6 @@ public class ReportsDTO {
     private String reason; // 신고 사유
     private ReportStatus status; // 처리 상태
     private LocalDateTime handledAt; // 처리 일시 (처리전 null)
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

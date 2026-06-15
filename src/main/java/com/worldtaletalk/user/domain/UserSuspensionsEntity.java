@@ -1,6 +1,6 @@
 package com.worldtaletalk.user.domain;
 
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,11 +33,11 @@ public class UserSuspensionsEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_suspensions_user"))
-    private UsersEntity users;
+    private UserEntity users;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_suspensions_admin"))
-    private UsersEntity admins;
+    private UserEntity admins;
 
 }

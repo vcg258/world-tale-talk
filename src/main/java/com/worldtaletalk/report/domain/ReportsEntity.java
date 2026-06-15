@@ -1,7 +1,7 @@
 package com.worldtaletalk.report.domain;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,10 +43,10 @@ public class ReportsEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false, foreignKey = @ForeignKey(name = "fk_reports_reporter"))
-    private UsersEntity users; // 신고한 유저
+    private UserEntity users; // 신고한 유저
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "handled_by", foreignKey = @ForeignKey(name = "fk_reports_handled_by"))
-    private UsersEntity admins; // 처리할 관리자 (처리전 null)
+    private UserEntity admins; // 처리할 관리자 (처리전 null)
 }

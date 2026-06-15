@@ -1,7 +1,7 @@
 package com.worldtaletalk.user.domain.socialaccounts;
 
 import com.worldtaletalk.global.basetime.BaseTimeEntity;
-import com.worldtaletalk.user.domain.users.UsersEntity;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,5 +29,5 @@ public class SocialAccountsEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_social_accounts_user"))
-    private UsersEntity users; // 회원 PK
+    private UserEntity users; // 회원 PK
 }

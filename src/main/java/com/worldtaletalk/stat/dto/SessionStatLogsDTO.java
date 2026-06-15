@@ -2,6 +2,8 @@ package com.worldtaletalk.stat.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,4 +17,6 @@ public class SessionStatLogsDTO {
     private int agilityDelta; // 민첩 변화량
     private int charismaDelta; // 카리스마 변화량
     private int luckDelta; // 행운 변화량
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

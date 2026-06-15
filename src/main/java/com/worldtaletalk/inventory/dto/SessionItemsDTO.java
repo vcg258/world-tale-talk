@@ -3,6 +3,7 @@ package com.worldtaletalk.inventory.dto;
 import com.worldtaletalk.item.domain.ItemGrade;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,8 @@ public class SessionItemsDTO {
     private boolean active; // 아이템 보유여부 (true 보유)
     private Integer gainedAtTurn; // 아이템 흭득한 턴
     private Integer droppedAtTurn; // 버린 턴
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * 보유 아이템 전체 스탯 보너스 합산
