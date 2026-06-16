@@ -5,6 +5,7 @@ import com.worldtaletalk.user.repository.UserSuspensionsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
      * @param userId 유저 PK
      * @return 정지 이력 목록
      */
+    @Transactional(readOnly = true)
     @Override
     public List<UserSuspensionsDTO> getUserSuspensions(Long userId) {
         return List.of();
@@ -28,6 +30,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
      * 유저 정지 처리 (관리자용)
      * @param userSuspensionsDTO 정지 정보 (유저 PK, 관리자 PK, 사유 포함)
      */
+    @Transactional
     @Override
     public void addUserSuspension(UserSuspensionsDTO userSuspensionsDTO) {
 
@@ -37,6 +40,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
      * 유저 정지 해제 (관리자용 - liftedAt 업데이트)
      * @param suspensionId 정지 이력 PK
      */
+    @Transactional
     @Override
     public void liftUserSuspension(Long suspensionId) {
 

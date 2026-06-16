@@ -1,8 +1,7 @@
 package com.worldtaletalk.rating.service;
 
 import com.worldtaletalk.rating.dto.WorldRatingsDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface WorldRatingsService {
 
@@ -11,7 +10,7 @@ public interface WorldRatingsService {
      * @param worldId 세계관 PK
      * @return 해당 세계관의 별점 목록
      */
-    List<WorldRatingsDTO> getWorldRatings(Long worldId);
+    Page<WorldRatingsDTO> getWorldRatings(Long worldId, int page);
 
     /**
      * 세계관 평균 별점 조회
@@ -27,11 +26,10 @@ public interface WorldRatingsService {
     void addWorldRating(WorldRatingsDTO worldRatingsDTO);
 
     /**
-     * 별점 수정
-     * @param id              별점 PK
+     * 평점 및 리뷰 수정
      * @param worldRatingsDTO 수정할 별점 정보
      */
-    void modifyWorldRating(Long id, WorldRatingsDTO worldRatingsDTO);
+    void modifyWorldRating(WorldRatingsDTO worldRatingsDTO);
 
     /**
      * 별점 삭제

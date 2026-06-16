@@ -31,7 +31,7 @@ public class ChatMessagesServiceImpl implements ChatMessagesService {
     @Transactional(readOnly = true)
     @Override
     public List<ChatMessagesDTO> getChatMessages(Long sessionId, LocalDateTime lastCreatedAt) {
-        Pageable pageable = PageRequest.of(0, 20, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<ChatMessagesEntity> messages = lastCreatedAt == null ?
                 chatMessagesRepository.findByStorySession_IdOrderByCreatedAtDesc(pageable, sessionId) :
                 chatMessagesRepository.findCursorBySessionId(pageable, sessionId, lastCreatedAt);

@@ -14,7 +14,6 @@ import com.worldtaletalk.stat.repository.SessionStatLogsRepository;
 import com.worldtaletalk.stat.repository.SessionStatSnapshotsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,18 +61,19 @@ public class SessionStatsServiceImpl implements SessionStatsService {
     }
 
     /**
-     * 현재 스텟 합산 조회 (기본 스텟 + 모든 로그 변화량 누적)
+     * 현재 스텟 합산 조회 (기본 스텟 + 해당 로그 변화량 누적)
      * @param sessionId 세션 PK
-     * @return 스텟별 합산 값 (wisdom, strength, agility, charisma, luck)
+     * @return 스텟별 합산 값
      */
     @Transactional(readOnly = true)
     @Override
     public Map<String, Integer> getCurrentStats(Long sessionId) {
-        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
-                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        if (!storySessionsRepository.existsById(sessionId)) {
+            throw new NoSuchElementException("해당 세션은 존재하지 않습니다.");
+        }
 
-        // 세션의 페르소나 기본 스텟 조회
-        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findByPersonaId(storySession.getPersonas().getId()).orElseThrow(() ->
+        // 페르소나 기본 스텟과 세션 조회
+        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findBySessionId(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않습니다."));
 
         // 세션의 전체 스텟 로그 조회 후 변화량 누적 합산
@@ -82,6 +82,12 @@ public class SessionStatsServiceImpl implements SessionStatsService {
         return getStringIntegerMap(baseStats, statLogs);
     }
 
+    /**
+     * 기본 스텟에 전체 스텟 로그 변화량을 누적 합산
+     * @param baseStats 페르소나 기본 스텟
+     * @param statLogs  세션 전체 스텟 변화 로그 목록
+     * @return 현재 스텟 합산 값
+     */
     private Map<String, Integer> getStringIntegerMap(PersonasBaseStatsEntity baseStats, List<SessionStatLogsEntity> statLogs) {
         int wisdom = baseStats.getWisdom();
         int strength = baseStats.getStrength();

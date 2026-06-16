@@ -9,7 +9,7 @@ import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
 import com.worldtaletalk.user.domain.user.UserEntity;
-import com.worldtaletalk.user.repository.UsersRepository;
+import com.worldtaletalk.user.repository.UserRepository;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 public class StorySessionsServiceImpl implements StorySessionsService {
     private final StorySessionsRepository storySessionsRepository;
     private final StorySessionsMapper storySessionsMapper;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
     private final WorldsRepository worldsRepository;
     private final PersonasRepository personasRepository;
 
@@ -61,7 +61,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Transactional
     @Override
     public void createStorySession(StorySessionsDTO storySessionsDTO) {
-        UserEntity user = usersRepository.findById(storySessionsDTO.getUserId()).orElseThrow(() ->
+        UserEntity user = userRepository.findById(storySessionsDTO.getUserId()).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 찾을 수 없습니다."));
 
         WorldsEntity world = worldsRepository.findById(storySessionsDTO.getWorldId()).orElseThrow(() ->

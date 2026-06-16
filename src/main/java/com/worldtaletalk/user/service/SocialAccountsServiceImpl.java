@@ -6,6 +6,7 @@ import com.worldtaletalk.user.repository.SocialAccountsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -19,6 +20,7 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * @param providerId 소셜 제공사 고유 ID
      * @return 소셜 계정 정보 (미연동시 null)
      */
+    @Transactional(readOnly = true)
     @Override
     public SocialAccountsDTO getSocialAccount(SocialProvider provider, String providerId) {
         return null;
@@ -28,6 +30,7 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * 소셜 계정 연동 (OAuth2 최초 로그인시 소셜 계정 등록)
      * @param socialAccountsDTO 소셜 계정 정보 (유저 PK, 제공사, 제공사 고유 ID 포함)
      */
+    @Transactional
     @Override
     public void createSocialAccount(SocialAccountsDTO socialAccountsDTO) {
 
@@ -37,6 +40,7 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * 소셜 계정 연동 해제
      * @param id 소셜 계정 PK
      */
+    @Transactional
     @Override
     public void deleteSocialAccount(Long id) {
 

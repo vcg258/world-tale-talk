@@ -56,7 +56,7 @@ public class UserEntity extends BaseTimeEntity {
     private List<UserSuspensionsEntity> suspensionsEntityUser;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "admins")
+    @OneToMany(mappedBy = "admin")
     private List<UserSuspensionsEntity> suspensionsEntityAdmin;
 
     @ToString.Exclude
@@ -72,10 +72,10 @@ public class UserEntity extends BaseTimeEntity {
     private List<ReportsEntity> reporterUser;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "admins")
+    @OneToMany(mappedBy = "admin")
     private List<ReportsEntity> reporterAdmin;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "admins")
+    @OneToMany(mappedBy = "admin")
     private List<NoticesEntity> notices;
 }

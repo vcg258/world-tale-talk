@@ -85,16 +85,16 @@ public class WorldsEntity extends BaseTimeEntity {
             int targetTurn,
             boolean active
     ) {
-        if (name == null || name.isBlank()) {
+        if (name == null || name.trim().isBlank()) {
             throw new IllegalArgumentException("세계관 이름은 필수 값입니다.");
         }
         if (genre == null) {
             throw new IllegalArgumentException("세계관 장르는 필수 값입니다.");
         }
-        if (description == null || description.isBlank()) {
+        if (description == null || description.trim().isBlank()) {
             throw new IllegalArgumentException("세계관 설명은 필수 값입니다.");
         }
-        if (settingText == null || settingText.isBlank()) {
+        if (settingText == null || settingText.trim().isBlank()) {
             throw new IllegalArgumentException("세계관 프롬프트는 필수 값입니다.");
         }
         if (targetTurn < 10) { // TODO 필요시 수정

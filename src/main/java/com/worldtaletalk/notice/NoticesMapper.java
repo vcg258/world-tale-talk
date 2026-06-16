@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface NoticesMapper {
-    @Mapping(source = "admins.id", target = "adminId")
+    @Mapping(source = "admin.id", target = "adminId")
     NoticesDTO toDTO(NoticesEntity noticesEntity);
-    List<NoticesDTO> toDTO(List<NoticesEntity> noticesEntity);
+    List<NoticesDTO> toDTOList(List<NoticesEntity> noticesEntity);
 }

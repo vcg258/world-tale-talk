@@ -14,7 +14,7 @@ import org.hibernate.annotations.Check;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "world_id"}),
+@Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"session_id"}),
         indexes = {
         @Index(name = "idx_world_ratings_user_id", columnList = "user_id"),
         @Index(name = "idx_world_ratings_world_id", columnList = "world_id"),
@@ -31,6 +31,10 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     @Column(length = 100)
     private String review; // 한줄 리뷰 (선택)
 
+    @Builder.Default
+    @Column(length = 4, nullable = false)
+    private int countPlayNumber = 0; // 해당 세게관 클리어한 수 (몇번 플레이를 했다라는걸 명시 하기 위함)
+
     /* FK (자식) */
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,4 +50,44 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false, foreignKey = @ForeignKey(name = "fk_world_ratings_session"))
     private StorySessionsEntity storySession;
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 세계관 평점 및 리뷰 생성
+     * @param score 평점
+     * @param review 리뷰
+     * @param countPlayNumber 해당 세계관 클리어 횟수
+     * @param user 유저 정보
+     * @param world 세계관 정보
+     * @param storySession 세션 정보
+     * @return 평점 및 리뷰
+     */
+    public static WorldRatingsEntity createWorldRating(
+        short score,
+        String review,
+        int countPlayNumber,
+        UserEntity user,
+        WorldsEntity world,
+        StorySessionsEntity storySession
+    ) {
+        return WorldRatingsEntity.builder()
+                .score(score)
+                .review(review)
+                .countPlayNumber(countPlayNumber)
+                .users(user)
+                .world(world)
+                .storySession(storySession)
+                .build();
+    }
+
+    /**
+     * 세계관 평점 및 리뷰 수정
+     * @param score 평점
+     * @param review 리뷰
+     */
+    public void modifyInformationWorldRating(short score, String review) {
+        this.score = score;
+        this.review = review;
+    }
 }

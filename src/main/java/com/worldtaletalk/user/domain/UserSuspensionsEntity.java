@@ -38,6 +38,6 @@ public class UserSuspensionsEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_suspensions_admin"))
-    private UserEntity admins;
+    private UserEntity admin;
 
 }

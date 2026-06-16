@@ -34,5 +34,51 @@ public class NoticesEntity extends BaseTimeEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_notices_admin"))
-    private UserEntity admins;
+    private UserEntity admin;
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 공지글 생성
+     * @param admin 관리자 PK
+     * @param title 공지글 제목
+     * @param content 공지글 내용
+     * @param active 공지글 활성화 여부
+     * @return 공지글
+     */
+    public static NoticesEntity createNotices(
+            UserEntity admin,
+            String title,
+            String content,
+            boolean active
+    ) {
+        if (admin == null) {
+            throw new IllegalArgumentException("관리자 FK 필수 (이거 뜨면 로직이 문제 있음)");
+        }
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 필수 값입니다.");
+        }
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("내용은 필수 값입니다.");
+        }
+
+        return NoticesEntity.builder()
+                .admin(admin)
+                .title(title)
+                .content(content)
+                .active(active)
+                .build();
+    }
+
+    public void modifyInformation(
+            String title,
+            String content,
+            boolean active
+    ) {
+        this.title = title;
+        this.content = content;
+        this.active = active;
+    }
+
+
 }

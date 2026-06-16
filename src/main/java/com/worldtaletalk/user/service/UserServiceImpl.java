@@ -2,22 +2,24 @@ package com.worldtaletalk.user.service;
 
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UsersDTO;
-import com.worldtaletalk.user.repository.UsersRepository;
+import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     /**
      * 유저 단건 조회
      * @param id 유저 PK
      * @return 유저 정보
      */
+    @Transactional(readOnly = true)
     @Override
     public UsersDTO getUser(Long id) {
         return null;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
      * @param email 이메일
      * @return 유저 정보 (미가입시 null)
      */
+    @Transactional(readOnly = true)
     @Override
     public UsersDTO getUserByEmail(String email) {
         return null;
@@ -37,6 +40,7 @@ public class UserServiceImpl implements UserService {
      * 유저 생성 (OAuth2 최초 로그인시 자동 가입)
      * @param usersDTO 유저 정보
      */
+    @Transactional
     @Override
     public void createUser(UsersDTO usersDTO) {
     }
@@ -46,6 +50,7 @@ public class UserServiceImpl implements UserService {
      * @param id       유저 PK
      * @param nickname 변경할 닉네임
      */
+    @Transactional
     @Override
     public void modifyUserNickname(Long id, String nickname) {
     }
@@ -55,6 +60,7 @@ public class UserServiceImpl implements UserService {
      * @param id     유저 PK
      * @param status 변경할 계정 상태
      */
+    @Transactional
     @Override
     public void modifyUserStatus(Long id, UserStatus status) {
     }
@@ -63,6 +69,7 @@ public class UserServiceImpl implements UserService {
      * 회원 탈퇴
      * @param id 유저 PK
      */
+    @Transactional
     @Override
     public void deleteUser(Long id) {
     }
