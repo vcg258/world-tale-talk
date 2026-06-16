@@ -14,7 +14,7 @@ import org.hibernate.annotations.Check;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(columnNames = {"session_id"}),
+@Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(name = "world_ratings_user_id_world_id_key", columnNames = {"session_id"}),
         indexes = {
         @Index(name = "idx_world_ratings_user_id", columnList = "user_id"),
         @Index(name = "idx_world_ratings_world_id", columnList = "world_id"),
