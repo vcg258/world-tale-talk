@@ -37,8 +37,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Transactional(readOnly = true)
     @Override
     public List<StorySessionsDTO> getStorySessions() {
-        List<StorySessionsEntity> storySessionsEntityList = storySessionsRepository.findAll();
-        return storySessionsMapper.toDTOList(storySessionsEntityList);
+        return storySessionsMapper.toDTOList(storySessionsRepository.findAll());
     }
 
     /**
@@ -49,9 +48,8 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Transactional(readOnly = true)
     @Override
     public StorySessionsDTO getStorySession(Long id) {
-        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
-        return storySessionsMapper.toDTO(storySession);
+        return storySessionsRepository.findById(id).map(storySessionsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
     }
 
     /**

@@ -58,9 +58,8 @@ public class NoticesServiceImpl implements NoticesService {
     @Transactional(readOnly = true)
     @Override
     public NoticesDTO getNotice(Long id) {
-        NoticesEntity notice = noticesRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 공지사항은 존재 하지 않습니다."));
-        return noticesMapper.toDTO(notice);
+        return noticesRepository.findById(id).map(noticesMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 공지사항은 존재 하지 않습니다."));
     }
 
     /**

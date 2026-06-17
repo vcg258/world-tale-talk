@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsersDTO {
+public class UserDTO {
     private Long id; // PK
+    private String loginId; // 로그인 아이디
     private String nickname; // 닉네임
     private String email; // 이메일
     private String password; // 비밀번호

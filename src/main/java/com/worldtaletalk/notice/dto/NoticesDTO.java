@@ -1,6 +1,5 @@
 package com.worldtaletalk.notice.dto;
 
-import com.worldtaletalk.user.dto.UsersDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;

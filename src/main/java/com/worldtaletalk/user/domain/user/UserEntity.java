@@ -24,12 +24,12 @@ public class UserEntity extends BaseTimeEntity {
     @Id private Long id; // PK
 
     @Column(length = 30, unique = true) // null허용 이유 : 소셜로그인 할시 아이디 불필요
-    private String login_id; // 로그인 아이디
-
-    @Column(length = 20, unique = true, nullable = false)
-    private String nickname; // 닉네임
+    private String loginId; // 로그인 아이디
 
     @Column(length = 50, unique = true, nullable = false)
+    private String nickname; // 닉네임
+
+    @Column(length = 70, unique = true, nullable = false)
     private String email; // 이메일
 
     @Column(length = 60) // null허용 이유 : 소셜로그인 할시 비밀번호 불필요
@@ -78,4 +78,64 @@ public class UserEntity extends BaseTimeEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "admin")
     private List<NoticesEntity> notices;
+
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 회원가입
+     * @param login_id 로그인 아이디
+     * @param nickname 닉네임
+     * @param email 이메일
+     * @param password 비밀번호 (BCrypt)
+     * @return 회원정보
+     */
+    public static UserEntity createUser(
+            String login_id,
+            String nickname,
+            String email,
+            String password
+    ) {
+        return UserEntity.builder()
+                .loginId(login_id)
+                .nickname(nickname)
+                .email(email)
+                .password(password)
+                .build();
+    }
+
+    /**
+     * 회원 정보 수정
+     * @param nickname 닉네임
+     * @param email 이메일
+     * @param password 비밀번호
+     */
+    public void modifyInformationUser(
+            String nickname,
+            String email,
+            String password
+    ) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+    }
+
+    /**
+     * 회원 계정 상태 변경
+     * @param status 상태
+     */
+    public void changeStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * 회원 삭제
+     */
+    public void userWithdrawal() {
+        this.loginId = null;
+        this.nickname = "del_" + this.id + "_" + this.nickname;
+        this.email = "del_" + this.id + "_" + this.email;
+        this.password = null;
+        this.status = UserStatus.DELETED;
+    }
 }

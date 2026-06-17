@@ -30,4 +30,26 @@ public class SocialAccountsEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_social_accounts_user"))
     private UserEntity users; // 회원 PK
+
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 소셜 로그인 연동 정보 생성
+     * @param socialProvider 소셜 로그인 제공사
+     * @param providerId 소셜 제공사 고유번호
+     * @param user 회원 정보
+     * @return 소셜 로그인 연동 정보
+     */
+    public static SocialAccountsEntity createSocialAccount (
+            SocialProvider socialProvider,
+            String providerId,
+            UserEntity user
+    ) {
+        return SocialAccountsEntity.builder()
+                .provider(socialProvider)
+                .providerId(providerId)
+                .users(user)
+                .build();
+    }
 }

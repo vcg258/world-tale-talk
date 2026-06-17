@@ -1,18 +1,25 @@
 package com.worldtaletalk.user.service;
 
+import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserStatus;
-import com.worldtaletalk.user.dto.UsersDTO;
+import com.worldtaletalk.user.dto.UserDTO;
+import com.worldtaletalk.user.mapper.UserMapper;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * 유저 단건 조회
@@ -21,8 +28,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional(readOnly = true)
     @Override
-    public UsersDTO getUser(Long id) {
-        return null;
+    public UserDTO getUser(Long id) {
+         return userRepository.findById(id).map(userMapper::toDTO).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
     }
 
     /**
@@ -32,27 +40,50 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional(readOnly = true)
     @Override
-    public UsersDTO getUserByEmail(String email) {
-        return null;
+    public UserDTO getUserByEmail(String email) {
+        return userRepository.findByEmail(email).map(userMapper::toDTO).orElse(null);
     }
 
     /**
      * 유저 생성 (OAuth2 최초 로그인시 자동 가입)
-     * @param usersDTO 유저 정보
+     * @param userDTO 유저 정보
      */
     @Transactional
     @Override
-    public void createUser(UsersDTO usersDTO) {
+    public void createUser(UserDTO userDTO) {
+        if (userDTO.getNickname() == null || userDTO.getNickname().trim().isEmpty()) {
+            throw new IllegalArgumentException("닉네임은 필수 값입니다.");
+        }
+        if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("이메일은 필수 값입니다.");
+        }
+        UserEntity user = UserEntity.createUser(
+                userDTO.getLoginId(), // 소셜 로그인 유저는 아이디가 필요없으므로 null 예외안함
+                userDTO.getNickname(),
+                userDTO.getEmail(),
+                userDTO.getPassword() != null ? bCryptPasswordEncoder.encode(userDTO.getPassword()) : null
+        );
+        UserEntity save = userRepository.save(user);
+        log.info("회원가입 완료 : {}", save);
     }
 
     /**
-     * 닉네임 수정
-     * @param id       유저 PK
-     * @param nickname 변경할 닉네임
+     * 회원 정보 수정
+     * @param userDTO 변경할 회원 정보
      */
     @Transactional
     @Override
-    public void modifyUserNickname(Long id, String nickname) {
+    public void modifyUser(UserDTO userDTO) {
+        UserEntity user = userRepository.findById(userDTO.getId()).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        user.modifyInformationUser(
+                userDTO.getNickname() != null ? userDTO.getNickname() : user.getNickname(),
+                userDTO.getEmail() != null ? userDTO.getEmail() : user.getEmail(),
+                userDTO.getPassword() != null ?
+                        bCryptPasswordEncoder.encode(userDTO.getPassword()) : user.getPassword()
+        );
+        UserEntity save = userRepository.save(user);
+        log.info("회원정보 수정 완료 : {}", save);
     }
 
     /**
@@ -63,6 +94,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void modifyUserStatus(Long id, UserStatus status) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        user.changeStatus(status);
+        UserEntity save = userRepository.save(user);
+        log.info("회원 계정 상태 변경 완료 : {}", save);
     }
 
     /**
@@ -72,5 +108,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        user.userWithdrawal();
+        UserEntity save = userRepository.save(user);
+        log.info("회원 탈퇴 완료 : {}", save);
     }
 }

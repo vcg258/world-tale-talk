@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,8 +29,7 @@ public class PersonasServiceImpl implements PersonasService {
     @Transactional(readOnly = true)
     @Override
     public List<PersonasDTO> getPersonasList() {
-        List<PersonasEntity> personasList = personasRepository.findAll();
-        return personasMapper.toDTOList(personasList);
+        return personasMapper.toDTOList(personasRepository.findAll());
     }
 
     /**
@@ -42,9 +40,8 @@ public class PersonasServiceImpl implements PersonasService {
     @Transactional(readOnly = true)
     @Override
     public PersonasDTO getPersona(Long id) {
-        PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 페르소나 없음"));
-        return personasMapper.toDTO(persona);
+        return personasRepository.findById(id).map(personasMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 페르소나 없음"));
     }
 
     /**

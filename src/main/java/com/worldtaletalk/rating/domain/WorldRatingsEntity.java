@@ -14,11 +14,10 @@ import org.hibernate.annotations.Check;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "world_ratings", uniqueConstraints = @UniqueConstraint(name = "world_ratings_user_id_world_id_key", columnNames = {"session_id"}),
+@Table(name = "world_ratings",
         indexes = {
         @Index(name = "idx_world_ratings_user_id", columnList = "user_id"),
-        @Index(name = "idx_world_ratings_world_id", columnList = "world_id"),
-        @Index(name = "idx_world_ratings_session_id", columnList = "session_id")
+        @Index(name = "idx_world_ratings_world_id", columnList = "world_id")
 })
 public class WorldRatingsEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +47,7 @@ public class WorldRatingsEntity extends BaseTimeEntity {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false, foreignKey = @ForeignKey(name = "fk_world_ratings_session"))
+    @JoinColumn(name = "session_id", nullable = false, unique = true, foreignKey = @ForeignKey(name = "fk_world_ratings_session"))
     private StorySessionsEntity storySession;
 
     /* 도메인 행위 메서드 */

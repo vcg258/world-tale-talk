@@ -28,8 +28,7 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional(readOnly = true)
     @Override
     public List<WorldsDTO> getAllWorlds() {
-        List<WorldsEntity> worlds = worldsRepository.findAll();
-        return worldsMapper.toDTOList(worlds);
+        return worldsMapper.toDTOList(worldsRepository.findAll());
     }
 
     /**
@@ -40,10 +39,8 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional(readOnly = true)
     @Override
     public WorldsDTO getWorldById(Long id) {
-        WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("지정한 세계관이 없습니다."));
-
-        return worldsMapper.toDTO(world);
+        return worldsRepository.findById(id).map(worldsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("지정한 세계관이 없습니다."));
     }
 
     /**
@@ -53,6 +50,21 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional
     @Override
     public void addWorld(WorldsDTO worldsDTO) {
+        if (worldsDTO.getName() == null || worldsDTO.getName().trim().isBlank()) {
+            throw new IllegalArgumentException("세계관 이름은 필수 값입니다.");
+        }
+        if (worldsDTO.getGenre() == null) {
+            throw new IllegalArgumentException("세계관 장르는 필수 값입니다.");
+        }
+        if (worldsDTO.getDescription() == null || worldsDTO.getDescription().trim().isBlank()) {
+            throw new IllegalArgumentException("세계관 설명은 필수 값입니다.");
+        }
+        if (worldsDTO.getSettingText() == null || worldsDTO.getSettingText().trim().isBlank()) {
+            throw new IllegalArgumentException("세계관 프롬프트는 필수 값입니다.");
+        }
+        if (worldsDTO.getTargetTurn() < 10) { // TODO 필요시 수정
+            throw new IllegalArgumentException("목표 턴 수는 10 이상이어야 합니다.");
+        }
         WorldsEntity world = WorldsEntity.createWorld(
                 worldsDTO.getName(),
                 worldsDTO.getGenre(),

@@ -1,18 +1,26 @@
 package com.worldtaletalk.user.service;
 
+import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import com.worldtaletalk.user.domain.socialaccounts.SocialProvider;
+import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.dto.SocialAccountsDTO;
+import com.worldtaletalk.user.mapper.SocialAccountsMapper;
 import com.worldtaletalk.user.repository.SocialAccountsRepository;
+import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SocialAccountsServiceImpl implements SocialAccountsService {
     private final SocialAccountsRepository socialAccountsRepository;
+    private final SocialAccountsMapper socialAccountsMapper;
+    private final UserRepository userRepository;
 
     /**
      * 소셜 계정 조회 (OAuth2 로그인시 기존 연동 여부 확인용)
@@ -23,7 +31,8 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
     @Transactional(readOnly = true)
     @Override
     public SocialAccountsDTO getSocialAccount(SocialProvider provider, String providerId) {
-        return null;
+        return socialAccountsRepository.findByProviderAndProviderId(provider, providerId)
+                .map(socialAccountsMapper::toDTO).orElse(null);
     }
 
     /**
@@ -33,7 +42,16 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
     @Transactional
     @Override
     public void createSocialAccount(SocialAccountsDTO socialAccountsDTO) {
+        UserEntity user = userRepository.findById(socialAccountsDTO.getUserId()).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
 
+        SocialAccountsEntity socialAccount = SocialAccountsEntity.createSocialAccount(
+                socialAccountsDTO.getProvider(),
+                socialAccountsDTO.getProviderId(),
+                user
+        );
+        SocialAccountsEntity save = socialAccountsRepository.save(socialAccount);
+        log.info("소셜 계정 연동 등록완료 : {}", save);
     }
 
     /**
@@ -43,6 +61,9 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
     @Transactional
     @Override
     public void deleteSocialAccount(Long id) {
-
+        SocialAccountsEntity socialAccount = socialAccountsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 소셜 계정이 존재하지 않습니다."));
+        socialAccountsRepository.delete(socialAccount);
+        log.info("소셜 계정 연동 해제 : {}", socialAccount);
     }
 }

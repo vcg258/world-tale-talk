@@ -29,8 +29,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Transactional(readOnly = true)
     @Override
     public List<PersonasBaseStatsDTO> getPersonasBaseStatsList() {
-        List<PersonasBaseStatsEntity> personasBaseStatsList = personasBaseStatsRepository.findAll();
-        return personasBaseStatsMapper.toDTOList(personasBaseStatsList);
+        return personasBaseStatsMapper.toDTOList(personasBaseStatsRepository.findAll());
     }
 
     /**
@@ -41,9 +40,8 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Transactional(readOnly = true)
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStats(Long id) {
-        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 스텟이 존재하지 않음"));
-        return personasBaseStatsMapper.toDTO(baseStats);
+        return personasBaseStatsRepository.findById(id).map(personasBaseStatsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 스텟이 존재하지 않음"));
     }
 
     /**
@@ -54,9 +52,8 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
     @Transactional(readOnly = true)
     @Override
     public PersonasBaseStatsDTO getPersonasBaseStatsByPersonaId(Long id) {
-        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findByPersonaId(id).orElseThrow(() ->
-                new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않음"));
-        return personasBaseStatsMapper.toDTO(baseStats);
+        return personasBaseStatsRepository.findByPersonaId(id).map(personasBaseStatsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않음"));
     }
 
     /**

@@ -109,6 +109,8 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
                 worldRatingsDTO.getScore() != null ? worldRatingsDTO.getScore() : rating.getScore(),
                 worldRatingsDTO.getReview() != null ? worldRatingsDTO.getReview() : rating.getReview()
         );
+        worldRatingsRepository.save(rating);
+        log.info("평점 및 리뷰 수정 완료 : {}", rating);
     }
 
     /**

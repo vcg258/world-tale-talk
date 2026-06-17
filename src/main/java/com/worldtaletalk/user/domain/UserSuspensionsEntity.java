@@ -40,4 +40,34 @@ public class UserSuspensionsEntity {
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_suspensions_admin"))
     private UserEntity admin;
 
+
+    /* 도메인 행위 메서드 */
+
+    /**
+     * 정지 이력 생성
+     * @param user 회원
+     * @param admin 관리자
+     * @param reason 정지 사유
+     * @return 정지 이력
+     */
+    public static UserSuspensionsEntity createUserSuspensionsEntity(
+            UserEntity user,
+            UserEntity admin,
+            String reason
+    ) {
+        return UserSuspensionsEntity.builder()
+                .users(user)
+                .admin(admin)
+                .reason(reason)
+                .build();
+    }
+
+    /**
+     * 정지 해제 일시 업데이트
+     */
+    public void modifyUnstoppableTime(
+    ) {
+        this.liftedAt = LocalDateTime.now();
+    }
+
 }

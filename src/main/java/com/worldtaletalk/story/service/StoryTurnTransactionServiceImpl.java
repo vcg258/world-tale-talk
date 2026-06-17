@@ -241,7 +241,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
             case MINOR -> ItemGrade.COMMON;
             case NORMAL -> ItemGrade.RARE;
             case SIGNIFICANT -> ItemGrade.EPIC;
-            case LEGENDARY -> ItemGrade.CURSED;
+            case LEGENDARY -> ItemGrade.CURSED; // TODO 현재 레전더리 등급은 존재하지 않음 추가할까?
         };
     }
 

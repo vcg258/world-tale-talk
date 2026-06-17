@@ -44,7 +44,8 @@ public class SessionItemsServiceImpl implements SessionItemsService {
                 new NoSuchElementException("해당 세션은 존재하지 않습니다."));
 
         // 해당 등급의 보정치 설정 조회 (statSumMax, singleMin, singleMax, canNegative)
-        ItemGradeConfigsEntity gradeConfigs = itemGradeConfigsRepository.findByGrade(grade);
+        ItemGradeConfigsEntity gradeConfigs = itemGradeConfigsRepository.findByGrade(grade).orElseThrow(() ->
+                new NoSuchElementException("해당 등급 보정치 설정이 존재하지 않습니다: " + grade));
         ItemGradeConfigsDTO dto = itemGradeConfigsMapper.toDTO(gradeConfigs);
         log.info("현재 {}등급 보정치 : {}", dto.getGrade(), dto);
 

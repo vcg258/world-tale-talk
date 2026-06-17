@@ -26,8 +26,7 @@ public class ItemGradeConfigsServiceImpl implements ItemGradeConfigsService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemGradeConfigsDTO> getGradeConfigs() {
-        List<ItemGradeConfigsEntity> entities = itemGradeConfigsRepository.findAll();
-        return itemGradeConfigsMapper.toDTOList(entities);
+        return itemGradeConfigsMapper.toDTOList(itemGradeConfigsRepository.findAll());
     }
 
     /**
@@ -38,9 +37,8 @@ public class ItemGradeConfigsServiceImpl implements ItemGradeConfigsService {
     @Transactional(readOnly = true)
     @Override
     public ItemGradeConfigsDTO getGradeConfig(Long id) {
-        ItemGradeConfigsEntity entity = itemGradeConfigsRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 등급 설정이 존재하지 않습니다."));
-        return itemGradeConfigsMapper.toDTO(entity);
+        return itemGradeConfigsRepository.findById(id).map(itemGradeConfigsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 등급 설정이 존재하지 않습니다."));
     }
 
     /**
