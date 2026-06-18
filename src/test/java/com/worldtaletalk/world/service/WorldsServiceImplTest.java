@@ -23,6 +23,16 @@ class WorldsServiceImplTest {
     }
 
     @Test
+    void getActiveWorlds() {
+        worldsService.getActiveWorlds().forEach(dto -> log.info("{}", dto));
+    }
+
+    @Test
+    void getFeaturedWorlds() {
+        worldsService.getFeaturedWorlds(5).forEach(dto -> log.info("{}", dto));
+    }
+
+    @Test
     void addWorld() {
         WorldsDTO worldsDTO = WorldsDTO.builder()
                 .name("test")

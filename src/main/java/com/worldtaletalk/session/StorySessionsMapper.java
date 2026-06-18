@@ -11,6 +11,7 @@ import java.util.List;
 public interface StorySessionsMapper {
     @Mapping(source = "users.id", target = "userId")
     @Mapping(source = "worlds.id", target = "worldId")
+    @Mapping(source = "worlds.name", target = "worldName")
     @Mapping(source = "personas.id", target = "personaId")
     StorySessionsDTO toDTO(StorySessionsEntity storySessionsEntity);
     List<StorySessionsDTO> toDTOList(List<StorySessionsEntity> storySessionsEntityList);

@@ -45,4 +45,9 @@ class ReportsServiceImplTest {
                 .build();
         reportsService.handleReport(reportsDTO);
     }
+
+    @Test
+    void deleteReport() {
+        reportsService.deleteReport(1L);
+    }
 }

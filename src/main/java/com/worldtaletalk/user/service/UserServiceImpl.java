@@ -57,6 +57,12 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 값입니다.");
         }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new IllegalArgumentException("이메일이 중복입니다. 다른 이메일을 넣어주세요");
+        }
+        if (userRepository.existsByNickname(userDTO.getNickname())) {
+            throw new IllegalArgumentException("닉네임이 종복입니다. 다른 닉네임을 넣어주세요");
+        }
         UserEntity user = UserEntity.createUser(
                 userDTO.getLoginId(), // 소셜 로그인 유저는 아이디가 필요없으므로 null 예외안함
                 userDTO.getNickname(),

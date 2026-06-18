@@ -13,4 +13,7 @@ import java.util.Optional;
 public interface ReportsRepository extends JpaRepository<ReportsEntity, Long> {
     // 상태별 페이징 처리
     Page<ReportsEntity> findAllByStatus(ReportStatus status, Pageable pageable);
+
+    // 신고 이력 상태별 전체 개수
+    long countByStatus(ReportStatus status);
 }

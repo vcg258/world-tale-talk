@@ -17,6 +17,11 @@ class UserSuspensionsServiceImplTest {
     }
 
     @Test
+    void getUserSuspension() {
+        log.info("{}", userSuspensionsService.getUserSuspension(5L));
+    }
+
+    @Test
     void addUserSuspension() {
         UserSuspensionsDTO userSuspensionsDTO = UserSuspensionsDTO.builder()
                 .userId(1L)

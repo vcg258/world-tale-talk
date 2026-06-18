@@ -68,7 +68,7 @@ public class WorldsEntity extends BaseTimeEntity {
 
     /* 도메인 행위 메서드 */
     /**
-     * 세계관 생성 (정적 메서드)
+     * 세계관 생성
      * @param name 이름
      * @param genre 장르
      * @param description 설명
@@ -97,7 +97,7 @@ public class WorldsEntity extends BaseTimeEntity {
     }
 
     /**
-     * 업데이트 도메인 메서드 (World)
+     * 업데이트 도메인 메서드
      * @param name 이름
      * @param genre 장르
      * @param description 설명
@@ -119,6 +119,21 @@ public class WorldsEntity extends BaseTimeEntity {
         this.settingText = settingText;
         this.targetTurn = targetTurn;
         this.active = active;
+    }
+
+    /**
+     * 해당 세계관 세션을 만들대 플레이 수 증가
+     */
+    public void playCountUp() {
+        this.playCount++;
+    }
+
+    /**
+     * 세계관 평균 평점 변경
+     * @param rating 평점
+     */
+    public void changeRating(BigDecimal rating) {
+        this.ratingAvg = rating;
     }
 
 }

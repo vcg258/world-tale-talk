@@ -11,6 +11,7 @@ import java.util.List;
 public interface WorldRatingsMapper {
     @Mapping(source = "users.id", target = "userId")
     @Mapping(source = "world.id", target = "worldId")
+    @Mapping(source = "world.name", target = "worldName")
     @Mapping(source = "storySession.id", target = "storySessionId")
     WorldRatingsDTO toDTO(WorldRatingsEntity worldRatingsEntity);
     List<WorldRatingsDTO> toDTOList(List<WorldRatingsEntity> worldRatingsEntity);

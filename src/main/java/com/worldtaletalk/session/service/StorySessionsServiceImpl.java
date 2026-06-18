@@ -14,6 +14,10 @@ import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +57,20 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     }
 
     /**
+     * 해당 회원의 세션 여러건 조회
+     * @param userId 회원 PK
+     * @param page 페이지 수
+     * @return 회원 세션 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<StorySessionsDTO> getMySessions(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        Page<StorySessionsEntity> userSessions = storySessionsRepository.findAllByUserId(userId, pageable);
+        return userSessions.map(storySessionsMapper::toDTO);
+    }
+
+    /**
      * 세션 생성 (새게임)
      * @param storySessionsDTO 세션 정보
      */
@@ -73,8 +91,13 @@ public class StorySessionsServiceImpl implements StorySessionsService {
                 world,
                 persona
         );
-        storySessionsRepository.save(storySessions);
-        log.info("세션 생성 : {}", storySessions);
+        StorySessionsEntity sessionSave = storySessionsRepository.save(storySessions);
+        log.info("세션 생성 : {}", sessionSave);
+
+        // 세션 생성후 플레이 수 ++
+        world.playCountUp();
+        WorldsEntity worldSave = worldsRepository.save(world);
+        log.info("해당 세계관 플레이수 ++후 전체 값 : {}", worldSave.getPlayCount());
     }
 
     /**

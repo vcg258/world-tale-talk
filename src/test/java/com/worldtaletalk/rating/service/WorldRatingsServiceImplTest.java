@@ -53,4 +53,19 @@ class WorldRatingsServiceImplTest {
     void deleteWorldRating() {
         worldRatingsService.deleteWorldRating(5L);
     }
+
+    @Test
+    void getMyRatingByRatingId() {
+        log.info("{}", worldRatingsService.getMyRatingByRatingId(1L));
+    }
+
+    @Test
+    void getMyRatings() {
+        worldRatingsService.getMyRatings(3L, 1).forEach(dto -> log.info("{}", dto));
+    }
+
+    @Test
+    void getMyRatingByWorldAndUser() {
+        log.info("{}", worldRatingsService.getMyRatingByWorldAndUser(1L, 3L));
+    }
 }

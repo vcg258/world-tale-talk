@@ -1,6 +1,9 @@
 package com.worldtaletalk.session.repository;
 
+import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +36,12 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             @Param("worldId") Long worldId,
             @Param("sessionId") Long sessionId
     );
+
+    // 회원 세션 전체 조회
+    @Query(value = "SELECT s FROM StorySessionsEntity s JOIN FETCH s.worlds WHERE s.users.id = :userId",
+           countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId")
+    Page<StorySessionsEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    // 세션 상태별 전체 개수 (통계용)
+    long countByStatus(SessionStatus status);
 }

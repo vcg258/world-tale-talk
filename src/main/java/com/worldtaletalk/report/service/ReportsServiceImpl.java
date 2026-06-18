@@ -102,4 +102,18 @@ public class ReportsServiceImpl implements ReportsService {
         ReportsEntity save = reportsRepository.save(report);
         log.info("신고 처리 완료 : {}", save);
     }
+
+    /**
+     * 신고 내역 삭제
+     * @param id PK
+     */
+    @Transactional
+    @Override
+    public void deleteReport(Long id) {
+        ReportsEntity report = reportsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 신고 내역이 존재하지 않습니다."));
+        reportsRepository.delete(report);
+
+        log.info("신고 내역 삭제 완료 : {}", report);
+    }
 }

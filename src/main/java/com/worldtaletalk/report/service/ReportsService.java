@@ -31,4 +31,10 @@ public interface ReportsService {
      * @param reportsDTO 신고 처리 정보
      */
     void handleReport(ReportsDTO reportsDTO);
+
+    /**
+     * 신고 내역 삭제
+     * @param id PK
+     */
+    void deleteReport(Long id);
 }

@@ -18,4 +18,7 @@ public class WorldRatingsDTO {
     private Integer countPlayNumber; // 해당 세계관 클리어 횟수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private String worldName; // 해당 세션의 세계관 이름 (FETCH JOIN 으로 제목을 가져오기 위함)
+
 }

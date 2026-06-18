@@ -7,6 +7,8 @@ import com.worldtaletalk.rating.repository.WorldRatingsRepository;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.repository.StorySessionsRepository;
+import com.worldtaletalk.world.domain.WorldsEntity;
+import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,7 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -28,6 +31,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     private final WorldRatingsRepository worldRatingsRepository;
     private final WorldRatingsMapper worldRatingsMapper;
     private final StorySessionsRepository storySessionsRepository;
+    private final WorldsRepository worldsRepository;
 
     /**
      * 세계관 별점 목록 조회 (페이징)
@@ -43,9 +47,47 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     }
 
     /**
-     * 세계관 평균 별점 조회
+     * 세계관 별점 단건 조회 (수정 폼 진입할때 필요함)
+     * @param ratingId 별점 PK
+     * @return 해당 세계관 별점
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public WorldRatingsDTO getMyRatingByRatingId(Long ratingId) {
+        return worldRatingsRepository.findById(ratingId).map(worldRatingsMapper::toDTO).orElseThrow(() ->
+                new NoSuchElementException("해당 별점 및 리뷰가 존재 하지 않습니다."));
+    }
+
+    /**
+     * 세계관 별점 단건 조회 (해당 세계관에 회원이 별점을 남겼는지 확인)
      * @param worldId 세계관 PK
-     * @return 평균 별점
+     * @param userId  회원 PK
+     * @return 세계관 별점
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public WorldRatingsDTO getMyRatingByWorldAndUser(Long worldId, Long userId) {
+        return worldRatingsRepository.findByUsersIdAndWorldId(userId, worldId).map(worldRatingsMapper::toDTO)
+                .orElse(null); // 조회 결과 남기지 않았다면 null
+    }
+
+    /**
+     * 해당 회원의 별점 목록 조회
+     * @param userId 회원 PK
+     * @return 해당 회원 별점 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<WorldRatingsDTO> getMyRatings(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<WorldRatingsEntity> worldRating = worldRatingsRepository.findAllByUserId(userId, pageable);
+        return worldRating.map(worldRatingsMapper::toDTO);
+    }
+
+    /**
+     * 세계관 평균 평점 조회
+     * @param worldId 세계관 PK
+     * @return 평균 평점
      */
     @Transactional(readOnly = true)
     @Override
@@ -87,8 +129,16 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
                 storySession.getWorlds(),
                 storySession
         );
-        worldRatingsRepository.save(worldRating);
-        log.info("평점 및 리뷰 생성 {}", worldRating);
+
+        WorldsEntity world = storySession.getWorlds();
+        WorldRatingsEntity worldRatingSave = worldRatingsRepository.save(worldRating);
+        log.info("평점 및 리뷰 생성 {}", worldRatingSave);
+
+        // 세계관 평균 평점 업데이트 (TODO 2자리 고정 반올림으로 지정함 필요하면 수정)
+        double ratingAvg = getWorldRatingAverage(world.getId());
+        world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
+        WorldsEntity worldSave = worldsRepository.save(world);
+        log.info("새로운 평점 및 리뷰 등록으로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());
     }
 
     /**
@@ -111,6 +161,14 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         );
         worldRatingsRepository.save(rating);
         log.info("평점 및 리뷰 수정 완료 : {}", rating);
+
+        WorldsEntity world = rating.getWorld();
+
+        // 세계관 평균 평점 재계산
+        double ratingAvg = getWorldRatingAverage(world.getId());
+        world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
+        WorldsEntity worldSave = worldsRepository.save(world);
+        log.info("평점 및 리뷰 수정으로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());
     }
 
     /**
@@ -122,7 +180,19 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     public void deleteWorldRating(Long id) {
         WorldRatingsEntity rating = worldRatingsRepository.findById(id).orElseThrow(() ->
             new NoSuchElementException("해당 평점 및 리뷰는 존재 하지 않습니다."));
+
+        // 삭제 전에 world 먼저 꺼냄
+        WorldsEntity world = rating.getWorld();
+
         worldRatingsRepository.delete(rating);
         log.info("삭제 완료 : {}", rating);
+
+
+        // 세계관 평균 평점 재계산
+        double ratingAvg = getWorldRatingAverage(world.getId());
+        world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
+        WorldsEntity worldSave = worldsRepository.save(world);
+        log.info("평점 및 리뷰 삭제로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());
+
     }
 }

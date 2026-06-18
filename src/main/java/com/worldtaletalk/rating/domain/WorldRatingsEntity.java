@@ -53,14 +53,14 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     /* 도메인 행위 메서드 */
 
     /**
-     * 세계관 평점 및 리뷰 생성
-     * @param score 평점
+     * 세계관 별점 및 리뷰 생성
+     * @param score 별점
      * @param review 리뷰
      * @param countPlayNumber 해당 세계관 클리어 횟수
      * @param user 유저 정보
      * @param world 세계관 정보
      * @param storySession 세션 정보
-     * @return 평점 및 리뷰
+     * @return 별점 및 리뷰
      */
     public static WorldRatingsEntity createWorldRating(
         short score,
@@ -81,8 +81,8 @@ public class WorldRatingsEntity extends BaseTimeEntity {
     }
 
     /**
-     * 세계관 평점 및 리뷰 수정
-     * @param score 평점
+     * 세계관 별점 및 리뷰 수정
+     * @param score 별점
      * @param review 리뷰
      */
     public void modifyInformationWorldRating(short score, String review) {

@@ -3,12 +3,13 @@ package com.worldtaletalk.session.service;
 import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface StorySessionsService {
     /**
-     * 세션 여러건 조회
+     * 세션 여러건 조회 (관리자용)
      * @return 세션s
      */
     List<StorySessionsDTO> getStorySessions();
@@ -19,6 +20,14 @@ public interface StorySessionsService {
      * @return 세션
      */
     StorySessionsDTO getStorySession(Long id);
+
+    /**
+     * 해당 회원의 세션 여러건 조회
+     * @param userId 회원 PK
+     * @param page 페이지 수
+     * @return 회원 세션 목록
+     */
+    Page<StorySessionsDTO> getMySessions(Long userId, int page);
 
     /**
      * 세션 생성 (새게임)

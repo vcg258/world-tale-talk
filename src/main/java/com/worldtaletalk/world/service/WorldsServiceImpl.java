@@ -22,7 +22,7 @@ public class WorldsServiceImpl implements WorldsService {
     private final StoryAiService storyAiService;
 
     /**
-     * 세계관 전체 조회
+     * 세계관 전체 조회 비활성화 포함 (관리자용)
      * @return 세계관들
      */
     @Transactional(readOnly = true)
@@ -41,6 +41,26 @@ public class WorldsServiceImpl implements WorldsService {
     public WorldsDTO getWorldById(Long id) {
         return worldsRepository.findById(id).map(worldsMapper::toDTO)
                 .orElseThrow(() -> new NoSuchElementException("지정한 세계관이 없습니다."));
+    }
+
+    /**
+     * 활성화 된 세계관만 조회
+     * @return 활성화 세계관
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<WorldsDTO> getActiveWorlds() {
+        return worldsMapper.toDTOList(worldsRepository.findAllByActiveTrue());
+    }
+
+    /**
+     * 세계관 플레이수를 기준으로 정렬 조회 (인기 상위 세게관을 표시 하기 위함)
+     * @return 플레이수를 기준 내림차순 정렬 세계관
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<WorldsDTO> getFeaturedWorlds(int limit) {
+        return worldsMapper.toDTOList(worldsRepository.findAllByPlayCount(limit));
     }
 
     /**
