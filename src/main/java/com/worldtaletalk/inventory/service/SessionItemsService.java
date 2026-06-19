@@ -8,6 +8,7 @@ import java.util.List;
 public interface SessionItemsService {
     /**
      * 아이템 생성 (등급 설정 기반 보정치 랜덤 생성)
+     *
      * @param sessionId       세션 PK
      * @param turn            획득 턴
      * @param itemName        LLM 생성 아이템 이름
@@ -19,6 +20,7 @@ public interface SessionItemsService {
 
     /**
      * 아이템 버림 처리 (이름 매칭, 없으면 null)
+     *
      * @param sessionId 세션 PK
      * @param itemName  버릴 아이템 이름
      * @param turn      버린 턴
@@ -28,6 +30,7 @@ public interface SessionItemsService {
 
     /**
      * 보유 중 인벤토리 조회
+     *
      * @param sessionId 세션 PK
      * @return 보유 아이템 목록
      */

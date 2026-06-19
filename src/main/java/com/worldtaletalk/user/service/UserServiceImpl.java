@@ -23,18 +23,20 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 유저 단건 조회
+     *
      * @param id 유저 PK
      * @return 유저 정보
      */
     @Transactional(readOnly = true)
     @Override
     public UserDTO getUser(Long id) {
-         return userRepository.findById(id).map(userMapper::toDTO).orElseThrow(() ->
+        return userRepository.findById(id).map(userMapper::toDTO).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 존재하지 않습니다."));
     }
 
     /**
      * 이메일로 유저 조회 (OAuth2 로그인시 기존 회원 여부 확인용)
+     *
      * @param email 이메일
      * @return 유저 정보 (미가입시 null)
      */
@@ -46,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 유저 생성 (OAuth2 최초 로그인시 자동 가입)
+     *
      * @param userDTO 유저 정보
      */
     @Transactional
@@ -57,12 +60,7 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수 값입니다.");
         }
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new IllegalArgumentException("이메일이 중복입니다. 다른 이메일을 넣어주세요");
-        }
-        if (userRepository.existsByNickname(userDTO.getNickname())) {
-            throw new IllegalArgumentException("닉네임이 종복입니다. 다른 닉네임을 넣어주세요");
-        }
+
         UserEntity user = UserEntity.createUser(
                 userDTO.getLoginId(), // 소셜 로그인 유저는 아이디가 필요없으므로 null 예외안함
                 userDTO.getNickname(),
@@ -75,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 회원 정보 수정
+     *
      * @param userDTO 변경할 회원 정보
      */
     @Transactional
@@ -83,7 +82,6 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userDTO.getId()).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 존재하지 않습니다."));
         user.modifyInformationUser(
-                userDTO.getNickname() != null ? userDTO.getNickname() : user.getNickname(),
                 userDTO.getEmail() != null ? userDTO.getEmail() : user.getEmail(),
                 userDTO.getPassword() != null ?
                         bCryptPasswordEncoder.encode(userDTO.getPassword()) : user.getPassword()
@@ -94,6 +92,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 계정 상태 변경 (정지 / 삭제 / 활성화)
+     *
      * @param id     유저 PK
      * @param status 변경할 계정 상태
      */
@@ -108,7 +107,48 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 닉네임 변경
+     *
+     * @param id       유저 PK
+     * @param nickname 변경할 닉네임
+     */
+    @Transactional
+    @Override
+    public void modifyNickname(Long id, String nickname) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        user.changeNickname(nickname);
+        UserEntity save = userRepository.save(user);
+        log.info("닉네임 변경 완료 : {}", save);
+    }
+
+    /**
+     * 이메일 중복 여부 확인
+     *
+     * @param email 이메일
+     * @return 중복 여부 (true: 중복)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    /**
+     * 닉네임 중복 여부 확인
+     *
+     * @param nickname 닉네임
+     * @return 중복 여부 (true: 중복)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
+    /**
      * 회원 탈퇴
+     *
      * @param id 유저 PK
      */
     @Transactional

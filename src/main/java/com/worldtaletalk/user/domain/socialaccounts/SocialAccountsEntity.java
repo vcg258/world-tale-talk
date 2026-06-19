@@ -36,6 +36,7 @@ public class SocialAccountsEntity extends BaseTimeEntity {
 
     /**
      * 소셜 로그인 연동 정보 생성
+     *
      * @param socialProvider 소셜 로그인 제공사
      * @param providerId 소셜 제공사 고유번호
      * @param user 회원 정보

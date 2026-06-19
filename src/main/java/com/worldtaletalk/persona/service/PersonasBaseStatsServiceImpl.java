@@ -24,6 +24,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
 
     /**
      * 페르소나 스텟 여러건 조회
+     *
      * @return 페르소나 스텟
      */
     @Transactional(readOnly = true)
@@ -34,6 +35,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
 
     /**
      * 페르소나 스텟 단건 조회
+     *
      * @param id PK
      * @return 페르소나 스텟
      */
@@ -46,6 +48,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
 
     /**
      * FK로 페르소나 스텟 단건 조회
+     *
      * @param id FK
      * @return 페르소나 스텟
      */
@@ -58,6 +61,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
 
     /**
      * 해당 페르소나 기본 스텟 생성
+     *
      * @param personasBaseStatsDTO 페르소나 기본스텟 정보
      */
     @Transactional
@@ -81,6 +85,7 @@ public class PersonasBaseStatsServiceImpl implements PersonasBaseStatsService {
 
     /**
      * 해당 페르소나 스텟 수정
+     *
      * @param personasBaseStatsDTO 기본스텟 정보
      */
     @Transactional

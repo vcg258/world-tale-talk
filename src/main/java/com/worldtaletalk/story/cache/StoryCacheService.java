@@ -22,6 +22,7 @@ public class StoryCacheService {
 
     /**
      * 직전 턴 선택지별 스텟 변화량 저장
+     *
      * @param sessionId 세션 PK
      * @param choiceChangesByChoices 선택지별 스텟 변화량
      */
@@ -33,6 +34,7 @@ public class StoryCacheService {
 
     /**
      * 직전 턴 선택지별 스텟 조회
+     *
      * @param sessionId 세션 PK
      * @return 선택지별 스텟 변화 (없다? null)
      */
@@ -45,6 +47,7 @@ public class StoryCacheService {
 
     /**
      * 세션 캐시 삭제 (세션 상태가 완결 or 중도 이탈시 제거할때 사용)
+     *
      * @param sessionId 세션 PK
      */
     public void deleteSessionCache(Long sessionId) {

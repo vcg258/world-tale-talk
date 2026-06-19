@@ -18,7 +18,7 @@ class UserSuspensionsServiceImplTest {
 
     @Test
     void getUserSuspension() {
-        log.info("{}", userSuspensionsService.getUserSuspension(5L));
+        log.info("{}", userSuspensionsService.getUserSuspension("관리자"));
     }
 
     @Test

@@ -30,6 +30,7 @@ public class CustomChatMemory implements ChatMemory {
 
     /**
      * 커스텀 ChatMemory 추가
+     *
      * @param conversationId 세션 PK (String)
      * @param messages 저장할 메시지 목록
      */
@@ -64,6 +65,7 @@ public class CustomChatMemory implements ChatMemory {
 
     /**
      * 커스텀 ChatMemory 조회
+     *
      * @param conversationId 세션 PK (String)
      * @return 메시지 목록
      */
@@ -96,6 +98,7 @@ public class CustomChatMemory implements ChatMemory {
 
     /**
      * 커스텀 ChatMemory 삭제 (세션의 모든 메시지 삭제)
+     *
      * @param conversationId 세션 PK (String)
      */
     @Override

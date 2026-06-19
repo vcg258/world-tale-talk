@@ -69,6 +69,7 @@ public class SessionItemsEntity extends BaseTimeEntity {
 
     /**
      * 아이템 생성
+     *
      * @param itemName 아이템 이름
      * @param itemDescription 아이템 설명
      * @param grade 아이템 등급
@@ -108,6 +109,7 @@ public class SessionItemsEntity extends BaseTimeEntity {
 
     /**
      * 아이템 버림
+     *
      * @param turn 버린 턴
      */
     public void dropItem(int turn) {

@@ -35,17 +35,19 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     private final PersonasRepository personasRepository;
 
     /**
-     * 세션 여러건 조회
+     * 세션 여러건 조회 (관리자용)
+     *
      * @return 세션s
      */
     @Transactional(readOnly = true)
     @Override
     public List<StorySessionsDTO> getStorySessions() {
-        return storySessionsMapper.toDTOList(storySessionsRepository.findAll());
+        return storySessionsMapper.toDTOList(storySessionsRepository.findAllWithDetails());
     }
 
     /**
      * 세션 단건 조회
+     *
      * @param id PK
      * @return 세션
      */
@@ -58,6 +60,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
     /**
      * 해당 회원의 세션 여러건 조회
+     *
      * @param userId 회원 PK
      * @param page 페이지 수
      * @return 회원 세션 목록
@@ -72,6 +75,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
     /**
      * 세션 생성 (새게임)
+     *
      * @param storySessionsDTO 세션 정보
      */
     @Transactional
@@ -102,6 +106,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
     /**
      * 세션상태 변경
+     *
      * @param id     PK
      * @param status 새션 상태
      */
@@ -119,6 +124,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
     /**
      * 세션 엔딩 결정
+     *
      * @param id         PK
      * @param endingType 엔딩
      */
@@ -136,12 +142,11 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
     /**
      * 세션 삭제
+     *
      * @param id PK
      */
     @Transactional
     @Override
     public void deleteStorySessionByStatus(Long id) {
         storySessionsRepository.deleteById(id);
-        log.info("세션 삭제 : {}", id);
-    }
-}
+        log.info("세션 삭�

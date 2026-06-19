@@ -55,6 +55,7 @@ public class PersonasEntity extends BaseTimeEntity {
 
     /**
      * 페르소나 생성
+     *
      * @param worldsEntity 세계관 정보 FK
      * @param name 페르소나 이름
      * @param description 페르소나 설명
@@ -89,6 +90,7 @@ public class PersonasEntity extends BaseTimeEntity {
 
     /**
      * 페르소나 수정
+     *
      * @param worldsEntity 세계관 정보 FK
      * @param name 페르소나 이름
      * @param description 페르소나 설명

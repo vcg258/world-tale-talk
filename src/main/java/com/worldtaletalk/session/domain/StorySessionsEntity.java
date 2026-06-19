@@ -85,6 +85,7 @@ public class StorySessionsEntity extends BaseTimeEntity {
 
     /**
      * 세션 생성 (새게임)
+     *
      * @param users 유저 정보 FK
      * @param worlds 세계관 정보 FK
      * @param personas 페르소나 정보 FK
@@ -123,6 +124,7 @@ public class StorySessionsEntity extends BaseTimeEntity {
 
     /**
      * 세션 상태 변경
+     *
      * @param sessionStatus 세션 상태 ENUM
      */
     public void changeInformationByStorySession(SessionStatus sessionStatus) {
@@ -131,6 +133,7 @@ public class StorySessionsEntity extends BaseTimeEntity {
 
     /**
      * 세션 엔딩 변경
+     *
      * @param endingType 세션 상태 ENUM
      */
     public void changeInformationByEndingType(EndingType endingType) {

@@ -29,6 +29,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     /**
      * 전체 신고 목록 조회 (관리자용) (페이징)
+     *
      * @return 신고 목록
      */
     @Transactional(readOnly = true)
@@ -41,6 +42,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     /**
      * 처리 상태별 신고 목록 조회 (관리자용) (페이징)
+     *
      * @param status 처리 상태
      * @return 상태별 신고 목록
      */
@@ -54,6 +56,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     /**
      * 신고 등록
+     *
      * @param reportsDTO 신고 정보
      */
     @Transactional
@@ -75,6 +78,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     /**
      * 신고 처리
+     *
      * @param reportsDTO 신고 처리 정보
      */
     @Transactional
@@ -105,6 +109,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     /**
      * 신고 내역 삭제
+     *
      * @param id PK
      */
     @Transactional

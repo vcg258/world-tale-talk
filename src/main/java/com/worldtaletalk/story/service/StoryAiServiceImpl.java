@@ -69,6 +69,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 세계관 인덱스(VectorStore) 삭제
+     *
      * @param worldId 세계관 PK
      */
     @Override
@@ -100,6 +101,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 세계관 등록/수정
+     *
      * @param worldId 세계관 PK
      */
     @Transactional(readOnly = true)
@@ -130,6 +132,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 스토리 생성 (RAG + LLM 호출)
+     *
      * @param sessionId 세션 PK
      * @param userInput 유저 입력
      * @return LLM 응답 파싱 결과
@@ -241,6 +244,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 메인 스토리 이후 에필로그 스토리 생성
+     *
      * @param sessionId 세션 PK
      * @param userInput 유저 입력
      * @return LLM 응답 결과 (String)
@@ -334,6 +338,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 엔딩 이후 메인스토리 요약
+     *
      * @param sessionId 세션 PK
      * @return 메인스토리 요약
      */
@@ -367,6 +372,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 유저 입력 기반 RAG 세계관 청크 조회
+     *
      * @param worldId 세계관 PK
      * @param userInput 유저 입력 (유사도 검색 쿼리로 사용)
      * @return 유사도 높은 세계관 설정 텍스트 청크 (개행 구분)
@@ -393,6 +399,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 인벤토리 컨텍스트 문자열 생성 (아이템 스탯 보너스 수치 포함)
+     *
      * @param inventory 보유 중인 아이템 목록
      * @return 아이템 이름/등급/설명/보너스 문자열
      */
@@ -412,6 +419,7 @@ public class StoryAiServiceImpl implements StoryAiService {
 
     /**
      * 아이템 보너스 수치 문자열 생성 (0인 스탯은 제외)
+     *
      * @param item 아이템 DTO
      * @return 보너스 수치 문자열 (예: 지혜 +3, 힘 -1)
      */

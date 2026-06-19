@@ -40,6 +40,7 @@ public class NoticesEntity extends BaseTimeEntity {
 
     /**
      * 공지글 생성
+     *
      * @param admin 관리자 PK
      * @param title 공지글 제목
      * @param content 공지글 내용

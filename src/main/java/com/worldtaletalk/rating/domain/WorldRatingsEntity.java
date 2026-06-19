@@ -54,6 +54,7 @@ public class WorldRatingsEntity extends BaseTimeEntity {
 
     /**
      * 세계관 별점 및 리뷰 생성
+     *
      * @param score 별점
      * @param review 리뷰
      * @param countPlayNumber 해당 세계관 클리어 횟수
@@ -82,6 +83,7 @@ public class WorldRatingsEntity extends BaseTimeEntity {
 
     /**
      * 세계관 별점 및 리뷰 수정
+     *
      * @param score 별점
      * @param review 리뷰
      */

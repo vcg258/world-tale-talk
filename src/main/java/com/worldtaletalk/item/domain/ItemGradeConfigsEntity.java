@@ -36,6 +36,7 @@ public class ItemGradeConfigsEntity extends BaseTimeEntity {
 
     /**
      * 아이템 등급 보정 설정 수정 (관리자)
+     *
      * @param statSumMax  스텟 보정 합산 최대치
      * @param singleMax   단일 스텟 보정 최대치
      * @param singleMin   단일 스텟 보정 최소치

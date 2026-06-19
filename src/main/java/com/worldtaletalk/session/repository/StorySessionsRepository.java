@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StorySessionsRepository extends JpaRepository<StorySessionsEntity, Long> {
@@ -42,6 +43,5 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId")
     Page<StorySessionsEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    // 세션 상태별 전체 개수 (통계용)
-    long countByStatus(SessionStatus status);
-}
+    // 관리자용 전체 세션 조회
+    @Query("SELECT s FROM StorySess

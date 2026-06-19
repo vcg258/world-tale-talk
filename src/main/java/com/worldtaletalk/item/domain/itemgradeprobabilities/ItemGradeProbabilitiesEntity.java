@@ -34,6 +34,7 @@ public class ItemGradeProbabilitiesEntity extends BaseTimeEntity {
 
     /**
      * 아이템 등급 확률 수정 (관리자)
+     *
      * @param probability 확률 (0~100)
      */
     public void updateProbability(int probability) {

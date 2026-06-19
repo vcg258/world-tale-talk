@@ -69,6 +69,7 @@ public class WorldsEntity extends BaseTimeEntity {
     /* 도메인 행위 메서드 */
     /**
      * 세계관 생성
+     *
      * @param name 이름
      * @param genre 장르
      * @param description 설명
@@ -98,6 +99,7 @@ public class WorldsEntity extends BaseTimeEntity {
 
     /**
      * 업데이트 도메인 메서드
+     *
      * @param name 이름
      * @param genre 장르
      * @param description 설명
@@ -130,6 +132,7 @@ public class WorldsEntity extends BaseTimeEntity {
 
     /**
      * 세계관 평균 평점 변경
+     *
      * @param rating 평점
      */
     public void changeRating(BigDecimal rating) {

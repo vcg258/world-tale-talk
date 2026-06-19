@@ -45,6 +45,7 @@ public class UserSuspensionsEntity {
 
     /**
      * 정지 이력 생성
+     *
      * @param user 회원
      * @param admin 관리자
      * @param reason 정지 사유

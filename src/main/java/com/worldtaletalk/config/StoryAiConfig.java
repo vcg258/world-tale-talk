@@ -13,6 +13,7 @@ import org.springframework.core.Ordered;
 public class StoryAiConfig {
     /**
      * 커스텀 ChatMemory 적용을 위한 설정
+     *
      * @param chatModel LLM 모델
      * @param customChatMemory 커스텀 챗메모리
      * @return 커스텀 챗메모리 설정 주입
@@ -29,6 +30,7 @@ public class StoryAiConfig {
 
     /**
      * 커스텀 ChatMemory 적용 (메인 스토리 요약 전용)
+     *
      * @param chatModel LLM 모델
      * @return 커스텀 챗메모리 설정 주입
      */

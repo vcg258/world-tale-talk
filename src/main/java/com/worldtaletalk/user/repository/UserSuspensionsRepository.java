@@ -20,5 +20,5 @@ public interface UserSuspensionsRepository extends JpaRepository<UserSuspensions
                 AND u.liftedAt IS NULL
                     ORDER BY u.id LIMIT 1
     """)
-    Optional<UserSuspensionsEntity> findCurrentSuspension(@Param("userId") Long usersId);
+    Optional<UserSuspensionsEntity> findCurrentSuspension(@Param("userId") Long userId);
 }

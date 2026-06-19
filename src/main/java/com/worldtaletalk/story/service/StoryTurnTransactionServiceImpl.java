@@ -55,6 +55,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 턴 시작 처리 (세션 검증, 턴 증가, 선택지 스텟 로그 저장)
+     *
      * @param sessionId    세션 PK
      * @param choiceNumber 선택지 (자유입력시 null)
      * @return 선택지 입력시 저장된 스텟 로그 (자유입력시 null)
@@ -91,6 +92,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 턴 완료 처리 (자유입력 스텟 로그, 아이템, 엔딩, 스냅샷, 레디스 갱신)
+     *
      * @param sessionId       세션 PK
      * @param choiceNumber    선택지 (자유입력시 null)
      * @param appliedStateLog beginTurn에서 저장된 스텟 로그 (자유입력시 null)
@@ -146,6 +148,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 보상 처리 (LLM 요청 실패시 턴 증가와 스텟 로그 원상 복구)
+     *
      * @param sessionId       세션 PK
      * @param appliedStateLog beginTurn에서 저장된 스텟 로그 (없으면 null)
      */
@@ -169,6 +172,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 스텟 로그를 DTO로 반환 하기 위한 메서드
+     *
      * @param sessionId 세션 PK
      * @param turn 현재 턴
      * @param stat 검증된 스탯
@@ -188,6 +192,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 스텟 +2 or -2 범위 제한
+     *
      * @param rawStat 검증이 필요한 스텟 Map값
      * @return 보정된 스텟 값
      */
@@ -205,6 +210,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 선택지별 스텟 범위 제한
+     *
      * @param rawChanges 검증이 필요한 선택지 Map
      * @return 보정된 선택지 값
      */
@@ -219,6 +225,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 아이템 확률을 정하기 위한 진행도 퍼센트 계산
+     *
      * @param storySessionsDTO 세션 정보
      * @return 진행도
      */
@@ -233,6 +240,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * LLM이 등급 힌트를 제공할때 매핑 할 메서드
+     *
      * @param itemContext LLM 아이템 힌트
      * @return 매핑할 아이템 등급
      */
@@ -247,6 +255,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 아이템 등급을 결정할 헬퍼 메서드
+     *
      * @param itemContext LLM 아이템 힌트
      * @param storySessionsDTO 세션 정보
      * @return 아이템 등급 확정
@@ -289,6 +298,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     /**
      * 엔딩 타입 판별 (스탯 합산 + 아이템 보너스 까지 포함)
      * SECRET -> DARK -> GOOD -> BAD -> TRUE 로 판별함 이유 : 히든과 흑화 엔딩조건 둘다 해당할 경우 충돌 가능성이 있기 때문
+     *
      * @param sessionId  세션 PK
      * @param personaId  페르소나 PK (기본 스탯 조회용)
      * @param endingFlag LLM 엔딩 트리거 여부
@@ -355,6 +365,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
     /**
      * 아이템 이벤트 처리 + 엔딩 판별
+     *
      * @param storySessionsDTO 세션 정보
      * @param llmTurnResult    LLM 응답 파싱 결과
      * @return 턴 처리 결과

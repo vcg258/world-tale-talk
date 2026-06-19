@@ -30,6 +30,7 @@ public class SessionItemsDTO {
 
     /**
      * 보유 아이템 전체 스탯 보너스 합산
+     *
      * @param inventory 보유 중인 아이템 목록
      * @return 스탯별 보너스 합산 (wisdom, strength, agility, charisma, luck)
      */

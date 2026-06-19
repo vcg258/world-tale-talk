@@ -52,6 +52,7 @@ public class SessionStatLogsEntity extends BaseTimeEntity {
 
     /**
      * 스텟 로그 생성
+     *
      * @param turn 스텟 변화가 발생한 턴
      * @param wisdomDelta 지혜
      * @param strengthDelta 힘

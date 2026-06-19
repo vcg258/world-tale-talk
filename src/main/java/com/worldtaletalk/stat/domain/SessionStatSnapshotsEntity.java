@@ -45,6 +45,7 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
 
     /**
      * 스텟 스냅샷 생성
+     *
      * @param wisdom 지혜
      * @param strength 힘
      * @param agility 민첩
@@ -73,6 +74,7 @@ public class SessionStatSnapshotsEntity extends BaseTimeEntity {
 
     /**
      * 엔딩이후 메인 스토리 요약
+     *
      * @param summary 메인스토리 요약 히스토리
      */
     public void modifySnapshotSummary(String summary) {

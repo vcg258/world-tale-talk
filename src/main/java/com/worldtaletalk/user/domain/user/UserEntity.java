@@ -84,6 +84,7 @@ public class UserEntity extends BaseTimeEntity {
 
     /**
      * 회원가입
+     *
      * @param login_id 로그인 아이디
      * @param nickname 닉네임
      * @param email 이메일
@@ -106,22 +107,29 @@ public class UserEntity extends BaseTimeEntity {
 
     /**
      * 회원 정보 수정
-     * @param nickname 닉네임
+     *
      * @param email 이메일
      * @param password 비밀번호
      */
     public void modifyInformationUser(
-            String nickname,
             String email,
             String password
     ) {
-        this.nickname = nickname;
         this.email = email;
         this.password = password;
     }
 
     /**
+     * 닉네임 변경
+     * @param nickname 변경할 닉네임
+     */
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    /**
      * 회원 계정 상태 변경
+     *
      * @param status 상태
      */
     public void changeStatus(UserStatus status) {

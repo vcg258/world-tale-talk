@@ -21,6 +21,7 @@ public class ItemGradeConfigsServiceImpl implements ItemGradeConfigsService {
 
     /**
      * 전체 등급 보정 설정 조회
+     *
      * @return 등급 설정 목록
      */
     @Transactional(readOnly = true)
@@ -31,6 +32,7 @@ public class ItemGradeConfigsServiceImpl implements ItemGradeConfigsService {
 
     /**
      * 단건 등급 보정 설정 조회
+     *
      * @param id 등급 설정 PK
      * @return 등급 설정
      */
@@ -43,6 +45,7 @@ public class ItemGradeConfigsServiceImpl implements ItemGradeConfigsService {
 
     /**
      * 등급 보정 설정 수정 (관리자)
+     *
      * @param id  등급 설정 PK
      * @param itemGradeConfigsDTO 수정할 설정 값
      * @return 수정된 설정

@@ -43,6 +43,7 @@ public class PersonasBaseStatsEntity {
     /* 도메인 행위 메서드 */
     /**
      * 페르소나 기본 스텟
+     *
      * @param wisdom 지혜
      * @param strength 힘
      * @param agility 민첩
@@ -71,6 +72,7 @@ public class PersonasBaseStatsEntity {
 
     /**
      * 해당 페르소나 스텟 수정
+     *
      * @param wisdom 지혜
      * @param strength 힘
      * @param agility 민첩

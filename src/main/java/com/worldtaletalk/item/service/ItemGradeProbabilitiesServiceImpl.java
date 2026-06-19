@@ -22,6 +22,7 @@ public class ItemGradeProbabilitiesServiceImpl implements ItemGradeProbabilities
 
     /**
      * 전체 확률 조회
+     *
      * @return 전체 구간 확률 목록
      */
     @Transactional(readOnly = true)
@@ -33,6 +34,7 @@ public class ItemGradeProbabilitiesServiceImpl implements ItemGradeProbabilities
 
     /**
      * 구간별 확률 조회
+     *
      * @param phase 진행도 구간 (EARLY, MID, LATE)
      * @return 해당 구간 확률 목록
      */
@@ -45,6 +47,7 @@ public class ItemGradeProbabilitiesServiceImpl implements ItemGradeProbabilities
 
     /**
      * 단건 확률 수정 (관리자)
+     *
      * @param id          확률 설정 PK
      * @param probability 수정할 확률 값 (0~100)
      * @return 수정된 확률 설정

@@ -54,6 +54,7 @@ public class ReportsEntity extends BaseTimeEntity {
 
     /**
      * 신고 등록
+     *
      * @param reportTargetType 신고 출처 (리뷰, 채팅 내역
      * @param targetId 신고한 유저 아이디
      * @param reason 신고 사유
@@ -76,6 +77,7 @@ public class ReportsEntity extends BaseTimeEntity {
 
     /**
      * 신고 내역 처리
+     *
      * @param reportStatus 신고 내역 처리 상태
      * @param admin 관리자
      */

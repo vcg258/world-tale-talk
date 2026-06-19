@@ -29,6 +29,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
 
     /**
      * 특정 유저의 정지 이력 조회 (관리자용) (페이징)
+     *
      * @param userId 유저 PK
      * @return 정지 이력 목록
      */
@@ -41,6 +42,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
 
     /**
      * 해당 회원의 유효한 정지 이력 단건 조회
+     *
      * @param userId 회원 PK
      * @return 회원 정지 이력
      */
@@ -53,6 +55,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
 
     /**
      * 유저 정지 처리 (관리자용)
+     *
      * @param userSuspensionsDTO 정지 정보
      */
     @Transactional
@@ -81,6 +84,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
 
     /**
      * 회원 정지 해제 (관리자용)
+     *
      * @param suspensionId 정지 이력 PK
      */
     @Transactional

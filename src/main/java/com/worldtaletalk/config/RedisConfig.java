@@ -12,6 +12,7 @@ public class RedisConfig {
 
     /**
      * 페르소나 스텟 관련 레디스 설정
+     *
      * @param redisConnectionFactory 레디스 펙토리
      * @return Json / Value 직렬화 역직렬화
      */

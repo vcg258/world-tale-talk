@@ -23,6 +23,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 전체 조회 비활성화 포함 (관리자용)
+     *
      * @return 세계관들
      */
     @Transactional(readOnly = true)
@@ -33,6 +34,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 단건 조회
+     *
      * @param id PK
      * @return 세계관
      */
@@ -45,6 +47,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 활성화 된 세계관만 조회
+     *
      * @return 활성화 세계관
      */
     @Transactional(readOnly = true)
@@ -55,6 +58,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 플레이수를 기준으로 정렬 조회 (인기 상위 세게관을 표시 하기 위함)
+     *
      * @return 플레이수를 기준 내림차순 정렬 세계관
      */
     @Transactional(readOnly = true)
@@ -65,6 +69,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 생성
+     *
      * @param worldsDTO 세계관 정보
      */
     @Transactional
@@ -101,6 +106,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 수정
+     *
      * @param worldsDTO 수정할 세계관 정보
      */
     @Transactional
@@ -125,6 +131,7 @@ public class WorldsServiceImpl implements WorldsService {
 
     /**
      * 세계관 삭제
+     *
      * @param id PK
      */
     @Transactional
