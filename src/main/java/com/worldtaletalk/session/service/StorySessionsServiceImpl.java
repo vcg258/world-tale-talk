@@ -67,9 +67,9 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<StorySessionsDTO> getMySessions(Long userId, int page) {
+    public Page<StorySessionsDTO> getMySessions(Long userId, SessionStatus status, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "updatedAt"));
-        Page<StorySessionsEntity> userSessions = storySessionsRepository.findAllByUserId(userId, pageable);
+        Page<StorySessionsEntity> userSessions = storySessionsRepository.findAllByUserId(userId, status, pageable);
         return userSessions.map(storySessionsMapper::toDTO);
     }
 
@@ -77,10 +77,11 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * 세션 생성 (새게임)
      *
      * @param storySessionsDTO 세션 정보
+     * @return 생성된 세션 PK
      */
     @Transactional
     @Override
-    public void createStorySession(StorySessionsDTO storySessionsDTO) {
+    public Long createStorySession(StorySessionsDTO storySessionsDTO) {
         UserEntity user = userRepository.findById(storySessionsDTO.getUserId()).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 찾을 수 없습니다."));
 
@@ -102,6 +103,8 @@ public class StorySessionsServiceImpl implements StorySessionsService {
         world.playCountUp();
         WorldsEntity worldSave = worldsRepository.save(world);
         log.info("해당 세계관 플레이수 ++후 전체 값 : {}", worldSave.getPlayCount());
+
+        return storySessions.getId();
     }
 
     /**
@@ -149,4 +152,6 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Override
     public void deleteStorySessionByStatus(Long id) {
         storySessionsRepository.deleteById(id);
-        log.info("세션 삭�
+        log.info("세션 삭제 완료 : id={}", id);
+    }
+}

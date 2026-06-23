@@ -393,10 +393,9 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
             } else if (llmTurnResult.getItemEvent().getType() == ItemEventType.LOSE) {
                 // 아이템 버림 (이름 매칭, LLM 환각으로 없는 아이템일 수 있어서 null 허용)
-                removeItemId = sessionItemsService.dropItem(
+                removeItemId = sessionItemsService.dropItemByName(
                         storySessionsDTO.getId(),
-                        llmTurnResult.getItemEvent().getItemName(),
-                        storySessionsDTO.getCurrentTurn()
+                        llmTurnResult.getItemEvent().getItemName()
                 );
                 if (removeItemId != null) {
                     log.info("아이템 소실 itemId : {}, itemName : {}", removeItemId, llmTurnResult.getItemEvent().getItemName());

@@ -6,5 +6,40 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@RequestMapping("/")
+@RequiredArgsConstructor
+public class HomeController {
+    private final WorldsService worldsService;
+    private final NoticesService noticesService;
+
+    /**
+     * H-01: 메인 화면 조회
+     *
+     * @param model 뷰에 전달할 모델
+     * @param page  페이지 번호 (1부터 시작)
+     * @return home/index
+     */
+    @GetMapping
+    public String home(Model model, @RequestParam(defaultValue = "1") int page) {
+        model.addAttribute("worlds", worldsService.getActiveWorlds());
+        model.addAttribute("featuredWorlds", worldsService.getFeaturedWorlds(3));
+        model.addAttribute("notices", noticesService.getActiveNotices(page));
+        return "home/index";
+    }
+
+    /**
+     * H-02: 세계관 목록 화면 조회
+     *
+     * @param model 뷰에 전달할 모델
+     * @return world/list
+     */
+    @GetMapping("/worlds")
+    public String worlds(Model model) {
+        model.addAttribute("worlds", worldsService.getActiveWorlds());
+        return "world/list";
+    }
+}

@@ -30,14 +30,15 @@ public interface StorySessionsService {
      * @param page 페이지 수
      * @return 회원 세션 목록
      */
-    Page<StorySessionsDTO> getMySessions(Long userId, int page);
+    Page<StorySessionsDTO> getMySessions(Long userId, SessionStatus status, int page);
 
     /**
      * 세션 생성 (새게임)
      *
      * @param storySessionsDTO 세션 정보
+     * @return 생성된 세션 PK
      */
-    void createStorySession(StorySessionsDTO storySessionsDTO);
+    Long createStorySession(StorySessionsDTO storySessionsDTO);
 
     /**
      * 세션상태 변경

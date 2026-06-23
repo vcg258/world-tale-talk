@@ -19,14 +19,21 @@ public interface SessionItemsService {
     SessionItemsDTO addItem(Long sessionId, int turn, String itemName, String itemDescription, ItemGrade grade);
 
     /**
-     * 아이템 버림 처리 (이름 매칭, 없으면 null)
+     * 아이템 버림 처리 (유저가 직접 버림용)
+     *
+     * @param sessionId 세션 PK
+     * @param itemId    버릴 아이템 PK
+     */
+    void dropItem(Long sessionId, Long itemId);
+
+    /**
+     * 아이템 이름으로 버림 처리 (LLM)
      *
      * @param sessionId 세션 PK
      * @param itemName  버릴 아이템 이름
-     * @param turn      버린 턴
-     * @return 버려진 아이템 PK (보유 중이 아니면 null)
+     * @return 버린 아이템 PK (보유하지 않은 아이템이면 null)
      */
-    Long dropItem(Long sessionId, String itemName, int turn);
+    Long dropItemByName(Long sessionId, String itemName);
 
     /**
      * 보유 중 인벤토리 조회

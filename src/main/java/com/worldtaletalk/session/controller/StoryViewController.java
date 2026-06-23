@@ -3,12 +3,20 @@ package com.worldtaletalk.session.controller;
 import com.worldtaletalk.chat.service.ChatMessagesService;
 import com.worldtaletalk.inventory.service.SessionItemsService;
 import com.worldtaletalk.persona.service.PersonasService;
+import com.worldtaletalk.session.domain.SessionStatus;
+import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/sessions")
@@ -29,4 +37,114 @@ public class StoryViewController {
             int charisma,
             int luck
     ) {}
+
+    /**
+     * S-01: 플레이 화면 조회
+     *
+     * @param id    세션 PK
+     * @param model 뷰에 전달할 모델
+     * @return story/play (플레이 화면)
+     */
+    @GetMapping("/{id}/play")
+    public String play(@PathVariable Long id, Model model) {
+        StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        Map<String, Integer> stats = sessionStatsService.getCurrentStats(id);
+
+        model.addAttribute("session", storySession);
+        model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
+        model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
+        model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
+        model.addAttribute("items", sessionItemsService.getInventory(id));
+        model.addAttribute("currentStats", new CurrentStatsVM(
+                stats.getOrDefault("wisdom", 0),
+                stats.getOrDefault("strength", 0),
+                stats.getOrDefault("agility", 0),
+                stats.getOrDefault("charisma", 0),
+                stats.getOrDefault("luck", 0)
+        ));
+        return "story/play";
+    }
+
+    /**
+     * S-02: 세션 포기
+     *
+     * @param id 세션 PK
+     * @return redirect:/mypage/sessions (내 세션 목록 페이지)
+     */
+    @PostMapping("/{id}/abandon")
+    public String abandon(@PathVariable Long id) {
+        storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
+        return "redirect:/mypage/sessions";
+    }
+
+    /**
+     * S-03: 엔딩 화면 조회
+     *
+     * @param id    세션 PK
+     * @param model 뷰에 전달할 모델
+     * @return story/ending (엔딩 화면)
+     */
+    @GetMapping("/{id}/ending")
+    public String ending(@PathVariable Long id, Model model) {
+        // TODO endingStory LLM이 채워주는 메인 스토리 요약 String값은 레디스로 넘겨줄 예정 WebSocket 구현후 추가
+        StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        model.addAttribute("session", storySession);
+        model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
+        model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
+        return "story/ending";
+    }
+
+    /**
+     * S-04: 에필로그 시작
+     *
+     * @param id 세션 PK
+     * @return redirect:/sessions/{id}/epilogue (에필로그 화면)
+     */
+    @PostMapping("/{id}/epilogue")
+    public String epilogue(@PathVariable Long id) {
+        storySessionsService.modifyStorySessionByStatus(id, SessionStatus.EPILOGUE);
+        return "redirect:/sessions/" + id + "/epilogue";
+    }
+
+    /**
+     * S-05: 에필로그 화면 조회
+     *
+     * @param id    세션 PK
+     * @param model 뷰에 전달할 모델
+     * @return story/epilogue (에필로그 화면)
+     */
+    @GetMapping("/{id}/epilogue")
+    public String epilogue(@PathVariable Long id, Model model) {
+        StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        model.addAttribute("session", storySession);
+        model.addAttribute("snapshotStats", sessionStatsService.getSnapshot(id));
+        model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
+        return "story/epilogue";
+    }
+
+    /**
+     * S-06: 세션 완료
+     *
+     * @param id 세션 PK
+     * @return redirect:/worlds/{worldId}/ratings (별점 등록 폼 페이지)
+     */
+    @PostMapping("/{id}/complete")
+    public String complete(@PathVariable Long id) {
+        StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        storySessionsService.modifyStorySessionByStatus(id, SessionStatus.COMPLETED);
+        return "redirect:/worlds/" + storySession.getWorldId() + "/ratings?sessionId=" + id;
+    }
+
+    /**
+     * S-07: 아이템 버리기
+     *
+     * @param sessionId 세션 PK
+     * @param itemId    아이템 PK
+     * @return redirect:/sessions/{sessionId}/play (플레이 화면)
+     */
+    @PostMapping("/{sessionId}/items/{itemId}/drop")
+    public String drop(@PathVariable Long sessionId, @PathVariable Long itemId) {
+        sessionItemsService.dropItem(sessionId, itemId);
+        return "redirect:/sessions/" + sessionId + "/play";
+    }
 }

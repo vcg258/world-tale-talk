@@ -76,10 +76,10 @@ public class CustomChatMemory implements ChatMemory {
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId)
                 .orElseThrow(() -> new NoSuchElementException("해당 세션을 찾을 수 없음"));
 
-        // 에필로그 여부 확인후 전체 조회를 하던 아니면 메인 메세지만 조회 TODO 이거 최적화 필요하긴함
+        // 에필로그 여부 확인후 에필로그 메세지만 조회를 하던 아니면 메인 메세지만 조회
         List<ChatMessagesEntity> chatMessages =
                 storySession.getStatus() == SessionStatus.EPILOGUE ?
-                        chatMessagesRepository.findAllByStorySessionId(sessionId) :
+                        chatMessagesRepository.findAllEpilogueBySessionId(sessionId) :
                         chatMessagesRepository.findAllSessionId(sessionId);
 
         return chatMessages.stream()

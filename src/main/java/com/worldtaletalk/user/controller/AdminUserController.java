@@ -3,6 +3,7 @@ package com.worldtaletalk.user.controller;
 import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import com.worldtaletalk.user.service.UserSuspensionsService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,5 +17,5 @@ public class AdminUserController {
     private final UserSuspensionsService userSuspensionsService;
     private final SocialAccountsService socialAccountsService;
 
-    record SuspendForm(String reason) {}
+    record SuspendForm(@NotBlank(message = "정지사유를 입력해주세요.") String reason) {}
 }

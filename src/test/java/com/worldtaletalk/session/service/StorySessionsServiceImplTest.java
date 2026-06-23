@@ -33,7 +33,7 @@ class StorySessionsServiceImplTest {
                 .personaId(1L)
                 .build();
 
-        storySessionsService.createStorySession(storySessionsDTO);
+        log.info("{}", storySessionsService.createStorySession(storySessionsDTO));
     }
 
     @Test

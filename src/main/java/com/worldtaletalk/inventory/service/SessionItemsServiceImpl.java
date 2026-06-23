@@ -74,27 +74,43 @@ public class SessionItemsServiceImpl implements SessionItemsService {
     }
 
     /**
-     * 아이템 버림 처리 (이름 매칭, 없으면 null)
+     * 아이템 버림 처리 (유저가 직접 버림용)
      *
      * @param sessionId 세션 PK
-     * @param itemName  버릴 아이템 이름
-     * @param turn      버린 턴
-     * @return 버려진 아이템 PK (보유 중이 아니면 null)
+     * @param itemId    버릴 아이템 PK
      */
     @Transactional
     @Override
-    public Long dropItem(Long sessionId, String itemName, int turn) {
+    public void dropItem(Long sessionId, Long itemId) {
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 존재하지 않습니다."));
-        SessionItemsEntity sessionItems = sessionItemsRepository.findAllByItemNameAndActiveTrue(storySession.getId(), itemName)
-                .orElse(null);
+        SessionItemsEntity item = sessionItemsRepository.findById(itemId).orElseThrow(() ->
+                new NoSuchElementException("해당 아이템은 존재하지 않습니다."));
+        item.dropItem(storySession.getCurrentTurn());
+        log.info("아이템 버림 처리 완료 : itemId : {}, sessionId : {}", itemId, sessionId);
+    }
 
-        // 아이템 버림 처리 (LLM 환각으로 보유하지 않은 아이템 버릴 수도 있어서 null 허용)
-        if (sessionItems != null) {
-            sessionItems.dropItem(turn);
-            return sessionItems.getId();
+    /**
+     * 아이템 이름으로 버림 처리 (LLM)
+     *
+     * @param sessionId 세션 PK
+     * @param itemName  버릴 아이템 이름
+     * @return 버린 아이템 PK (보유하지 않은 아이템이면 null)
+     */
+    @Transactional
+    @Override
+    public Long dropItemByName(Long sessionId, String itemName) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        SessionItemsEntity item = sessionItemsRepository.findAllByItemNameAndActiveTrue(sessionId, itemName)
+                .orElse(null);
+        if (item == null) {
+            log.warn("아이템 소실 실패 보유하지 않음 itemName : {}, sessionId : {}", itemName, sessionId);
+            return null;
         }
-        return null;
+        item.dropItem(storySession.getCurrentTurn());
+        log.info("아이템 버림 처리 완료 : itemName : {}, itemId :{}, sessionId : {}", itemName, item.getId(), sessionId);
+        return item.getId();
     }
 
     /**

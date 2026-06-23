@@ -34,7 +34,7 @@ public class ChatMessagesServiceImpl implements ChatMessagesService {
     public List<ChatMessagesDTO> getChatMessages(Long sessionId, LocalDateTime lastCreatedAt) {
         Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<ChatMessagesEntity> messages = lastCreatedAt == null ?
-                chatMessagesRepository.findByStorySession_IdOrderByCreatedAtDesc(pageable, sessionId) :
+                chatMessagesRepository.findByStorySession_Id(pageable, sessionId) :
                 chatMessagesRepository.findCursorBySessionId(pageable, sessionId, lastCreatedAt);
         return chatMessagesMapper.toDTOList(messages);
     }

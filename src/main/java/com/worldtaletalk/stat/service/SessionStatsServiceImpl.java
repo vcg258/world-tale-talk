@@ -146,6 +146,19 @@ public class SessionStatsServiceImpl implements SessionStatsService {
     }
 
     /**
+     * 해당 세션의 스냅샷 단건 조회
+     *
+     * @param sessionId 세션 PK
+     * @return 해당 세션 스냅샷
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public SessionStatSnapshotsDTO getSnapshot(Long sessionId) {
+        return sessionStatSnapshotsRepository.findByIdWithStorySessions(sessionId).map(sessionStatSnapshotsMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("해당 스냅샷은 존재 하지 않습니다."));
+    }
+
+    /**
      * 스텟 로그 삭제 (LLM호출 실패시 보상용)
      *
      * @param statLogId 스텟 로그 PK

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity, Long> {
-    // 세션의 모든 메시지 조회 (메인 에필로그 모두 포함) createdAt 기준 오름차순 정렬
+    // 세션의 모든 메시지 조회 (메인 에필로그 모두 포함) createdAt 기준 오름차순 정렬 TODO 일단 보류 없앨지 고민 해봐야할듯
     @Query("""
     SELECT c FROM ChatMessagesEntity c
         WHERE c.storySession.id = :id
@@ -26,7 +26,7 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
     """)
     List<ChatMessagesEntity> findAllSessionId(@Param("id") Long id);
 
-    // 세션의 에필로그 스토리 메시지만 조회 TODO 일단 보류 없앨지 고민 해봐야할듯
+    // 세션의 에필로그 스토리 메시지만 조회
     @Query("""
     SELECT c FROM ChatMessagesEntity c
         WHERE c.storySession.id = :id AND c.epilogue = TRUE
@@ -38,7 +38,7 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
     void deleteAllByStorySession_Id(Long sessionId);
 
     // 해당 세션 메시지 전체 최초 조회 (스크롤 형식 페이징)
-    List<ChatMessagesEntity> findByStorySession_IdOrderByCreatedAtDesc(Pageable pageable, Long id);
+    List<ChatMessagesEntity> findByStorySession_Id(Pageable pageable, Long id);
 
     // 해당 세션 메시지 전체 조회 (스크롤 형식 페이징)
     @Query("SELECT c FROM ChatMessagesEntity c WHERE c.storySession.id = :sessionId AND c.createdAt < :lastCreateAt")

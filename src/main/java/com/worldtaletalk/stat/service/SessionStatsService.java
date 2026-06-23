@@ -19,7 +19,7 @@ public interface SessionStatsService {
      * 현재 스텟 합산 조회 (기본 스텟 + 모든 로그 변화량 누적)
      *
      * @param sessionId 세션 PK
-     * @return 스텟별 합산 값 (wisdom, strength, agility, charisma, luck)
+     * @return 스텟별 합산 값
      */
     Map<String, Integer> getCurrentStats(Long sessionId);
 
@@ -30,6 +30,13 @@ public interface SessionStatsService {
      * @return 저장된 스냅샷
      */
     SessionStatSnapshotsDTO addSnapshot(Long sessionId);
+
+    /**
+     * 해당 세션의 스냅샷 단건 조회
+     * @param sessionId 세션 PK
+     * @return 해당 세션 스냅샷
+     */
+    SessionStatSnapshotsDTO getSnapshot(Long sessionId);
 
     /**
      * 스텟 로그 삭제 (LLM호출 실패시 보상용)

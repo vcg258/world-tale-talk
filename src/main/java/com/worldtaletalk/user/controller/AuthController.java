@@ -4,10 +4,13 @@ import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2User;
 import com.worldtaletalk.user.service.UserService;
 import com.worldtaletalk.user.service.UserSuspensionsService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +23,7 @@ public class AuthController {
     private final UserService userService;
     private final UserSuspensionsService userSuspensionsService;
 
-    record NicknameForm(String nickname) {
+    record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {
     }
 
     /**
@@ -53,9 +56,15 @@ public class AuthController {
      */
     @PostMapping("nickname")
     public String submitNickname(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                 @ModelAttribute NicknameForm form,
+                                 @Valid @ModelAttribute NicknameForm form,
+                                 BindingResult bindingResult,
                                  Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("nicknameError", bindingResult.getFieldError("nickname").getDefaultMessage());
+            return "auth/nickname";
+        }
+
         if (userService.existsByNickname(form.nickname())) {
             model.addAttribute("nicknameError", "이미 사용중인 닉네임입니다.");
             return "auth/nickname";
