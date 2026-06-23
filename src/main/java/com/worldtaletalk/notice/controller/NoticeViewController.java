@@ -20,7 +20,7 @@ public class NoticeViewController {
      *
      * @param page  페이지 번호 (1부터 시작)
      * @param model 뷰에 전달할 모델
-     * @return notice/list
+     * @return notice/list (공지 목록 페이지)
      */
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page, Model model) {
@@ -33,7 +33,7 @@ public class NoticeViewController {
      *
      * @param id    공지 PK
      * @param model 뷰에 전달할 모델
-     * @return notice/detail
+     * @return notice/detail (공지 상세 페이지)
      */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {

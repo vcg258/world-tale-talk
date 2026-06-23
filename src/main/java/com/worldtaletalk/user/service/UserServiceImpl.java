@@ -7,6 +7,10 @@ import com.worldtaletalk.user.mapper.UserMapper;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,21 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    /**
+     * 전체 회원 조회
+     *
+     * @param q      검색어
+     * @param status 회원 상태
+     * @param page   페이지
+     * @return 회원 목록
+     */
+    @Override
+    public Page<UserDTO> getUsers(String q, UserStatus status, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "updatedAt"));
+        Page<UserEntity> users = userRepository.findAllBySearch(q, status, pageable);
+        return users.map(userMapper::toDTO);
+    }
 
     /**
      * 유저 단건 조회

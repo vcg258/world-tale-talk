@@ -22,8 +22,8 @@ public class PersonaViewController {
      *
      * @param worldId   세계관 PK
      * @param personaId 페르소나 PK
-     * @param user      로그인 회원 정보
-     * @return redirect:/sessions/{sessionId}/play
+     * @param user      현재 로그인 유저
+     * @return redirect:/sessions/{sessionId}/play (플레이 화면)
      */
     @PostMapping("/{worldId}/personas/{personaId}/sessions")
     public String createSession(

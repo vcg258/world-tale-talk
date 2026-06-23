@@ -96,7 +96,7 @@ public class MypageController {
                     "errors", bindingResult.getFieldError("nickname").getDefaultMessage());
             return "redirect:/mypage/profile";
         }
-        userService.modifyNickname(user.getId(), form.nickname);
+        userService.modifyNickname(user.getId(), form.nickname());
         redirectAttributes.addFlashAttribute("message", "닉네임이 변경되었습니다");
         return "redirect:/mypage/profile";
     }
@@ -110,7 +110,7 @@ public class MypageController {
     @PostMapping("/withdraw")
     public String withdraw(@AuthenticationPrincipal AuthenticatedUser user) {
         userService.deleteUser(user.getId()); // TODO 시큐리티에서 GET /logout 허용 또는 POST /logout 리다이렉트 방식으로 처리 필요
-        return "redirect:/logout";
+        return "redirect:/auth/logout";
     }
 
     /**

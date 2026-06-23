@@ -59,13 +59,25 @@ public class PersonasServiceImpl implements PersonasService {
     }
 
     /**
+     * 해당 세계관 페르소나 전체 조회 (비활성 포함, 관리자용)
+     *
+     * @param worldId 세계관 PK
+     * @return 해당 세계관 페르소나 전체 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<PersonasDTO> getPersonasAllByWorldId(Long worldId) {
+        return personasMapper.toDTOList(personasRepository.findAllByWorldId(worldId));
+    }
+
+    /**
      * 페르소나 추가
      *
      * @param personasDTO 페르소나 정보
      */
     @Transactional
     @Override
-    public void addPersona(PersonasDTO personasDTO) {
+    public Long addPersona(PersonasDTO personasDTO) {
         WorldsEntity worldsEntity = worldsRepository.findById(personasDTO.getWorldId()).orElseThrow(() ->
                 new NoSuchElementException("해당 세계관은 존재하지 않음"));
         PersonasEntity persona = PersonasEntity.addPersona(
@@ -77,6 +89,7 @@ public class PersonasServiceImpl implements PersonasService {
         );
         PersonasEntity save = personasRepository.save(persona);
         log.info("페르소나 등록 : {}", save);
+        return save.getId();
     }
 
     /**

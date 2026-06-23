@@ -131,8 +131,8 @@ public class StoryViewController {
     @PostMapping("/{id}/complete")
     public String complete(@PathVariable Long id) {
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
-        storySessionsService.modifyStorySessionByStatus(id, SessionStatus.COMPLETED);
-        return "redirect:/worlds/" + storySession.getWorldId() + "/ratings?sessionId=" + id;
+        storySessionsService.modifyStorySessionByStatus(storySession.getId(), SessionStatus.COMPLETED);
+        return "redirect:/worlds/" + storySession.getWorldId() + "/ratings?sessionId=" + storySession.getId();
     }
 
     /**

@@ -51,4 +51,7 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
     // 관리자용 전체 세션 조회
     @Query("SELECT s FROM StorySessionsEntity s JOIN FETCH s.users JOIN FETCH s.worlds JOIN FETCH s.personas")
     List<StorySessionsEntity> findAllWithDetails();
+
+    // 세션 상태별 전체 개수 (통계용)
+    long countByStatus(SessionStatus status);
 }

@@ -29,11 +29,19 @@ public interface PersonasService {
     List<PersonasDTO> getPersonasByWorldId(Long worldId);
 
     /**
+     * 해당 세계관 페르소나 전체 조회 (비활성 포함, 관리자용)
+     *
+     * @param worldId 세계관 PK
+     * @return 해당 세계관 페르소나 전체 목록
+     */
+    List<PersonasDTO> getPersonasAllByWorldId(Long worldId);
+
+    /**
      * 페르소나 추가
      *
      * @param personasDTO 페르소나 정보
      */
-    void addPersona(PersonasDTO personasDTO);
+    Long addPersona(PersonasDTO personasDTO);
 
     /**
      * 페르소나 수정

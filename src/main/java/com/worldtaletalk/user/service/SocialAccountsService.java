@@ -3,6 +3,8 @@ package com.worldtaletalk.user.service;
 import com.worldtaletalk.user.domain.socialaccounts.SocialProvider;
 import com.worldtaletalk.user.dto.SocialAccountsDTO;
 
+import java.util.List;
+
 public interface SocialAccountsService {
 
     /**
@@ -13,6 +15,14 @@ public interface SocialAccountsService {
      * @return 소셜 계정 정보 (미연동시 null)
      */
     SocialAccountsDTO getSocialAccount(SocialProvider provider, String providerId);
+
+    /**
+     * 소셜 계정 목록 조회 (userId로 전체 조회)
+     *
+     * @param userId 회원 PK
+     * @return 소셜 계정 목록
+     */
+    List<SocialAccountsDTO> getSocialAccountsByUserId(Long userId);
 
     /**
      * 소셜 계정 연동 (OAuth2 최초 로그인시 소셜 계정 등록)

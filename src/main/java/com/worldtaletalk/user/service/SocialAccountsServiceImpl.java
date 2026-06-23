@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -34,6 +35,18 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
     public SocialAccountsDTO getSocialAccount(SocialProvider provider, String providerId) {
         return socialAccountsRepository.findByProviderAndProviderId(provider, providerId)
                 .map(socialAccountsMapper::toDTO).orElse(null);
+    }
+
+    /**
+     * 소셜 계정 조회 (userId로 단건 조회)
+     *
+     * @param userId 회원 PK
+     * @return 소셜 계정 정보
+     */
+    @Override
+    public List<SocialAccountsDTO> getSocialAccountsByUserId(Long userId) {
+        return socialAccountsRepository.findAllByUsersId(userId).stream()
+                .map(socialAccountsMapper::toDTO).toList();
     }
 
     /**

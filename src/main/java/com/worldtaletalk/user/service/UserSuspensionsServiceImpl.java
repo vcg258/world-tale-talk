@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -38,6 +39,19 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
     public Page<UserSuspensionsDTO> getUserSuspensions(Long userId, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "id"));
         return userSuspensionsRepository.findAllByUsersId(userId, pageable).map(userSuspensionsMapper::toDTO);
+    }
+
+    /**
+     * 특정 유저의 정지 이력 전체 조회 (관리자 상세 페이지용)
+     *
+     * @param userId 유저 PK
+     * @return 정지 이력 전체 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<UserSuspensionsDTO> getAllUserSuspensions(Long userId) {
+        return userSuspensionsRepository.findAllByUsersId(userId).stream()
+                .map(userSuspensionsMapper::toDTO).toList();
     }
 
     /**

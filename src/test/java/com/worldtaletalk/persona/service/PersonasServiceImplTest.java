@@ -30,7 +30,7 @@ class PersonasServiceImplTest {
                 .background("background")
                 .active(true)
                 .build();
-        personasService.addPersona(personasDTO);
+        log.info("{}", personasService.addPersona(personasDTO));
     }
 
     @Test

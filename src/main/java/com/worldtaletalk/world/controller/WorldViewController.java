@@ -30,7 +30,7 @@ public class WorldViewController {
      *
      * @param id    세계관 PK
      * @param model 뷰에 전달할 모델
-     * @return world/detail
+     * @return world/detail (세계관 상세 페이지)
      */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
@@ -43,7 +43,7 @@ public class WorldViewController {
      *
      * @param id    세계관 PK
      * @param model 뷰에 전달할 모델
-     * @return persona/list
+     * @return persona/list (페르소나 목록 페이지)
      */
     @GetMapping("/{id}/personas")
     public String personas(@PathVariable Long id, Model model) {

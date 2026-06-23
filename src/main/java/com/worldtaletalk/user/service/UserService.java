@@ -2,8 +2,18 @@ package com.worldtaletalk.user.service;
 
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
+import org.springframework.data.domain.Page;
 
 public interface UserService {
+
+    /**
+     * 전체 회원 조회
+     * @param q 검색어
+     * @param status 회원 상태
+     * @param page 페이지
+     * @return 회원 목록
+     */
+    Page<UserDTO> getUsers(String q, UserStatus status, int page);
 
     /**
      * 유저 단건 조회

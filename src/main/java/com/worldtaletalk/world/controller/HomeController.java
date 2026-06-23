@@ -21,7 +21,7 @@ public class HomeController {
      *
      * @param model 뷰에 전달할 모델
      * @param page  페이지 번호 (1부터 시작)
-     * @return home/index
+     * @return home/index (메인 페이지)
      */
     @GetMapping
     public String home(Model model, @RequestParam(defaultValue = "1") int page) {
@@ -35,7 +35,7 @@ public class HomeController {
      * H-02: 세계관 목록 화면 조회
      *
      * @param model 뷰에 전달할 모델
-     * @return world/list
+     * @return world/list (세계관 목록 페이지)
      */
     @GetMapping("/worlds")
     public String worlds(Model model) {
