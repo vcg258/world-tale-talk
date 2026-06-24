@@ -27,7 +27,7 @@ public class AdminItemController {
     private final ItemGradeConfigsService itemGradeConfigsService;
     private final ItemGradeProbabilitiesService itemGradeProbabilitiesService;
 
-    record GradeConfigForm(
+    private record GradeConfigForm(
             @NotNull(message = "스탯 합산 최대치를 입력해주세요.")
             @Positive(message = "스탯 합산 최대치는 양수여야 합니다.")
             Integer statSumMax,
@@ -43,7 +43,7 @@ public class AdminItemController {
             Boolean canNegative) {
     }
 
-    record ProbabilityForm(
+    private record ProbabilityForm(
             @NotNull(message = "확률을 입력해주세요.")
             @Min(value = 0, message = "확률은 0 이상이어야 합니다.")
             @Max(value = 100, message = "확률은 100 이하여야 합니다.")

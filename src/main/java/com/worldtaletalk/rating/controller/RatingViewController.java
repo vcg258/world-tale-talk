@@ -25,7 +25,7 @@ public class RatingViewController {
     private final WorldRatingsService worldRatingsService;
     private final WorldsService worldsService;
 
-    record RatingForm(
+    private record RatingForm(
             @NotNull(message = "해당 세션의 PK를 입력해주세요.")
             Long sessionId,
 

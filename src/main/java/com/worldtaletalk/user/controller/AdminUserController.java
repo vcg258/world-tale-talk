@@ -27,7 +27,7 @@ public class AdminUserController {
     private final UserSuspensionsService userSuspensionsService;
     private final SocialAccountsService socialAccountsService;
 
-    record SuspendForm(@NotBlank(message = "정지사유를 입력해주세요.") String reason) {
+    private record SuspendForm(@NotBlank(message = "정지사유를 입력해주세요.") String reason) {
     }
 
     /**

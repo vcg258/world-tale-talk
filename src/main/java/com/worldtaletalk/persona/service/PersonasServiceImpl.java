@@ -71,6 +71,18 @@ public class PersonasServiceImpl implements PersonasService {
     }
 
     /**
+     * 해당 세계관 페르소나 + 기본 스탯 포함 전체 조회
+     *
+     * @param worldId 세계관 PK
+     * @return 페르소나 + 기본 스텟 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<PersonasDTO> getPersonasByWorldIdWithBaseStats(Long worldId) {
+        return personasMapper.toDTOList(personasRepository.findAllByWorldIdWithBaseStats(worldId));
+    }
+
+    /**
      * 페르소나 추가
      *
      * @param personasDTO 페르소나 정보

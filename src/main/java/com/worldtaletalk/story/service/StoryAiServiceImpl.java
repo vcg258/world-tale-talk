@@ -11,7 +11,6 @@ import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -269,7 +268,7 @@ public class StoryAiServiceImpl implements StoryAiService {
         // 인벤토리
         String inventoryContext = buildInventoryContext(inventory);
 
-        SessionStatSnapshotsEntity snapshot = sessionStatSnapshotsRepository.findByIdWithStorySessions(sessionId)
+        SessionStatSnapshotsEntity snapshot = sessionStatSnapshotsRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
 
         // 스냅샷 + 아이템 보너스 합산 -> 유효 스탯 계산 (에필로그에서도 실제 체감 능력치 반영)

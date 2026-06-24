@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface SessionStatSnapshotsRepository extends JpaRepository<SessionStatSnapshotsEntity, Long> {
     @Query("SELECT s FROM SessionStatSnapshotsEntity s WHERE s.storySession.id = :sessionId")
-    Optional<SessionStatSnapshotsEntity> findByIdWithStorySessions(@Param("sessionId") Long sessionId);
+    Optional<SessionStatSnapshotsEntity> findBySessionId(@Param("sessionId") Long sessionId);
 }

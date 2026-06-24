@@ -92,8 +92,11 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
         );
 
         user.changeStatus(UserStatus.SUSPENDED);
-        UserSuspensionsEntity save = userSuspensionsRepository.save(userSuspension);
-        log.info("유저 정지 처리 완료 : {}", save);
+        UserEntity userSaved = userRepository.save(user);
+        log.info("해당 유저 계정 정지 상태로 변경 : {}", userSaved);
+
+        UserSuspensionsEntity userSuspensionSaved = userSuspensionsRepository.save(userSuspension);
+        log.info("유저 정지 처리 완료 : {}", userSuspensionSaved);
     }
 
     /**
@@ -111,7 +114,10 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
         }
         userSuspension.modifyUnstoppableTime();
         userSuspension.getUsers().changeStatus(UserStatus.ACTIVE);
-        UserSuspensionsEntity save = userSuspensionsRepository.save(userSuspension);
-        log.info("회원 정지 해제 완료 : {}", save);
+        UserEntity userSaved = userRepository.save(userSuspension.getUsers());
+        log.info("회원 상태 변경 : {}", userSaved);
+
+        UserSuspensionsEntity userSuspensionSaved = userSuspensionsRepository.save(userSuspension);
+        log.info("회원 정지 해제 완료 : {}", userSuspensionSaved);
     }
 }

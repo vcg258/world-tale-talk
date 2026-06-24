@@ -23,6 +23,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     // 닉네임으로 조회
     Optional<UserEntity> findByNickname(String nickname);
 
-    @Query("SELECT u FROM UserEntity u WHERE (:q IS NULL OR u.nickname LIKE :q) AND (u.status IS NULL OR u.status = :userStatus)")
+    @Query("SELECT u FROM UserEntity u WHERE (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%')) AND (:userStatus IS NULL OR u.status = :userStatus)")
     Page<UserEntity> findAllBySearch(@Param("q") String q, @Param("userStatus") UserStatus userStatus, Pageable pageable);
 }

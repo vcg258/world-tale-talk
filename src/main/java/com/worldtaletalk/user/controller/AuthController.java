@@ -23,7 +23,7 @@ public class AuthController {
     private final UserService userService;
     private final UserSuspensionsService userSuspensionsService;
 
-    record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {
+    private record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {
     }
 
     /**

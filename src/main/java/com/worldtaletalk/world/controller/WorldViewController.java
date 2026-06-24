@@ -2,7 +2,6 @@ package com.worldtaletalk.world.controller;
 
 import com.worldtaletalk.persona.dto.PersonasBaseStatsDTO;
 import com.worldtaletalk.persona.dto.PersonasDTO;
-import com.worldtaletalk.persona.service.PersonasBaseStatsService;
 import com.worldtaletalk.persona.service.PersonasService;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +20,8 @@ public class WorldViewController {
 
     private final WorldsService worldsService;
     private final PersonasService personasService;
-    private final PersonasBaseStatsService personasBaseStatsService;
 
-    record PersonaListItemVM(PersonasDTO persona, PersonasBaseStatsDTO baseStats) {}
+    private record PersonaListItemVM(PersonasDTO persona, PersonasBaseStatsDTO baseStats) {}
 
     /**
      * W-01: 세계관 상세 조회
@@ -47,11 +45,8 @@ public class WorldViewController {
      */
     @GetMapping("/{id}/personas")
     public String personas(@PathVariable Long id, Model model) {
-        List<PersonaListItemVM> personas = personasService.getPersonasByWorldId(id).stream()
-                .map(persona -> new PersonaListItemVM(
-                        persona,
-                        personasBaseStatsService.getPersonasBaseStatsByPersonaId(persona.getId())
-                )).toList();
+        List<PersonaListItemVM> personas = personasService.getPersonasByWorldIdWithBaseStats(id).stream()
+                .map(persona -> new PersonaListItemVM(persona, persona.getBaseStats())).toList();
         model.addAttribute("world", worldsService.getWorldById(id));
         model.addAttribute("personas", personas);
         return "persona/list";

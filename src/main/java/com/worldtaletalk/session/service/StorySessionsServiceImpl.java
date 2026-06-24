@@ -54,6 +54,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * @param page 페이지
      * @return 세션 목록
      */
+    @Transactional(readOnly = true)
     @Override
     public Page<StorySessionsDTO> getSessions(Long userId, Long worldId, SessionStatus status, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -120,7 +121,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
         WorldsEntity worldSave = worldsRepository.save(world);
         log.info("해당 세계관 플레이수 ++후 전체 값 : {}", worldSave.getPlayCount());
 
-        return storySessions.getId();
+        return sessionSave.getId();
     }
 
     /**

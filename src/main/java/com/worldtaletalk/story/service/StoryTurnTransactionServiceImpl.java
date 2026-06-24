@@ -68,6 +68,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
         // 이 메서드에 진입을 했다는건 다음 턴이라는 뜻 (턴수 ++ 처리)
         state.turnUp();
+        storySessionsRepository.save(state);
 
         // 선택지를 선택 했을 경우 레디스에서 스텟변화량 정보 꺼내옴
         Map<String, Integer> appliedStates = null;
@@ -138,6 +139,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
         return TurnProcessResult.builder()
                 .session(latestSession)
+                .story(llmTurnResult.getStory())
+                .choices(turnProcessResult.getEndingType() != null ? null : llmTurnResult.getChoices()) // 엔딩일경우 선택지 없음 항상 null
                 .createdItem(turnProcessResult.getCreatedItem())
                 .removedItemId(turnProcessResult.getRemovedItemId())
                 .endingType(turnProcessResult.getEndingType())
@@ -155,7 +158,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     @Transactional
     @Override
     public void compensateTurn(Long sessionId, SessionStatLogsDTO appliedStateLog) {
-        StorySessionsEntity state = storySessionsRepository.findById(sessionId).orElseThrow(() ->
+        StorySessionsEntity state = storySessionsRepository.findByState(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
 
         // 증가했던 턴 원상 복구
@@ -165,6 +168,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         if (appliedStateLog != null) {
             sessionStatsService.deleteStatLog(appliedStateLog.getId());
         }
+
+        storySessionsRepository.save(state);
         log.warn("LLM 호출 실패 보상 처리 완료 sessionId : {}", sessionId);
     }
 
@@ -375,7 +380,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         SessionItemsDTO sessionItemsDTO = null;
         Long removeItemId = null;
 
-        if (llmTurnResult.getItemEvent() != null && llmTurnResult.getItemEvent().getType() != ItemEventType.NULL) {
+        if (llmTurnResult.getItemEvent() != null) {
             ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO);
             log.info("아이템 이벤트 type : {}, 힌트 : {}, 확정 등급 : {}",
                     llmTurnResult.getItemEvent().getType(), llmTurnResult.getItemEvent().getItemContext(), itemGrade);

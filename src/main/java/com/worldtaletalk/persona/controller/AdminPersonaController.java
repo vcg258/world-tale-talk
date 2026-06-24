@@ -26,7 +26,7 @@ public class AdminPersonaController {
     private final PersonasBaseStatsService personasBaseStatsService;
     private final WorldsService worldsService;
 
-    record PersonaForm(
+    private record PersonaForm(
             @NotNull
             Long worldId,
 

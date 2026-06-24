@@ -30,7 +30,7 @@ public class StoryViewController {
     private final SessionItemsService sessionItemsService;
     private final SessionStatsService sessionStatsService;
 
-    record CurrentStatsVM(
+    private record CurrentStatsVM(
             int wisdom,
             int strength,
             int agility,

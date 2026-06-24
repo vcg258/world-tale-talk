@@ -22,6 +22,11 @@ class PersonasServiceImplTest {
     }
 
     @Test
+    void getPersonasByWorldIdWithBaseStats() {
+        personasService.getPersonasByWorldIdWithBaseStats(1L).forEach(dto -> log.info("{}", dto));
+    }
+
+    @Test
     void addPersona() {
         PersonasDTO personasDTO = PersonasDTO.builder()
                 .worldId(1L)

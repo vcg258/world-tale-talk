@@ -24,7 +24,7 @@ public class AdminWorldController {
 
     private final WorldsService worldsService;
 
-    record WorldForm(
+    private record WorldForm(
             @NotBlank(message = "세계관 이름을 입력해주세요")
             @Size(max = 50, message = "세계관 이름을 50자 이내로 입력해주세요.")
             String name,

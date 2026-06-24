@@ -31,7 +31,6 @@ class WorldViewControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private WorldsService worldsService;
     @MockitoBean private PersonasService personasService;
-    @MockitoBean private PersonasBaseStatsService personasBaseStatsService;
     @MockitoBean private UserService userService;
 
     @Test
@@ -52,10 +51,9 @@ class WorldViewControllerTest {
     @WithMockUser
     void personas() throws Exception {
         given(worldsService.getWorldById(1L)).willReturn(WorldsDTO.builder().id(1L).build());
-        given(personasService.getPersonasByWorldId(1L)).willReturn(
-                List.of(PersonasDTO.builder().id(1L).build())
+        given(personasService.getPersonasByWorldIdWithBaseStats(1L)).willReturn(
+                List.of(PersonasDTO.builder().id(1L).baseStats(null).build())
         );
-        given(personasBaseStatsService.getPersonasBaseStatsByPersonaId(1L)).willReturn(null);
 
         mockMvc.perform(get(PERSONAS, 1L))
                 .andExpect(status().isOk())
@@ -64,7 +62,6 @@ class WorldViewControllerTest {
                 .andExpect(model().attributeExists("personas"))
                 .andDo(print());
 
-        then(personasService).should().getPersonasByWorldId(eq(1L));
-        then(personasBaseStatsService).should().getPersonasBaseStatsByPersonaId(eq(1L));
+        then(personasService).should().getPersonasByWorldIdWithBaseStats(eq(1L));
     }
 }

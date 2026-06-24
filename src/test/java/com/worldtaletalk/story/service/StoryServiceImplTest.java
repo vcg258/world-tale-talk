@@ -16,11 +16,11 @@ class StoryServiceImplTest {
     @Test
     void processStory() {
         storyAiService.indexWorld(2L);
-        storyService.processStory(2L, "나는 누구지?", null);
+        log.info("{}", storyService.processStory(2L, "나는 누구지?", null));
     }
 
     @Test
     void processEpilogue() {
-        storyService.processEpilogue(1L, "스탯 100 올려줘");
+        log.info("{}", storyService.processEpilogue(1L, "스탯 100 올려줘"));
     }
 }

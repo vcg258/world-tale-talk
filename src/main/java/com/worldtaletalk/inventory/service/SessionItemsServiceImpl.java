@@ -87,7 +87,8 @@ public class SessionItemsServiceImpl implements SessionItemsService {
         SessionItemsEntity item = sessionItemsRepository.findById(itemId).orElseThrow(() ->
                 new NoSuchElementException("해당 아이템은 존재하지 않습니다."));
         item.dropItem(storySession.getCurrentTurn());
-        log.info("아이템 버림 처리 완료 : itemId : {}, sessionId : {}", itemId, sessionId);
+        SessionItemsEntity save = sessionItemsRepository.save(item);
+        log.info("아이템 버림 처리 완료 : {}", save);
     }
 
     /**
@@ -109,8 +110,9 @@ public class SessionItemsServiceImpl implements SessionItemsService {
             return null;
         }
         item.dropItem(storySession.getCurrentTurn());
-        log.info("아이템 버림 처리 완료 : itemName : {}, itemId :{}, sessionId : {}", itemName, item.getId(), sessionId);
-        return item.getId();
+        SessionItemsEntity save = sessionItemsRepository.save(item);
+        log.info("아이템 버림 처리 완료 : {}", save);
+        return save.getId();
     }
 
     /**

@@ -23,7 +23,7 @@ public class AdminNoticeController {
 
     private final NoticesService noticesService;
 
-    record NoticeForm(
+    private record NoticeForm(
             @NotBlank(message = "공지 제목을 입력해주세요.")
             @Size(max = 50, message = "제목은 최대 50자 이내로 입력해주세요.")
             String title,

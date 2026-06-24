@@ -154,7 +154,7 @@ public class SessionStatsServiceImpl implements SessionStatsService {
     @Transactional(readOnly = true)
     @Override
     public SessionStatSnapshotsDTO getSnapshot(Long sessionId) {
-        return sessionStatSnapshotsRepository.findByIdWithStorySessions(sessionId).map(sessionStatSnapshotsMapper::toDTO)
+        return sessionStatSnapshotsRepository.findBySessionId(sessionId).map(sessionStatSnapshotsMapper::toDTO)
                 .orElseThrow(() -> new NoSuchElementException("해당 스냅샷은 존재 하지 않습니다."));
     }
 
@@ -179,7 +179,7 @@ public class SessionStatsServiceImpl implements SessionStatsService {
     @Transactional
     @Override
     public void modifySummary(Long sessionId, String summary) {
-        SessionStatSnapshotsEntity sessionStatSnapshot = sessionStatSnapshotsRepository.findByIdWithStorySessions(sessionId)
+        SessionStatSnapshotsEntity sessionStatSnapshot = sessionStatSnapshotsRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new NoSuchElementException("해당 스냅샷은 존재 하지 않습니다."));
         sessionStatSnapshot.modifySnapshotSummary(summary);
         sessionStatSnapshotsRepository.save(sessionStatSnapshot);

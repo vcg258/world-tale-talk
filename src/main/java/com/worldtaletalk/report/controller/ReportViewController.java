@@ -23,7 +23,7 @@ public class ReportViewController {
 
     private final ReportsService reportsService;
 
-    record ReportForm(
+    private record ReportForm(
             @NotNull(message = "신고할 타입을 선택해주세요.")
             ReportTargetType targetType,
 

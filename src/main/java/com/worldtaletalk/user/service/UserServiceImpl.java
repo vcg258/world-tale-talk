@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
      * @param page   페이지
      * @return 회원 목록
      */
+    @Transactional(readOnly = true)
     @Override
     public Page<UserDTO> getUsers(String q, UserStatus status, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "updatedAt"));

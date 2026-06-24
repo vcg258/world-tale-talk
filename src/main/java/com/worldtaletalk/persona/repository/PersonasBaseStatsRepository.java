@@ -18,4 +18,6 @@ public interface PersonasBaseStatsRepository extends JpaRepository<PersonasBaseS
                 (SELECT s.personas.id FROM StorySessionsEntity s WHERE s.id = :sessionId)
     """)
     Optional<PersonasBaseStatsEntity> findBySessionId(@Param("sessionId") Long sessionId);
+
+
 }

@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 // 서버 턴 처리 결과 (서버 내부 전용 - 클라이언트 직접 노출 없음)
 @Getter
 @Builder
@@ -22,4 +24,6 @@ public class TurnProcessResult {
     private Long removedItemId; // 소실된 아이템 PK (null = 없음)
     private EndingType endingType; // 서버 판별 엔딩 유형 (null = 없음)
     private SessionStatSnapshotsDTO snapshot; // 엔딩 시점 스탯 스냅샷 (null = 없음)
+    private String story; // LLM 생성 소설 본문
+    private List<String> choices; // 선택지 3가지 (null = 엔딩 도달)
 }

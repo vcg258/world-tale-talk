@@ -7,9 +7,10 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PersonasBaseStatsMapper.class)
 public interface PersonasMapper {
     @Mapping(source = "world.id", target = "worldId")
+    @Mapping(source = "personaBaseStats", target = "baseStats")
     PersonasDTO toDTO(PersonasEntity personasEntity);
     List<PersonasDTO> toDTOList(List<PersonasEntity> personasEntity);
 }

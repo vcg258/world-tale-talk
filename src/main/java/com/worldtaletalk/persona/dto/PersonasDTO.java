@@ -17,4 +17,6 @@ public class PersonasDTO{
     private Boolean active; // 활성화 여부 (True 활성화)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private PersonasBaseStatsDTO baseStats; // 페르소나 기본 스탯 사용안하면 null (FETCH JOIN)
 }

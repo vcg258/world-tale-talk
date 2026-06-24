@@ -30,9 +30,9 @@ public class MypageController {
     private final StorySessionsService storySessionsService;
     private final WorldRatingsService worldRatingsService;
 
-    record ProfileForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
+    private record ProfileForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
 
-    record StorySessionListItemVM(
+    private record StorySessionListItemVM(
             Long id,
             String worldName,
             String personaName,
