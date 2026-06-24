@@ -15,7 +15,7 @@ class WorldRatingsServiceImplTest {
 
     @Test
     void getWorldRatings() {
-        worldRatingsService.getWorldRatings(1L, 1).forEach(dto -> log.info("{}", dto));
+        worldRatingsService.getWorldRatings(1L, "관리자",1).forEach(dto -> log.info("{}", dto));
     }
 
     @Test

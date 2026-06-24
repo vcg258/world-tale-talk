@@ -20,14 +20,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, OAuth2SuccessHandler oAuth2SuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/", // 메인 화면
-                                "/auth/login", // 로그인
-                                "/auth/nickname", // 닉네임 설정
-                                "/auth/suspended", // 정지 안내
-                                "/css/**", "/js/**", "/images/**"
-                        ).permitAll()
-                        .anyRequest().authenticated() // 그 외 모든 요청 인증 필요
+//                        .requestMatchers(
+//                                "/", // 메인 화면
+//                                "/auth/login", // 로그인
+//                                "/auth/nickname", // 닉네임 설정
+//                                "/auth/suspended", // 정지 안내
+//                                "/css/**", "/js/**", "/images/**"
+//                        ).permitAll()
+//                        .anyRequest().authenticated() // 그 외 모든 요청 인증 필요
+                            .anyRequest().permitAll() // TODO 임시로 열어둠
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/auth/login")

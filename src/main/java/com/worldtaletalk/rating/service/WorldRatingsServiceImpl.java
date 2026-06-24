@@ -37,13 +37,14 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
      * 세계관 별점 목록 조회 (페이징)
      *
      * @param worldId 세계관 PK
+     * @param nickname 회원 닉네임
      * @return 해당 세계관의 별점 목록
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<WorldRatingsDTO> getWorldRatings(Long worldId, int page) {
+    public Page<WorldRatingsDTO> getWorldRatings(Long worldId, String nickname, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<WorldRatingsEntity> worldRating = worldRatingsRepository.findAllByWorldId(worldId, pageable);
+        Page<WorldRatingsEntity> worldRating = worldRatingsRepository.findAllByWorldIdAndNickname(worldId, nickname, pageable);
         return worldRating.map(worldRatingsMapper::toDTO);
     }
 

@@ -11,9 +11,20 @@ public interface StorySessionsService {
     /**
      * 세션 여러건 조회 (관리자용)
      *
-     * @return 세션s
+     * @return 세션 목록
      */
     List<StorySessionsDTO> getStorySessions();
+
+    /**
+     * 세션 여러건 조회 (필터 적용)
+     *
+     * @param userId 회원 PK
+     * @param worldId 세계관 PK
+     * @param status 해당 세션 상태
+     * @param page 페이지
+     * @return 세션 목록
+     */
+    Page<StorySessionsDTO> getSessions(Long userId, Long worldId, SessionStatus status, int page);
 
     /**
      * 세션 단건 조회

@@ -16,16 +16,37 @@ public interface WorldRatingsRepository extends JpaRepository<WorldRatingsEntity
 
     // 세계관 평균 평점 계산 (COALESCE로 null일경우 0.0으로 계산)
     @Query("""
-        SELECT COALESCE(AVG(r.score), 0.0) FROM WorldRatingsEntity r
-                WHERE r.world.id = :worldId
-        """)
+            SELECT COALESCE(AVG(r.score), 0.0) FROM WorldRatingsEntity r
+                    WHERE r.world.id = :worldId
+            """)
     double findAverageScoreByWorldId(@Param("worldId") Long worldId);
 
     // 해당 유저의 세계관 별점 및 리뷰 전체 조회 (페이징)
     @Query(value = "SELECT w FROM WorldRatingsEntity w JOIN FETCH w.world WHERE w.users.id = :userId",
-           countQuery = "SELECT COUNT(w) FROM WorldRatingsEntity w WHERE w.users.id = :userId")
+            countQuery = "SELECT COUNT(w) FROM WorldRatingsEntity w WHERE w.users.id = :userId")
     Page<WorldRatingsEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     // 해당 세계관에 회원이 남긴 별점 및 리뷰 조회
     Optional<WorldRatingsEntity> findByUsersIdAndWorldId(Long userId, Long worldId);
+
+    // 별점 및 리뷰 전체 조회 (관리자용) (필터 조건)
+    @Query(value = """
+            SELECT w FROM WorldRatingsEntity w
+                JOIN FETCH w.users
+                    JOIN FETCH w.world
+                        WHERE (:worldId IS NULL OR w.world.id = :worldId)
+                            AND (:nickname IS NULL OR w.users.nickname = :nickname)
+            """,
+            countQuery = """
+                    SELECT COUNT(w) FROM WorldRatingsEntity w
+                        JOIN w.users
+                            JOIN w.world
+                                WHERE (:worldId IS NULL OR w.world.id = :worldId)
+                                    AND (:nickname IS NULL OR w.users.nickname = :nickname)
+                    """)
+    Page<WorldRatingsEntity> findAllByWorldIdAndNickname(
+            @Param("worldId") Long worldId,
+            @Param("nickname") String nickname,
+            Pageable pageable
+    );
 }

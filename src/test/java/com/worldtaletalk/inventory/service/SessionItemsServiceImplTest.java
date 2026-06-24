@@ -20,7 +20,7 @@ class SessionItemsServiceImplTest {
 
     @Test
     void dropItem() {
-        sessionItemsService.dropItem(2L, "검", 10);
+        sessionItemsService.dropItem(2L,  10L);
     }
 
     @Test

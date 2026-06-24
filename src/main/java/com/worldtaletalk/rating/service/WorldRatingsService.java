@@ -9,9 +9,10 @@ public interface WorldRatingsService {
      * 세계관 별점 목록 조회 (페이징)
      *
      * @param worldId 세계관 PK
+     * @param nickname 회원 닉네임
      * @return 해당 세계관의 별점 목록
      */
-    Page<WorldRatingsDTO> getWorldRatings(Long worldId, int page);
+    Page<WorldRatingsDTO> getWorldRatings(Long worldId, String nickname, int page);
 
     /**
      * 세계관 별점 단건 조회 (수정 폼 진입할때 필요함)

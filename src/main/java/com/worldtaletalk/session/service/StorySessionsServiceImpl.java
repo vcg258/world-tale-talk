@@ -46,6 +46,22 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     }
 
     /**
+     * 세션 여러건 조회 (필터 적용)
+     *
+     * @param userId 회원 PK
+     * @param worldId 세계관 PK
+     * @param status 해당 세션 상태
+     * @param page 페이지
+     * @return 세션 목록
+     */
+    @Override
+    public Page<StorySessionsDTO> getSessions(Long userId, Long worldId, SessionStatus status, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<StorySessionsEntity> entities = storySessionsRepository.findAllByIdWithWorldIdAndStatus(userId, worldId, status, pageable);
+        return entities.map(storySessionsMapper::toDTO);
+    }
+
+    /**
      * 세션 단건 조회
      *
      * @param id PK

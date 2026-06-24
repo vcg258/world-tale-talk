@@ -26,12 +26,12 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
 
     // 해당 세계관의 완결 횟수
     @Query("""
-        SELECT COUNT(s) FROM StorySessionsEntity s
-            WHERE s.users.id = :userId
-                AND s.worlds.id = :worldId
-                    AND s.status = 'COMPLETED'
-                        AND s.id <= :sessionId
-    """)
+                SELECT COUNT(s) FROM StorySessionsEntity s
+                    WHERE s.users.id = :userId
+                        AND s.worlds.id = :worldId
+                            AND s.status = 'COMPLETED'
+                                AND s.id <= :sessionId
+            """)
     int countPlayNumber(
             @Param("userId") Long userId,
             @Param("worldId") Long worldId,
@@ -45,7 +45,7 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
                                 JOIN FETCH s.personas
                                     WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)
             """,
-           countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)")
+            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)")
     Page<StorySessionsEntity> findAllByUserId(@Param("userId") Long userId, @Param("status") SessionStatus status, Pageable pageable);
 
     // 관리자용 전체 세션 조회
@@ -54,4 +54,26 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
 
     // 세션 상태별 전체 개수 (통계용)
     long countByStatus(SessionStatus status);
+
+    // 세션 전체 조회 (관리자용) (필터 조건)
+    @Query(value = """
+            SELECT s FROM StorySessionsEntity s
+                JOIN FETCH s.users
+                    JOIN FETCH s.worlds
+                        WHERE (:userId IS NULL OR s.users.id = :userId)
+                            AND (:worldId IS NULL OR s.worlds.id = :worldId)
+                                AND (:status IS NULL OR s.status = :status)
+            """,
+            countQuery = """
+            SELECT COUNT(s) FROM StorySessionsEntity s
+                WHERE (:userId IS NULL OR s.users.id = :userId)
+                    AND (:worldId IS NULL OR s.worlds.id = :worldId)
+                        AND (:status IS NULL OR s.status = :status)
+            """)
+    Page<StorySessionsEntity> findAllByIdWithWorldIdAndStatus(
+            @Param("userId") Long userId,
+            @Param("worldId") Long worldId,
+            @Param("status") SessionStatus status,
+            Pageable pageable
+    );
 }
