@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.stream.Collectors;
+
 @Slf4j
 @SpringBootTest
 class StoryAiServiceImplTest {
@@ -16,17 +18,31 @@ class StoryAiServiceImplTest {
     }
 
     @Test
-    void generateStory() {
-        storyAiService.generateStory(2L, "반갑다");
+    void streamNarrative() {
+        String narrative = storyAiService.streamNarrative(2L, "반갑다")
+                .collect(Collectors.joining())
+                .block();
+        log.info("{}", narrative);
     }
 
     @Test
-    void generateEpilogue() {
-        log.info(storyAiService.generateEpilogue(1L, "하이"));
+    void generateMetadata() {
+        String narrative = storyAiService.streamNarrative(2L, "반갑다")
+                .collect(Collectors.joining())
+                .block();
+        log.info("{}", storyAiService.generateMetadata(2L, "반갑다", narrative));
     }
 
     @Test
-    void modifyMainSammary() {
+    void streamEpilogue() {
+        String result = storyAiService.streamEpilogue(1L, "하이")
+                .collect(Collectors.joining())
+                .block();
+        log.info("{}", result);
+    }
+
+    @Test
+    void modifyMainSummary() {
         storyAiService.modifyMainSummary(1L);
     }
 }

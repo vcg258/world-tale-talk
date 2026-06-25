@@ -28,8 +28,8 @@ class StorySessionsServiceImplTest {
     @Test
     void createStorySession() {
         StorySessionsDTO storySessionsDTO = StorySessionsDTO.builder()
-                .userId(1L)
-                .worldId(1L)
+                .userId(2L)
+                .worldId(2L)
                 .personaId(1L)
                 .build();
 

@@ -105,6 +105,37 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     public TurnProcessResult completeTurn(Long sessionId, Integer choiceNumber, SessionStatLogsDTO appliedStateLog, LlmTurnResult llmTurnResult) {
         StorySessionsEntity state = storySessionsRepository.findByState(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 존재 하지 않습니다."));
+        WorldsEntity worlds = worldsRepository.findById(state.getWorlds().getId()).orElseThrow(() ->
+                new NoSuchElementException("해당 세계관은 존재하지 않습니다."));
+
+        // 지정된 targetTurn에는 무조건적으로 엔딩 처리
+        boolean forcedEnding = state.getCurrentTurn() >= worlds.getTargetTurn();
+        if (forcedEnding && !llmTurnResult.isEndingFlag()) {
+            log.info("targetTurn 도달로 강제 엔딩 처리 sessionId: {}, turn: {}/{}",
+                    sessionId, state.getCurrentTurn(), worlds.getTargetTurn());
+            llmTurnResult = LlmTurnResult.builder()
+                    .story(llmTurnResult.getStory())
+                    .choices(llmTurnResult.getChoices())
+                    .statChanges(llmTurnResult.getStatChanges())
+                    .statChangesByChoice(llmTurnResult.getStatChangesByChoice())
+                    .itemEvent(llmTurnResult.getItemEvent())
+                    .endingFlag(true)
+                    .hiddenEventFlag(llmTurnResult.isHiddenEventFlag())
+                    .build();
+        }
+
+        // 회원이 프롬프트로 스토리 외의 질문을 할시 turn++ 롤백을 위한 조건문
+        boolean isNullAction = (llmTurnResult.getChoices() == null || llmTurnResult.getChoices().isEmpty())
+                && (llmTurnResult.getStatChanges() == null || llmTurnResult.getStatChanges().isEmpty())
+                && !llmTurnResult.isEndingFlag();
+        if (isNullAction) {
+            compensateTurn(sessionId, appliedStateLog);
+            return TurnProcessResult.builder()
+                    .session(storySessionsMapper.toDTO(state))
+                    .story(llmTurnResult.getStory())
+                    .choices(List.of())
+                    .build();
+        }
 
         // 자유 입력시 LLM이 평가한 스텟을 서버 검증후 로그 저장 (응답에서 나오므로 사후 저장)
         if (choiceNumber == null) {
@@ -143,6 +174,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                 .choices(turnProcessResult.getEndingType() != null ? null : llmTurnResult.getChoices()) // 엔딩일경우 선택지 없음 항상 null
                 .createdItem(turnProcessResult.getCreatedItem())
                 .removedItemId(turnProcessResult.getRemovedItemId())
+                .removedItemName(turnProcessResult.getRemovedItemName())
                 .endingType(turnProcessResult.getEndingType())
                 .snapshot(sessionStatSnapshotsDTO)
                 .appliedStatLog(appliedStateLog)
@@ -379,6 +411,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         // 아이템 처리 로직
         SessionItemsDTO sessionItemsDTO = null;
         Long removeItemId = null;
+        String removeItemName = null;
 
         if (llmTurnResult.getItemEvent() != null) {
             ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO);
@@ -403,7 +436,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                         llmTurnResult.getItemEvent().getItemName()
                 );
                 if (removeItemId != null) {
-                    log.info("아이템 소실 itemId : {}, itemName : {}", removeItemId, llmTurnResult.getItemEvent().getItemName());
+                    removeItemName = llmTurnResult.getItemEvent().getItemName();
+                    log.info("아이템 소실 itemId : {}, itemName : {}", removeItemId, removeItemName);
                 } else {
                     log.warn("아이템 소실 실패 (보유하지 않은 아이템) itemName : {}", llmTurnResult.getItemEvent().getItemName());
                 }
@@ -422,6 +456,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                 .session(storySessionsDTO)
                 .createdItem(sessionItemsDTO)
                 .removedItemId(removeItemId)
+                .removedItemName(removeItemName)
                 .endingType(endingType)
                 .build();
     }

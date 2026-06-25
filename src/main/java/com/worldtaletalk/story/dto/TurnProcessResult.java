@@ -22,6 +22,7 @@ public class TurnProcessResult {
     private SessionStatLogsDTO appliedStatLog; // 적용된 스탯 변화 로그
     private SessionItemsDTO createdItem; // 생성된 아이템 (null = 없음)
     private Long removedItemId; // 소실된 아이템 PK (null = 없음)
+    private String removedItemName; // 소실된 아이템 이름 (null = 없음)
     private EndingType endingType; // 서버 판별 엔딩 유형 (null = 없음)
     private SessionStatSnapshotsDTO snapshot; // 엔딩 시점 스탯 스냅샷 (null = 없음)
     private String story; // LLM 생성 소설 본문
