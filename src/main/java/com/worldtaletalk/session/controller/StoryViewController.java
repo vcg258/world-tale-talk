@@ -7,6 +7,8 @@ import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.stat.service.SessionStatsService;
+import com.worldtaletalk.story.cache.StoryCacheService;
+import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,7 @@ public class StoryViewController {
     private final ChatMessagesService chatMessagesService;
     private final SessionItemsService sessionItemsService;
     private final SessionStatsService sessionStatsService;
+    private final StoryCacheService storyCacheService;
 
     // 플레이 화면 스탯 뷰 모델 - 5가지 스탯 수치를 묶어 Thymeleaf에 전달하는 레코드
     private record CurrentStatsVM(
@@ -50,6 +53,13 @@ public class StoryViewController {
     public String play(@PathVariable Long id, Model model) {
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         Map<String, Integer> stats = sessionStatsService.getCurrentStats(id);
+        PlayStateCacheDTO playState = storyCacheService.getPlayState(id);
+        if (playState != null) {
+            model.addAttribute("currentStory", playState.getCurrentStory());
+            model.addAttribute("choices", playState.getChoices());
+            model.addAttribute("progressPercent", playState.getProgressPercent());
+        }
+
 
         model.addAttribute("session", storySession);
         model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
@@ -87,11 +97,12 @@ public class StoryViewController {
      */
     @GetMapping("/{id}/ending")
     public String ending(@PathVariable Long id, Model model) {
-        // TODO endingStory LLM이 채워주는 메인 스토리 요약 String값은 레디스로 넘겨줄 예정 WebSocket 구현후 추가
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         model.addAttribute("session", storySession);
         model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
-        model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
+        model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId())
+        );
+        model.addAttribute("endingStory", storyCacheService.getEndingStory(id));
         return "story/ending";
     }
 

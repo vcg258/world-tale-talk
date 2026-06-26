@@ -48,9 +48,17 @@ public interface StoryAiService {
     Flux<String> streamEpilogue(Long sessionId, String userInput);
 
     /**
+     * 메인 스토리 요약 지정 턴마다 갱신
+     *
+     * @param sessionId 세션 PK
+     * @return 메인 스토리 요약
+     */
+    String generateRunningSummary(Long sessionId);
+
+    /**
      * 엔딩 이후 메인스토리 요약
      *
-     * @param sessionId 세션PK
+     * @param sessionId 세션 PK
      * @return 메인스토리 요약
      */
     String modifyMainSummary(Long sessionId);

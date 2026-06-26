@@ -27,4 +27,5 @@ public class TurnProcessResult {
     private SessionStatSnapshotsDTO snapshot; // 엔딩 시점 스탯 스냅샷 (null = 없음)
     private String story; // LLM 생성 소설 본문
     private List<String> choices; // 선택지 3가지 (null = 엔딩 도달)
+    private int progressPercent; // 진행도 %
 }

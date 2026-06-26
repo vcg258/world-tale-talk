@@ -1,7 +1,9 @@
 package com.worldtaletalk.story.service;
 
+import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.stat.dto.SessionStatLogsDTO;
 import com.worldtaletalk.stat.service.SessionStatsService;
+import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
 import com.worldtaletalk.story.dto.TurnProcessResult;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ public class StoryServiceImpl implements StoryService {
     private final StoryAiService storyAiService;
     private final StoryTurnTransactionService storyTurnTransactionService;
     private final SessionStatsService sessionStatsService;
+    private final StoryCacheService storyCacheService;
+    private final StorySessionsService storySessionsService;
 
     /**
      * 메인 스토리 스트리밍 처리
@@ -66,6 +70,13 @@ public class StoryServiceImpl implements StoryService {
                                     String summary = storyAiService.modifyMainSummary(sessionId);
                                     sessionStatsService.modifySummary(sessionId, summary);
                                     log.info("메인스토리 요약 저장 완료 sessionId: {}", sessionId);
+                                }
+                                // 지정 턴 마다 스토리 요약본 갱신 TODO 현재는 5턴으로 지정해놓으면 필요하면 수정
+                                if (result.getEndingType() == null && result.getSession().getCurrentTurn() % 5 == 0) {
+                                    String runningSummary = storyAiService.generateRunningSummary(sessionId);
+                                    storySessionsService.modifyRunningSummary(sessionId, runningSummary);
+                                    storyCacheService.saveRunningSummary(sessionId, runningSummary);
+                                    log.info("런닝 요약 갱신 sessionId: {}, turn: {}", sessionId, result.getSession().getCurrentTurn());
                                 }
 
                                 completeConsumer.accept(result);

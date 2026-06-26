@@ -161,6 +161,24 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     }
 
     /**
+     * 스토리 요약 갱신
+     *
+     * @param sessionId      세션 PK
+     * @param runningSummary 스토리 요약
+     */
+    @Transactional
+    @Override
+    public void modifyRunningSummary(Long sessionId, String runningSummary) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+
+        storySession.changeRunningSummary(runningSummary);
+
+        StorySessionsEntity save = storySessionsRepository.save(storySession);
+        log.info("해당 턴마다 스토리 요약본 갱신 : {}", save);
+    }
+
+    /**
      * 세션 삭제
      *
      * @param id PK

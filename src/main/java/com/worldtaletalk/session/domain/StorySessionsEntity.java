@@ -44,6 +44,9 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @Column(length = 15)
     private EndingType endingType; // 도달한 엔딩 유형 (null = 아직 엔딩 아님)
 
+    @Column(length = Integer.MAX_VALUE)
+    private String runningSummary; // 지정 턴마다 갱신되는 스토리 요약본
+
     /* FK (부모) */
     @ToString.Exclude
     @OneToMany(mappedBy = "storySession")
@@ -138,5 +141,14 @@ public class StorySessionsEntity extends BaseTimeEntity {
      */
     public void changeInformationByEndingType(EndingType endingType) {
         this.endingType = endingType;
+    }
+
+    /**
+     * 스토리 요약 갱신
+     *
+     * @param runningSummary 진행중인 스토리 요약
+     */
+    public void changeRunningSummary(String runningSummary) {
+        this.runningSummary = runningSummary;
     }
 }

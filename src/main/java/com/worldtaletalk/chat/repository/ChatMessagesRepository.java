@@ -18,21 +18,19 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
     """)
     List<ChatMessagesEntity> findAllByStorySessionId(@Param("id") Long id);
 
-    // 세션의 메인 스토리 메시지만 조회
+    // 세션의 메인 스토리 메시지만 조회 (Pageable LIMIT)
     @Query("""
     SELECT c FROM ChatMessagesEntity c
         WHERE c.storySession.id = :id AND c.epilogue = FALSE
-            ORDER BY c.createdAt ASC
     """)
-    List<ChatMessagesEntity> findAllSessionId(@Param("id") Long id);
+    List<ChatMessagesEntity> findAllSessionId(Pageable pageable, @Param("id") Long id);
 
-    // 세션의 에필로그 스토리 메시지만 조회
+    // 세션의 에필로그 스토리 메시지만 조회 (Pageable LIMIT)
     @Query("""
     SELECT c FROM ChatMessagesEntity c
         WHERE c.storySession.id = :id AND c.epilogue = TRUE
-            ORDER BY c.createdAt ASC
     """)
-    List<ChatMessagesEntity> findAllEpilogueBySessionId(@Param("id") Long id);
+    List<ChatMessagesEntity> findAllEpilogueBySessionId(Pageable pageable, @Param("id") Long id);
 
     // 세션의 메시지 전체 삭제
     void deleteAllByStorySession_Id(Long sessionId);

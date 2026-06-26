@@ -108,6 +108,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         WorldsEntity worlds = worldsRepository.findById(state.getWorlds().getId()).orElseThrow(() ->
                 new NoSuchElementException("해당 세계관은 존재하지 않습니다."));
 
+        int progressPercent = Math.min(100, (int) (state.getCurrentTurn() * 100.0 / worlds.getTargetTurn()));
+
         // 지정된 targetTurn에는 무조건적으로 엔딩 처리
         boolean forcedEnding = state.getCurrentTurn() >= worlds.getTargetTurn();
         if (forcedEnding && !llmTurnResult.isEndingFlag()) {
@@ -134,6 +136,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                     .session(storySessionsMapper.toDTO(state))
                     .story(llmTurnResult.getStory())
                     .choices(List.of())
+                    .progressPercent(progressPercent)
                     .build();
         }
 
@@ -178,6 +181,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                 .endingType(turnProcessResult.getEndingType())
                 .snapshot(sessionStatSnapshotsDTO)
                 .appliedStatLog(appliedStateLog)
+                .progressPercent(progressPercent)
                 .build();
     }
 

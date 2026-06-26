@@ -1,5 +1,7 @@
 package com.worldtaletalk.session.controller;
 
+import com.worldtaletalk.story.cache.StoryCacheService;
+import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.story.service.StoryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +22,7 @@ public class StoryWebSocketController {
 
     private final StoryService storyService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final StoryCacheService storyCacheService;
 
     // 메인 스토리 턴 요청 메시지 - 선택지 번호 입력와 자유 입력 두 타입을 하나의 레코드로 처리함
     private record StoryInputMessage(
@@ -61,8 +64,25 @@ public class StoryWebSocketController {
                 sessionId, "이야기를 시작해주세요.", null,
                 chunk -> messagingTemplate.convertAndSend(
                         destination, new StoryMessageResponse("DELTA", "story", chunk, null)),
-                result -> messagingTemplate.convertAndSend(
-                        destination, new StoryMessageResponse("COMPLETE", null, null, result)),
+                result -> {
+                    // 엔딩 도달 레디스에 본문 저장
+                    if (result.getEndingType() != null) {
+                        storyCacheService.saveEndingStory(sessionId, result.getStory());
+
+                    // 유효 턴 완료 레디스에 상태 저장
+                    } else if (result.getChoices() != null && !result.getChoices().isEmpty()) {
+                        storyCacheService.savePlayState(
+                                sessionId,
+                                PlayStateCacheDTO.builder()
+                                        .currentStory(result.getStory())
+                                        .choices(result.getChoices())
+                                        .progressPercent(result.getProgressPercent())
+                                        .build()
+                        );
+                    }
+                    messagingTemplate.convertAndSend(
+                            destination, new StoryMessageResponse("COMPLETE", null, null, result));
+                },
                 e -> {
                     log.error("스토리 시작 실패 sessionId: {}", sessionId, e);
                     messagingTemplate.convertAndSend(
@@ -91,8 +111,25 @@ public class StoryWebSocketController {
                 message.choiceIndex(),
                 chunk -> messagingTemplate.convertAndSend(
                         destination, new StoryMessageResponse("DELTA", "story", chunk, null)),
-                result -> messagingTemplate.convertAndSend(
-                        destination, new StoryMessageResponse("COMPLETE", null, null, result)),
+                result -> {
+                    // 엔딩 도달 레디스에 본문 저장
+                    if (result.getEndingType() != null) {
+                        storyCacheService.saveEndingStory(sessionId, result.getStory());
+
+                        // 유효 턴 완료 레디스에 상태 저장
+                    } else if (result.getChoices() != null && !result.getChoices().isEmpty()) {
+                        storyCacheService.savePlayState(
+                                sessionId,
+                                PlayStateCacheDTO.builder()
+                                        .currentStory(result.getStory())
+                                        .choices(result.getChoices())
+                                        .progressPercent(result.getProgressPercent())
+                                        .build()
+                        );
+                    }
+                    messagingTemplate.convertAndSend(
+                            destination, new StoryMessageResponse("COMPLETE", null, null, result));
+                },
                 e -> {
                     log.error("스토리 턴 처리 실패 sessionId: {}", sessionId, e);
                     messagingTemplate.convertAndSend(

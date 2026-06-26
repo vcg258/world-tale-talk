@@ -68,6 +68,14 @@ public interface StorySessionsService {
     void modifyStorySessionByEndingType(Long id, EndingType endingType);
 
     /**
+     * 스토리 요약 갱신
+     *
+     * @param sessionId 세션 PK
+     * @param runningSummary 스토리 요약
+     */
+    void modifyRunningSummary(Long sessionId, String runningSummary);
+
+    /**
      * 세션 삭제
      *
      * @param id PK

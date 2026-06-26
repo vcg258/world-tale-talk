@@ -8,6 +8,7 @@ import com.worldtaletalk.session.repository.StorySessionsRepository;
 import com.worldtaletalk.stat.domain.SessionStatSnapshotsEntity;
 import com.worldtaletalk.stat.repository.SessionStatSnapshotsRepository;
 import com.worldtaletalk.stat.service.SessionStatsService;
+import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
@@ -44,6 +45,7 @@ public class StoryAiServiceImpl implements StoryAiService {
     private final SessionStatsService sessionStatsService;
     private final SessionItemsService sessionItemsService;
     private final SessionStatSnapshotsRepository sessionStatSnapshotsRepository;
+    private final StoryCacheService storyCacheService;
 
     public StoryAiServiceImpl(
             @Qualifier("chatClient") ChatClient chatClient,
@@ -54,7 +56,8 @@ public class StoryAiServiceImpl implements StoryAiService {
             SessionStatsService sessionStatsService,
             SessionItemsService sessionItemsService,
             SessionStatSnapshotsRepository sessionStatSnapshotsRepository,
-            ChatMemory chatMemory
+            ChatMemory chatMemory,
+            StoryCacheService storyCacheService
     ) {
         this.chatClient = chatClient;
         this.summaryChatClient = summaryChatClient;
@@ -65,6 +68,7 @@ public class StoryAiServiceImpl implements StoryAiService {
         this.sessionItemsService = sessionItemsService;
         this.sessionStatSnapshotsRepository = sessionStatSnapshotsRepository;
         this.chatMemory = chatMemory;
+        this.storyCacheService = storyCacheService;
     }
 
     /**
@@ -141,6 +145,16 @@ public class StoryAiServiceImpl implements StoryAiService {
     public Flux<String> streamNarrative(Long sessionId, String userInput) {
         StorySessionsEntity storySession = storySessionsRepository.findByIdWithWorldAndPersonas(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 찾을 수 없습니다."));
+
+        String runningSummary = storyCacheService.getRunningSummary(sessionId);
+        if (runningSummary == null) {
+            runningSummary = storySession.getRunningSummary();
+            if (runningSummary != null) {
+                storyCacheService.saveRunningSummary(sessionId, runningSummary);
+            }
+        }
+        String summaryContext = runningSummary != null ? runningSummary : "초반부 아직 요약본 없음";
+
         // 인벤토리 조회
         List<SessionItemsDTO> inventory = sessionItemsService.getInventory(storySession.getId());
 
@@ -194,6 +208,9 @@ public class StoryAiServiceImpl implements StoryAiService {
                 [진행도 퍼센트]
                 %s
                 
+                [이전 스토리 요약]
+                %s
+                
                 [보유 아이템]
                 %s
                 
@@ -217,7 +234,7 @@ public class StoryAiServiceImpl implements StoryAiService {
                 world.getName(), worldContext,
                 persona.getName(), personaContext,
                 effectiveWisdom, effectiveStrength, effectiveAgility, effectiveCharisma, effectiveLuck,
-                storySession.getCurrentTurn(), world.getTargetTurn(), paceGuide,
+                storySession.getCurrentTurn(), world.getTargetTurn(), paceGuide, summaryContext,
                 inventoryContext
         );
 
@@ -437,6 +454,33 @@ public class StoryAiServiceImpl implements StoryAiService {
                 .user(userInput)
                 .stream()
                 .content();
+    }
+
+    /**
+     * 메인 스토리 요약 지정 턴마다 갱신
+     *
+     * @param sessionId 세션 PK
+     * @return 메인 스토리 요약
+     */
+    @Override
+    public String generateRunningSummary(Long sessionId) {
+        String systemPrompt = """
+            당신은 스토리 요약가입니다.
+            지금까지 진행된 메인 스토리를 바탕으로 현재까지의 이야기를 3~4줄로 요약하세요.
+            
+            [규칙]
+            1. 요약은 3~4줄로 작성하세요.
+            2. 페르소나가 어떤 세계에서 어떤 여정을 거쳤는지 핵심 사건 위주로 작성하세요.
+            3. 순수 텍스트만 반환하세요. JSON이나 다른 형식은 사용하지 않습니다.
+            """;
+        List<Message> history = chatMemory.get(sessionId.toString());
+        String result = summaryChatClient.prompt()
+                .system(systemPrompt)
+                .messages(history)
+                .call()
+                .content();
+        log.info("러닝 요약 생성 : {}", sessionId);
+        return result;
     }
 
     /**

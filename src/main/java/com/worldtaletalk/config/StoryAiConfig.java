@@ -22,7 +22,8 @@ public class StoryAiConfig {
     public ChatClient chatClient(ChatModel chatModel, CustomChatMemory customChatMemory) {
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(
-                        MessageChatMemoryAdvisor.builder(customChatMemory).build(),
+                        MessageChatMemoryAdvisor.builder(customChatMemory)
+                                .build(),
                         new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1)
                 )
                 .build();
