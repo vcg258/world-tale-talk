@@ -21,6 +21,7 @@ public class WorldViewController {
     private final WorldsService worldsService;
     private final PersonasService personasService;
 
+    // 세계관 상세 페르소나 목록 뷰 모델 - 페르소나 정보와 기본 스탯을 묶어 Thymeleaf에 전달하는 레코드
     private record PersonaListItemVM(PersonasDTO persona, PersonasBaseStatsDTO baseStats) {}
 
     /**

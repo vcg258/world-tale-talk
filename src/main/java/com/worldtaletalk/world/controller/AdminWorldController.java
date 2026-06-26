@@ -24,6 +24,7 @@ public class AdminWorldController {
 
     private final WorldsService worldsService;
 
+    // 세계관 등록·수정 요청 폼 - 이름, 장르, 설명, 설정 텍스트, 목표 턴수, 활성화 여부 전체 필드를 하나의 레코드로 처리함
     private record WorldForm(
             @NotBlank(message = "세계관 이름을 입력해주세요")
             @Size(max = 50, message = "세계관 이름을 50자 이내로 입력해주세요.")

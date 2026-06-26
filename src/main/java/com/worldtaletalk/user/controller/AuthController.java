@@ -23,6 +23,7 @@ public class AuthController {
     private final UserService userService;
     private final UserSuspensionsService userSuspensionsService;
 
+    // 닉네임 설정 요청 폼 - 닉네임 단일 필드를 레코드로 처리함
     private record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {
     }
 

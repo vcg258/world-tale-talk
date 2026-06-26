@@ -23,6 +23,7 @@ public class ReportViewController {
 
     private final ReportsService reportsService;
 
+    // 신고 등록 요청 폼 - 신고 타입, 대상 ID, 사유 세 필드를 하나의 레코드로 처리함
     private record ReportForm(
             @NotNull(message = "신고할 타입을 선택해주세요.")
             ReportTargetType targetType,

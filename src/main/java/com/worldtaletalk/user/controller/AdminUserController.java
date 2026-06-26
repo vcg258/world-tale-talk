@@ -27,6 +27,7 @@ public class AdminUserController {
     private final UserSuspensionsService userSuspensionsService;
     private final SocialAccountsService socialAccountsService;
 
+    // 유저 정지 요청 폼 - 정지 사유 단일 필드를 레코드로 처리함
     private record SuspendForm(@NotBlank(message = "정지사유를 입력해주세요.") String reason) {
     }
 

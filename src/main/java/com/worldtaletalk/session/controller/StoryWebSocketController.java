@@ -13,8 +13,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.security.Principal;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -23,15 +21,17 @@ public class StoryWebSocketController {
     private final StoryService storyService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    // 메인 스토리 턴 요청 메시지 - 선택지 번호 입력와 자유 입력 두 타입을 하나의 레코드로 처리함
     private record StoryInputMessage(
             @NotNull(message = "type은 필수입니다.")
-            String type,            // CHOICE / FREE_TEXT
+            String type,            // 선택지와 자유입력
             @Size(max = 500, message = "입력값은 500자 이내여야 합니다.")
-            String content,         // FREE_TEXT일 때
-            Integer choiceIndex     // CHOICE일 때
+            String content,         // 자유 입력일 때
+            Integer choiceIndex     // 선택지일 때
     ) {
     }
 
+    // 에필로그 턴 요청 메시지 - 자유 입력만 허용
     private record EpilogueInputMessage(
             @NotBlank(message = "입력값은 필수입니다.")
             @Size(max = 500, message = "입력값은 500자 이내여야 합니다.")
@@ -39,8 +39,9 @@ public class StoryWebSocketController {
     ) {
     }
 
+    // WebSocket 공용 응답 - 스트리밍 청크, 턴 완료 결과, 오류 세 이벤트를 하나의 레코드로 처리함
     private record StoryMessageResponse(
-            String event,   // DELTA / COMPLETE / ERROR
+            String event,   // DELTA / COMPLETE / ERROR (웹소켓 이벤트 타입)
             String field,   // DELTA 시 "story"
             String value,   // DELTA 청크 텍스트 / ERROR 메시지
             Object result   // COMPLETE 시 TurnProcessResult

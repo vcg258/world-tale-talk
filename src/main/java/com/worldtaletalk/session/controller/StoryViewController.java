@@ -30,6 +30,7 @@ public class StoryViewController {
     private final SessionItemsService sessionItemsService;
     private final SessionStatsService sessionStatsService;
 
+    // 플레이 화면 스탯 뷰 모델 - 5가지 스탯 수치를 묶어 Thymeleaf에 전달하는 레코드
     private record CurrentStatsVM(
             int wisdom,
             int strength,

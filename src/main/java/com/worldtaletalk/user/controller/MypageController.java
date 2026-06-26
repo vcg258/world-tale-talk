@@ -30,8 +30,10 @@ public class MypageController {
     private final StorySessionsService storySessionsService;
     private final WorldRatingsService worldRatingsService;
 
+    // 마이페이지 프로필 수정 요청 폼 - 닉네임 단일 필드를 레코드로 처리함
     private record ProfileForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
 
+    // 마이페이지 스토리 목록 뷰 모델 - 세션 ID, 세계관명, 페르소나명, 상태, 턴수, 생성일을 묶어 Thymeleaf에 전달하는 레코드
     private record StorySessionListItemVM(
             Long id,
             String worldName,

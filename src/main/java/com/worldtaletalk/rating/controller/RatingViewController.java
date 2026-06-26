@@ -25,6 +25,7 @@ public class RatingViewController {
     private final WorldRatingsService worldRatingsService;
     private final WorldsService worldsService;
 
+    // 세계관 별점 등록 요청 폼 - 세션 ID와 별점 점수 두 필드를 하나의 레코드로 처리함
     private record RatingForm(
             @NotNull(message = "해당 세션의 PK를 입력해주세요.")
             Long sessionId,
