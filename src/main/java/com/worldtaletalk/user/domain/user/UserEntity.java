@@ -32,7 +32,7 @@ public class UserEntity extends BaseTimeEntity {
     @Column(length = 70, unique = true, nullable = false)
     private String email; // 이메일
 
-    @Column(length = 60) // null허용 이유 : 소셜로그인 할시 비밀번호 불필요
+    @Column(length = 255) // null허용 이유 : 소셜로그인 할시 비밀번호 불필요
     private String password; // 비밀번호
 
     @Builder.Default

@@ -58,7 +58,7 @@ public class RatingViewController {
     ) {
         model.addAttribute("world", worldsService.getWorldById(worldId));
         model.addAttribute("sessionId", sessionId);
-        model.addAttribute("existingRating", worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getId()));
+        model.addAttribute("existingRating", worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getUser().getId()));
 
         return "rating/form";
     }
@@ -79,7 +79,7 @@ public class RatingViewController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        WorldRatingsDTO existingRating = worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getId());
+        WorldRatingsDTO existingRating = worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getUser().getId());
         if (existingRating == null) {
             redirectAttributes.addFlashAttribute("error", "등록된 별점이 없습니다.");
             return "redirect:/mypage/ratings";
@@ -115,10 +115,10 @@ public class RatingViewController {
             return "redirect:/worlds/" + worldId + "/ratings?sessionId=" + form.sessionId();
         }
 
-        WorldRatingsDTO existingRating = worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getId());
+        WorldRatingsDTO existingRating = worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getUser().getId());
         if (existingRating == null) {
             worldRatingsService.addWorldRating(WorldRatingsDTO.builder()
-                    .userId(user.getId())
+                    .userId(user.getUser().getId())
                     .worldId(worldId)
                     .storySessionId(form.sessionId())
                     .score(form.score())
@@ -127,7 +127,7 @@ public class RatingViewController {
         } else {
             worldRatingsService.modifyWorldRating(WorldRatingsDTO.builder()
                     .id(existingRating.getId())
-                    .userId(user.getId())
+                    .userId(user.getUser().getId())
                     .score(form.score())
                     .review(form.review())
                     .build());

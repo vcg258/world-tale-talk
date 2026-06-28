@@ -1,5 +1,6 @@
 package com.worldtaletalk.user.service;
 
+import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.user.domain.UserSuspensionsEntity;
 import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserRole;
@@ -14,6 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
     private final UserSuspensionsRepository userSuspensionsRepository;
     private final UserSuspensionsMapper userSuspensionsMapper;
     private final UserRepository userRepository;
+    private final SessionRegistry sessionRegistry;
 
     /**
      * 특정 유저의 정지 이력 조회 (관리자용) (페이징)
@@ -94,6 +99,12 @@ public class UserSuspensionsServiceImpl implements UserSuspensionsService {
         user.changeStatus(UserStatus.SUSPENDED);
         UserEntity userSaved = userRepository.save(user);
         log.info("해당 유저 계정 정지 상태로 변경 : {}", userSaved);
+
+        // 세션 강제 만료 처리
+        sessionRegistry.getAllPrincipals().stream()
+                .filter(p -> p instanceof AuthenticatedUser auth && auth.getUser().getId().equals(userSuspensionsDTO.getUserId()))
+                .flatMap(p -> sessionRegistry.getAllSessions(p, false).stream())
+                .forEach(SessionInformation::expireNow);
 
         UserSuspensionsEntity userSuspensionSaved = userSuspensionsRepository.save(userSuspension);
         log.info("유저 정지 처리 완료 : {}", userSuspensionSaved);

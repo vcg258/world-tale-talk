@@ -79,7 +79,7 @@ public class ReportViewController {
         }
 
         reportsService.addReport(ReportsDTO.builder()
-                .userId(user.getId())
+                .userId(user.getUser().getId())
                 .targetType(form.targetType())
                 .targetId(form.targetId())
                 .reason(form.reason())

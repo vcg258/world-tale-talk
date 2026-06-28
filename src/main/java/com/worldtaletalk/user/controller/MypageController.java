@@ -1,6 +1,7 @@
 package com.worldtaletalk.user.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.security.SecurityContextUtil;
 import com.worldtaletalk.rating.dto.WorldRatingsDTO;
 import com.worldtaletalk.rating.service.WorldRatingsService;
 import com.worldtaletalk.session.domain.SessionStatus;
@@ -8,11 +9,16 @@ import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,8 +58,8 @@ public class MypageController {
      */
     @GetMapping
     public String index(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-        UserDTO userDTO = userService.getUser(user.getId());
-        Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getId(), null, 1);
+        UserDTO userDTO = userService.getUser(user.getUser().getId());
+        Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), null, 1);
         List<StorySessionListItemVM> recentSessions = mySessions.stream()
                         .map(r -> new StorySessionListItemVM(
                                 r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
@@ -73,7 +79,7 @@ public class MypageController {
      */
     @GetMapping("/profile")
     public String profile(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-        model.addAttribute("user", userService.getUser(user.getId()));
+        model.addAttribute("user", userService.getUser(user.getUser().getId()));
         return "mypage/profile";
     }
 
@@ -91,14 +97,20 @@ public class MypageController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @ModelAttribute ProfileForm form,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(
                     "errors", bindingResult.getFieldError("nickname").getDefaultMessage());
             return "redirect:/mypage/profile";
         }
-        userService.modifyNickname(user.getId(), form.nickname());
+        userService.modifyNickname(user.getUser().getId(), form.nickname());
+
+        // 닉네임 변경후 세션 갱신
+        UserDTO updateUser = userService.getUser(user.getUser().getId());
+        SecurityContextUtil.refresh(user, updateUser, request.getSession());
+
         redirectAttributes.addFlashAttribute("message", "닉네임이 변경되었습니다");
         return "redirect:/mypage/profile";
     }
@@ -110,8 +122,17 @@ public class MypageController {
      * @return redirect:/logout (로그아웃)
      */
     @PostMapping("/withdraw")
-    public String withdraw(@AuthenticationPrincipal AuthenticatedUser user) {
-        userService.deleteUser(user.getId()); // TODO 시큐리티에서 GET /logout 허용 또는 POST /logout 리다이렉트 방식으로 처리 필요
+    public String withdraw(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        userService.deleteUser(user.getUser().getId());
+
+        // 세션 무효화 SecurityContext 초기화를 Security가 처리
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        new SecurityContextLogoutHandler().logout(request, response, auth);
+
         return "redirect:/auth/logout";
     }
 
@@ -130,7 +151,7 @@ public class MypageController {
                            @RequestParam(defaultValue = "1") int page,
                            Model model
     ) {
-        Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getId(), status, page);
+        Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), status, page);
         List<StorySessionListItemVM> recentSessions = mySessions.stream()
                 .map(r -> new StorySessionListItemVM(
                         r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
@@ -156,7 +177,7 @@ public class MypageController {
             @RequestParam(defaultValue = "1") int page,
             Model model
     ) {
-        Page<WorldRatingsDTO> myRatings = worldRatingsService.getMyRatings(user.getId(), page);
+        Page<WorldRatingsDTO> myRatings = worldRatingsService.getMyRatings(user.getUser().getId(), page);
         model.addAttribute("ratings", myRatings.getContent());
         model.addAttribute("ratingsPage", myRatings);
         return "mypage/ratings";

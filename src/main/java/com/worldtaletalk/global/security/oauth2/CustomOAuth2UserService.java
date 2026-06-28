@@ -44,10 +44,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .nickname(tempNickname)
                     .email(email)
                     .build();
-            userService.createUser(newUser);
-            UserDTO savedUser = userService.getUserByEmail(email);
+            UserDTO user = userService.createUser(newUser);
             // 새로운 유저 true (임시닉네임이 부여받았기 때문에 강제로 닉네임 변경 시켜줄 예정)
-            return new CustomOAuth2User(savedUser, attributes, true);
+            return new CustomOAuth2User(user, attributes, true);
         }
         return new CustomOAuth2User(existsUser, attributes, false);
     }
@@ -71,6 +70,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 yield kakaoAccount.get("email");
             }
             default -> throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인입니다: " + registrationId);
+        };
+    }
+
+    /**
+     * 소셜로그인 제공사 추출
+     *
+     * @param registrationId 소셜 제공사
+     * @param attributes 속성 Map
+     * @return 소셜 제공사
+     */
+    private String extractProviderId(String registrationId, Map<String, Object> attributes) {
+        return switch (registrationId) {
+            case "google" -> (String) attributes.get("sub");
+            case "naver" -> {
+                Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+                yield (String) response.get("id");
+            }
+            case "kakao" -> String.valueOf(attributes.get("id")); // Long → String
+            default -> throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인: " + registrationId);
         };
     }
 }

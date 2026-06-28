@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 전체 회원 조회
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public void createUser(UserDTO userDTO) {
+    public UserDTO createUser(UserDTO userDTO) {
         if (userDTO.getNickname() == null || userDTO.getNickname().trim().isEmpty()) {
             throw new IllegalArgumentException("닉네임은 필수 값입니다.");
         }
@@ -85,10 +85,12 @@ public class UserServiceImpl implements UserService {
                 userDTO.getLoginId(), // 소셜 로그인 유저는 아이디가 필요없으므로 null 예외안함
                 userDTO.getNickname(),
                 userDTO.getEmail(),
-                userDTO.getPassword() != null ? bCryptPasswordEncoder.encode(userDTO.getPassword()) : null
+                userDTO.getPassword() != null ? passwordEncoder.encode(userDTO.getPassword()) : null
         );
         UserEntity save = userRepository.save(user);
         log.info("회원가입 완료 : {}", save);
+
+        return userMapper.toDTO(save);
     }
 
     /**
@@ -104,7 +106,7 @@ public class UserServiceImpl implements UserService {
         user.modifyInformationUser(
                 userDTO.getEmail() != null ? userDTO.getEmail() : user.getEmail(),
                 userDTO.getPassword() != null ?
-                        bCryptPasswordEncoder.encode(userDTO.getPassword()) : user.getPassword()
+                        passwordEncoder.encode(userDTO.getPassword()) : user.getPassword()
         );
         UserEntity save = userRepository.save(user);
         log.info("회원정보 수정 완료 : {}", save);

@@ -36,7 +36,7 @@ public interface UserService {
      *
      * @param userDTO 유저 정보
      */
-    void createUser(UserDTO userDTO);
+    UserDTO createUser(UserDTO userDTO);
 
     /**
      * 회원 정보 수정

@@ -95,7 +95,7 @@ public class AdminUserController {
         }
         userSuspensionsService.addUserSuspension(UserSuspensionsDTO.builder()
                 .userId(id)
-                .adminId(admin.getId())
+                .adminId(admin.getUser().getId())
                 .reason(form.reason())
                 .build()
         );

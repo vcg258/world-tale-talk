@@ -32,7 +32,7 @@ public class PersonaViewController {
             @AuthenticationPrincipal AuthenticatedUser user
             ) {
         StorySessionsDTO storySessionsDTO = StorySessionsDTO.builder()
-                .userId(user.getId())
+                .userId(user.getUser().getId())
                 .worldId(worldId)
                 .personaId(personaId)
                 .build();

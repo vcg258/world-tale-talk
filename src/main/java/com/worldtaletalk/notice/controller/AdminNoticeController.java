@@ -23,7 +23,7 @@ public class AdminNoticeController {
 
     private final NoticesService noticesService;
 
-    // 공지사항 등록·수정 요청 폼 - 제목, 내용, 활성화 여부 세 필드를 하나의 레코드로 처리함
+    // 공지사항 등록/수정 요청 폼 - 제목, 내용, 활성화 여부 세 필드를 하나의 레코드로 처리함
     private record NoticeForm(
             @NotBlank(message = "공지 제목을 입력해주세요.")
             @Size(max = 50, message = "제목은 최대 50자 이내로 입력해주세요.")
@@ -98,7 +98,7 @@ public class AdminNoticeController {
             return "redirect:/admin/notices/new";
         }
         noticesService.createNotice(NoticesDTO.builder()
-                .adminId(admin.getId())
+                .adminId(admin.getUser().getId())
                 .title(form.title())
                 .content(form.content())
                 .active(form.isActive())
@@ -131,7 +131,7 @@ public class AdminNoticeController {
         }
         noticesService.modifyNotice(NoticesDTO.builder()
                 .id(id)
-                .adminId(admin.getId())
+                .adminId(admin.getUser().getId())
                 .title(form.title())
                 .content(form.content())
                 .active(form.isActive())

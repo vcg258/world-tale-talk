@@ -30,13 +30,13 @@ public class CustomOAuth2User implements OAuth2User, AuthenticatedUser {
     }
 
     /**
-     * 유저 PK 반환
+     * 유저 정보 반환
      *
-     * @return 유저 PK
+     * @return 유저 정보
      */
     @Override
-    public Long getId() {
-        return userDTO.getId();
+    public UserDTO getUser() {
+        return userDTO;
     }
 
     /**

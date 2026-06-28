@@ -1,9 +1,12 @@
 package com.worldtaletalk.user.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.security.SecurityContextUtil;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2User;
+import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.service.UserService;
 import com.worldtaletalk.user.service.UserSuspensionsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/auth")
@@ -60,7 +65,8 @@ public class AuthController {
     public String submitNickname(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
                                  @Valid @ModelAttribute NicknameForm form,
                                  BindingResult bindingResult,
-                                 Model model
+                                 Model model,
+                                 HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("nicknameError", bindingResult.getFieldError("nickname").getDefaultMessage());
@@ -71,7 +77,11 @@ public class AuthController {
             model.addAttribute("nicknameError", "이미 사용중인 닉네임입니다.");
             return "auth/nickname";
         }
-        userService.modifyNickname(customOAuth2User.getId(), form.nickname());
+        userService.modifyNickname(customOAuth2User.getUser().getId(), form.nickname());
+
+        // 세션 갱신
+        UserDTO updateUser = userService.getUser(customOAuth2User.getUser().getId());
+        SecurityContextUtil.refresh(customOAuth2User, updateUser, request.getSession());
         return "redirect:/";
 
     }
@@ -85,7 +95,11 @@ public class AuthController {
      */
     @GetMapping("/suspended")
     public String suspended(@AuthenticationPrincipal AuthenticatedUser authenticatedUser, Model model) {
-        model.addAttribute("suspended", userSuspensionsService.getUserSuspension(authenticatedUser.getId()));
+        if (authenticatedUser != null) {
+            try {
+                model.addAttribute("suspended", userSuspensionsService.getUserSuspension(authenticatedUser.getUser().getId()));
+            } catch (NoSuchElementException ignored) {}
+        }
         return "auth/suspended";
     }
 }

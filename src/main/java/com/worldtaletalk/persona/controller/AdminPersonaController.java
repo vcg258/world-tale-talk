@@ -26,7 +26,7 @@ public class AdminPersonaController {
     private final PersonasBaseStatsService personasBaseStatsService;
     private final WorldsService worldsService;
 
-    // 페르소나 등록·수정 요청 폼 - 세계관 ID, 이름, 설명, 배경, 스탯 등 전체 필드를 하나의 레코드로 처리함
+    // 페르소나 등록/수정 요청 폼 - 세계관 ID, 이름, 설명, 배경, 스탯 등 전체 필드를 하나의 레코드로 처리함
     private record PersonaForm(
             @NotNull
             Long worldId,

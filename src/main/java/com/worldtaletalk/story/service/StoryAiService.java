@@ -34,7 +34,7 @@ public interface StoryAiService {
      * @param sessionId 세션 PK
      * @param userInput 유저 입력
      * @param narrative streamNarrative가 생성한 서사 텍스트 전문
-     * @return 선택지·스탯 변화·아이템 이벤트 등이 담긴 LlmTurnResult
+     * @return 선택지/스탯 변화/아이템 이벤트 등이 담긴 LlmTurnResult
      */
     LlmTurnResult generateMetadata(Long sessionId, String userInput, String narrative);
 
@@ -43,7 +43,7 @@ public interface StoryAiService {
      *
      * @param sessionId 세션 PK
      * @param userInput 유저 입력
-     * @return LLM 응답 결과 (String)
+     * @return LLM 응답 결과
      */
     Flux<String> streamEpilogue(Long sessionId, String userInput);
 

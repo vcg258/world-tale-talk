@@ -16,9 +16,14 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails, AuthenticatedUser {
     private final UserDTO userDTO;
 
+    /**
+     * 유저 정보 반환
+     *
+     * @return 유저 정보
+     */
     @Override
-    public Long getId() {
-        return userDTO.getId();
+    public UserDTO getUser() {
+        return userDTO;
     }
 
     /**
@@ -48,7 +53,7 @@ public class CustomUserDetails implements UserDetails, AuthenticatedUser {
      */
     @Override
     public String getUsername() {
-        return userDTO.getEmail();
+        return userDTO.getLoginId();
     }
 
     /**
