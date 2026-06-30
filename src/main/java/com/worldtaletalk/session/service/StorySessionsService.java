@@ -76,6 +76,15 @@ public interface StorySessionsService {
     void modifyRunningSummary(Long sessionId, String runningSummary);
 
     /**
+     * 세션 소유자 검증 (WebSocket 인가용)
+     *
+     * @param sessionId 세션 PK
+     * @param userId    회원 PK
+     * @return 소유자 여부
+     */
+    boolean isOwner(Long sessionId, Long userId);
+
+    /**
      * 세션 삭제
      *
      * @param id PK

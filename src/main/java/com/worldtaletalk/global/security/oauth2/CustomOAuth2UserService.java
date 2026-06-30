@@ -1,6 +1,9 @@
 package com.worldtaletalk.global.security.oauth2;
 
+import com.worldtaletalk.user.domain.socialaccounts.SocialProvider;
+import com.worldtaletalk.user.dto.SocialAccountsDTO;
 import com.worldtaletalk.user.dto.UserDTO;
+import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserService userService;
+    private final SocialAccountsService socialAccountsService;
 
     /**
      * OAuth2 로그인 처리 (Google / Naver / Kakao)
@@ -45,6 +49,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(email)
                     .build();
             UserDTO user = userService.createUser(newUser);
+
+            // 소셜계정 등록 (신규)
+            String providerId = extractProviderId(registrationId, attributes);
+            socialAccountsService.createSocialAccount(SocialAccountsDTO.builder()
+                    .userId(user.getId())
+                    .provider(SocialProvider.valueOf(registrationId.toUpperCase()))
+                    .providerId(providerId)
+                    .build());
             // 새로운 유저 true (임시닉네임이 부여받았기 때문에 강제로 닉네임 변경 시켜줄 예정)
             return new CustomOAuth2User(user, attributes, true);
         }
@@ -77,8 +89,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      * 소셜로그인 제공사 추출
      *
      * @param registrationId 소셜 제공사
-     * @param attributes 속성 Map
-     * @return 소셜 제공사
+     * @param attributes     속성 Map
+     * @return 소셜 제공사 고유 ID
      */
     private String extractProviderId(String registrationId, Map<String, Object> attributes) {
         return switch (registrationId) {

@@ -33,7 +33,7 @@ public class WorldViewController {
      */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("world", worldsService.getWorldById(id));
+        model.addAttribute("world", worldsService.getWorldByActiveId(id));
         return "world/detail";
     }
 

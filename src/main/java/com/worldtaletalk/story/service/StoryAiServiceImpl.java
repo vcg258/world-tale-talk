@@ -110,7 +110,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      *
      * @param worldId 세계관 PK
      */
-    @Transactional
     @Override
     public void indexWorld(Long worldId) {
         WorldsEntity world = worldsRepository.findById(worldId).orElseThrow(() ->

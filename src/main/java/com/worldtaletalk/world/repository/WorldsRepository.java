@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WorldsRepository extends JpaRepository<WorldsEntity, Long> {
     // 활성화된 세계관만 조회
@@ -28,4 +29,7 @@ public interface WorldsRepository extends JpaRepository<WorldsEntity, Long> {
     ORDER BY COUNT(s.id) DESC
     """)
     List<WorldStatsProjection> findWorldStats();
+
+    // 활성화된 세계관 단건 조회
+    Optional<WorldsEntity> findByIdAndActiveTrue(Long id);
 }

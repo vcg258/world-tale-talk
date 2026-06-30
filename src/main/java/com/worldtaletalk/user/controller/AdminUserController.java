@@ -90,7 +90,7 @@ public class AdminUserController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError("reason").getDefaultMessage());
+                    bindingResult.getFieldError().getDefaultMessage());
             return "redirect:/admin/users/" + id;
         }
         userSuspensionsService.addUserSuspension(UserSuspensionsDTO.builder()

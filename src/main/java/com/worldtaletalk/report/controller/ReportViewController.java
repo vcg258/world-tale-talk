@@ -16,6 +16,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URI;
+
 @Controller
 @RequestMapping("/reports")
 @RequiredArgsConstructor
@@ -92,7 +94,7 @@ public class ReportViewController {
         String serverName = request.getServerName();
 
         // 직접적으로 referer를 사용하기 때문에 외부 도메인이 들어올 수 도 있음 현재 서버 도메인인지 검증
-        if (referer != null && referer.contains(serverName)) {
+        if (referer != null && URI.create(referer).getHost().equals(serverName)) {
             return "redirect:" + referer;
         }
         return "redirect:/";

@@ -13,4 +13,7 @@ public interface SocialAccountsRepository extends JpaRepository<SocialAccountsEn
 
     // 회원 PK로 소셜 계정 단건 조회
     List<SocialAccountsEntity> findAllByUsersId(Long userId);
+
+    // 회원 이메일로 조회
+    Optional<SocialAccountsEntity> findByUsersEmail(String email);
 }

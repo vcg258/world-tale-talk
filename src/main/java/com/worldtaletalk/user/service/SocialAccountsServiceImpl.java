@@ -50,6 +50,18 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
     }
 
     /**
+     * 소셜 계정 이메일로 단건조회
+     *
+     * @param email 이메일
+     * @return 소셜 계정 정보
+     */
+    @Override
+    public SocialAccountsDTO getSocialAccountByEmail(String email) {
+        return socialAccountsRepository.findByUsersEmail(email)
+                .map(socialAccountsMapper::toDTO).orElse(null);
+    }
+
+    /**
      * 소셜 계정 연동 (OAuth2 최초 로그인시 소셜 계정 등록)
      *
      * @param socialAccountsDTO 소셜 계정 정보 (유저 PK, 제공사, 제공사 고유 ID 포함)

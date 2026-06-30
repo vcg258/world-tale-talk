@@ -39,6 +39,6 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
     List<ChatMessagesEntity> findByStorySession_Id(Pageable pageable, Long id);
 
     // 해당 세션 메시지 전체 조회 (스크롤 형식 페이징)
-    @Query("SELECT c FROM ChatMessagesEntity c WHERE c.storySession.id = :sessionId AND c.createdAt < :lastCreateAt")
-    List<ChatMessagesEntity> findCursorBySessionId(Pageable pageable, @Param("sessionId") Long id, @Param("lastCreateAt") LocalDateTime lastCreateAt);
+    @Query("SELECT c FROM ChatMessagesEntity c WHERE c.storySession.id = :sessionId AND c.createdAt < :lastCreatedAt")
+    List<ChatMessagesEntity> findCursorBySessionId(Pageable pageable, @Param("sessionId") Long id, @Param("lastCreatedAt") LocalDateTime lastCreateAt);
 }

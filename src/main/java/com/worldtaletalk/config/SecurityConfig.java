@@ -3,7 +3,7 @@ package com.worldtaletalk.config;
 import com.worldtaletalk.global.security.CustomUserDetailsService;
 import com.worldtaletalk.global.security.RememberMeTokenRepository;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2UserService;
-import com.worldtaletalk.global.security.oauth2.OAuth2RememberMeRequestFilter;
+import com.worldtaletalk.global.security.oauth2.OAuth2RememberMeFilter;
 import com.worldtaletalk.global.security.oauth2.OAuth2SuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final RememberMeTokenRepository rememberMeTokenRepository;
-    private final OAuth2RememberMeRequestFilter oAuth2RememberMeRequestFilter;
+    private final OAuth2RememberMeFilter oAuth2RememberMeFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -81,7 +81,7 @@ public class SecurityConfig {
                         .accessDeniedHandler((request, response, e) ->
                                 response.sendError(HttpServletResponse.SC_FORBIDDEN))
                 )
-                .addFilterBefore(oAuth2RememberMeRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(oAuth2RememberMeFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/ws/**") // 웹소켓 제외
                 );

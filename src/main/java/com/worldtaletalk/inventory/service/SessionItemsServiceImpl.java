@@ -86,6 +86,11 @@ public class SessionItemsServiceImpl implements SessionItemsService {
                 new NoSuchElementException("해당 세션은 존재하지 않습니다."));
         SessionItemsEntity item = sessionItemsRepository.findById(itemId).orElseThrow(() ->
                 new NoSuchElementException("해당 아이템은 존재하지 않습니다."));
+
+        if (!item.getStorySession().getId().equals(sessionId)) {
+            throw new IllegalArgumentException("해당 세션의 아이템이 아닙니다");
+        }
+
         item.dropItem(storySession.getCurrentTurn());
         SessionItemsEntity save = sessionItemsRepository.save(item);
         log.info("아이템 버림 처리 완료 : {}", save);
@@ -124,9 +129,8 @@ public class SessionItemsServiceImpl implements SessionItemsService {
     @Transactional(readOnly = true)
     @Override
     public List<SessionItemsDTO> getInventory(Long sessionId) {
-        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
-                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
-        List<SessionItemsEntity> sessionItems = sessionItemsRepository.findAllByItemActive(storySession.getId());
+        if (!storySessionsRepository.existsById(sessionId)) throw new NoSuchElementException("해당 세션은 존재 하지 않습니다.");
+        List<SessionItemsEntity> sessionItems = sessionItemsRepository.findAllByItemActive(sessionId);
         return sessionItemsMapper.toDTOList(sessionItems);
     }
 

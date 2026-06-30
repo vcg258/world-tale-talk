@@ -2,7 +2,9 @@ package com.worldtaletalk.global.security.oauth2;
 
 import com.worldtaletalk.global.security.RememberMeTokenRepository;
 import com.worldtaletalk.user.domain.user.UserStatus;
+import com.worldtaletalk.user.dto.SocialAccountsDTO;
 import com.worldtaletalk.user.dto.UserDTO;
+import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,12 +35,13 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
+public class OAuth2RememberMeFilter extends OncePerRequestFilter {
     private final RememberMeTokenRepository rememberMeTokenRepository;
     private final UserService userService;
+    private final SocialAccountsService socialAccountsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
@@ -59,6 +62,8 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
             // 이미 발급된 쿠키 디코딩후 식별자와 쿠키값으로 나눔
             String decoded = new String(Base64.getDecoder().decode(cookieValue));
             String[] parts = decoded.split(":");
+
+            // series, token으로 나눠져있지않으면 만료 처리
             if (parts.length != 2) {
                 invalidateCookie(response);
                 filterChain.doFilter(request, response);
@@ -68,15 +73,17 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
             String series = parts[0];
             String token = parts[1];
 
+            // 레디스 조회
             PersistentRememberMeToken stored = rememberMeTokenRepository.getTokenForSeries(series);
 
-            if (stored == null || !stored.getUsername().equals(token)) {
+            if (stored == null || !stored.getTokenValue().equals(token)) {
                 log.warn("OAuth2 토큰값 불일치 탈취 감지 series : {}", series);
                 invalidateCookie(response);
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            // 조회한 유저가 없거나 정지, 탈퇴된 상태라면 만료처리
             UserDTO user = userService.getUserByEmail(stored.getUsername());
             if (user == null || !UserStatus.ACTIVE.equals(user.getStatus())) {
                 invalidateCookie(response);
@@ -84,7 +91,17 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
                 return;
             }
 
+            // 기존 소셜회원 확인
+            SocialAccountsDTO socialAccounts = socialAccountsService.getSocialAccountByEmail(stored.getUsername());
+            if (socialAccounts == null) {
+                invalidateCookie(response);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String newToken = UUID.randomUUID().toString();
+            String registrationId = socialAccounts.getProvider().name().toLowerCase();
+
             rememberMeTokenRepository.updateToken(series, newToken, new Date());
 
             String newCookieValue = Base64.getEncoder().encodeToString((series + ":" + newToken).getBytes());
@@ -97,11 +114,11 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
                     .secure(false) // TODO HTTPS 로 변경시 수정
                     .build();
 
-            response.setHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
             CustomOAuth2User oAuth2User = new CustomOAuth2User(user, Map.of(), false);
             OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(
-                    oAuth2User, oAuth2User.getAuthorities(), "google"); // TODO 일단 하드코딩 구글 조만간 수정예정
+                    oAuth2User, oAuth2User.getAuthorities(), registrationId);
 
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authToken);
@@ -135,7 +152,7 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
      * 해당 이름 쿠키 유무 확인
      *
      * @param request 요청
-     * @param name 쿠키 이름
+     * @param name    쿠키 이름
      * @return 해당 이름 쿠키 값
      */
     private String extractCookie(HttpServletRequest request, String name) {
@@ -148,9 +165,9 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
     }
 
     /**
+     * 소셜 자동 로그인 쿠키 만료 처리
      *
-     *
-     * @param response
+     * @param response 응답
      */
     private void invalidateCookie(HttpServletResponse response) {
         ResponseCookie expired = ResponseCookie.from("oauth2-remember-me", "")
@@ -158,6 +175,6 @@ public class OAuth2RememberMeRequestFilter extends OncePerRequestFilter {
                 .maxAge(0)
                 .path("/")
                 .build();
-        response.setHeader(HttpHeaders.SET_COOKIE, expired.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, expired.toString());
     }
 }

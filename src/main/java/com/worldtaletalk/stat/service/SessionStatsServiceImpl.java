@@ -10,6 +10,7 @@ import com.worldtaletalk.stat.domain.SessionStatLogsEntity;
 import com.worldtaletalk.stat.domain.SessionStatSnapshotsEntity;
 import com.worldtaletalk.stat.dto.SessionStatLogsDTO;
 import com.worldtaletalk.stat.dto.SessionStatSnapshotsDTO;
+import com.worldtaletalk.stat.projection.StatDeltaSumProjection;
 import com.worldtaletalk.stat.repository.SessionStatLogsRepository;
 import com.worldtaletalk.stat.repository.SessionStatSnapshotsRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -79,40 +79,9 @@ public class SessionStatsServiceImpl implements SessionStatsService {
                 new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않습니다."));
 
         // 세션의 전체 스텟 로그 조회 후 변화량 누적 합산
-        List<SessionStatLogsEntity> statLogs = sessionStatLogsRepository.findAllByStorySession_Id(sessionId);
+        StatDeltaSumProjection statLogs = sessionStatLogsRepository.sumDeltasBySessionId(sessionId);
 
         return getStringIntegerMap(baseStats, statLogs);
-    }
-
-    /**
-     * 기본 스텟에 전체 스텟 로그 변화량을 누적 합산
-     *
-     * @param baseStats 페르소나 기본 스텟
-     * @param statLogs  세션 전체 스텟 변화 로그 목록
-     * @return 현재 스텟 합산 값
-     */
-    private Map<String, Integer> getStringIntegerMap(PersonasBaseStatsEntity baseStats, List<SessionStatLogsEntity> statLogs) {
-        int wisdom = baseStats.getWisdom();
-        int strength = baseStats.getStrength();
-        int agility = baseStats.getAgility();
-        int charisma = baseStats.getCharisma();
-        int luck = baseStats.getLuck();
-
-        for (SessionStatLogsEntity statLog : statLogs) {
-            wisdom += statLog.getWisdomDelta();
-            strength += statLog.getStrengthDelta();
-            agility += statLog.getAgilityDelta();
-            charisma += statLog.getCharismaDelta();
-            luck += statLog.getLuckDelta();
-        }
-
-        Map<String, Integer> currentStats = new HashMap<>();
-        currentStats.put("wisdom", wisdom);
-        currentStats.put("strength", strength);
-        currentStats.put("agility", agility);
-        currentStats.put("charisma", charisma);
-        currentStats.put("luck", luck);
-        return currentStats;
     }
 
     /**
@@ -126,9 +95,13 @@ public class SessionStatsServiceImpl implements SessionStatsService {
     public SessionStatSnapshotsDTO addSnapshot(Long sessionId) {
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        PersonasBaseStatsEntity baseStats = personasBaseStatsRepository.findBySessionId(storySession.getId()).orElseThrow(() ->
+                new NoSuchElementException("해당 페르소나의 스텟이 존재하지 않습니다."));
+
+        StatDeltaSumProjection statLogs = sessionStatLogsRepository.sumDeltasBySessionId(sessionId);
 
         // 현재 합산 스텟 기준으로 스냅샷 생성
-        Map<String, Integer> currentStats = getCurrentStats(sessionId);
+        Map<String, Integer> currentStats = getStringIntegerMap(baseStats, statLogs);
 
         SessionStatSnapshotsEntity snapshot = SessionStatSnapshotsEntity.createSessionStatSnapshots(
                 currentStats.get("wisdom"),
@@ -183,5 +156,31 @@ public class SessionStatsServiceImpl implements SessionStatsService {
                 .orElseThrow(() -> new NoSuchElementException("해당 스냅샷은 존재 하지 않습니다."));
         sessionStatSnapshot.modifySnapshotSummary(summary);
         sessionStatSnapshotsRepository.save(sessionStatSnapshot);
+    }
+
+
+    /* Helper Methode */
+
+    /**
+     * 기본 스텟에 전체 스텟 로그 변화량을 누적 합산
+     *
+     * @param baseStats 페르소나 기본 스텟
+     * @param statLogs  세션 전체 스텟 변화 로그 목록
+     * @return 현재 스텟 합산 값
+     */
+    private Map<String, Integer> getStringIntegerMap(PersonasBaseStatsEntity baseStats, StatDeltaSumProjection statLogs) {
+        int wisdom = baseStats.getWisdom() + statLogs.getWisdomSum();
+        int strength = baseStats.getStrength() + statLogs.getStrengthSum();
+        int agility = baseStats.getAgility() + statLogs.getAgilitySum();
+        int charisma = baseStats.getCharisma() + statLogs.getCharismaSum();
+        int luck = baseStats.getLuck() + statLogs.getLuckSum();
+
+        Map<String, Integer> currentStats = new HashMap<>();
+        currentStats.put("wisdom", wisdom);
+        currentStats.put("strength", strength);
+        currentStats.put("agility", agility);
+        currentStats.put("charisma", charisma);
+        currentStats.put("luck", luck);
+        return currentStats;
     }
 }

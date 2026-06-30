@@ -101,8 +101,11 @@ public class MypageController {
             HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
+            String errorMsg = bindingResult.getFieldError() != null
+                    ? bindingResult.getFieldError().getDefaultMessage()
+                    : "입력값을 확인해주세요.";
             redirectAttributes.addFlashAttribute(
-                    "errors", bindingResult.getFieldError("nickname").getDefaultMessage());
+                    "errors", errorMsg);
             return "redirect:/mypage/profile";
         }
         userService.modifyNickname(user.getUser().getId(), form.nickname());
@@ -131,9 +134,9 @@ public class MypageController {
 
         // 세션 무효화 SecurityContext 초기화를 Security가 처리
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        new SecurityContextLogoutHandler().logout(request, response, auth);
+        new SecurityContextLogoutHandler().logout(request, response, auth); // 직접 세션 무효화
 
-        return "redirect:/auth/logout";
+        return "redirect:/auth/login"; // 로그아웃 페이지로 굳이 이동할 필요는 없음
     }
 
     /**

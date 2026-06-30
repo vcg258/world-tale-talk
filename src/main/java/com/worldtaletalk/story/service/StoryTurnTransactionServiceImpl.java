@@ -270,10 +270,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @param storySessionsDTO 세션 정보
      * @return 진행도
      */
-    private PhaseType resolvePhase(StorySessionsDTO storySessionsDTO) {
-        WorldsEntity world = worldsRepository.findById(storySessionsDTO.getWorldId()).orElseThrow(() ->
-                new NoSuchElementException("해당 세계관은 존재하지 않습니다."));
-        double ratio = (double) storySessionsDTO.getCurrentTurn() / world.getTargetTurn();
+    private PhaseType resolvePhase(StorySessionsDTO storySessionsDTO, int currentTurn) {
+        double ratio = (double) storySessionsDTO.getCurrentTurn() / currentTurn;
         if (ratio < 0.33) return PhaseType.EARLY; // 초입
         if (ratio < 0.66) return PhaseType.MID; // 중간
         return PhaseType.LATE; // 완결
@@ -302,7 +300,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @return 아이템 등급 확정
      */
     private ItemGrade resolveItemGrade(ItemContext itemContext, StorySessionsDTO storySessionsDTO) {
-        PhaseType phaseType = resolvePhase(storySessionsDTO);
+        PhaseType phaseType = resolvePhase(storySessionsDTO, storySessionsDTO.getCurrentTurn());
         List<ItemGradeProbabilitiesEntity> probabilities = itemGradeProbabilitiesRepository.findAllByPhase(phaseType);
         // Phase로 조회를 했는데 비었을 경우 COMMON 으로 fallback
         if (probabilities.isEmpty()) {

@@ -56,13 +56,15 @@ public class StoryServiceImpl implements StoryService {
                         },
                         // 서사 스트리밍 완료 -> 블로킹 후속 작업은 boundedElastic에서 실행
                         () -> Schedulers.boundedElastic().schedule(() -> {
+                            TurnProcessResult result = null;
+
                             try {
                                 // LLM 2차 호출: 메타데이터 (선택지, 스탯 변화 등)
                                 LlmTurnResult llmTurnResult = storyAiService.generateMetadata(
                                         sessionId, userInput, narrativeBuilder.toString());
 
                                 // 트랜잭션 2: 턴 완료 (스탯 로그, 아이템, 엔딩 처리)
-                                TurnProcessResult result = storyTurnTransactionService.completeTurn(
+                                result = storyTurnTransactionService.completeTurn(
                                         sessionId, choiceNumber, statLogsDTO, llmTurnResult);
 
                                 // 엔딩 도달 시 메인 스토리 요약 저장
@@ -81,7 +83,13 @@ public class StoryServiceImpl implements StoryService {
 
                                 completeConsumer.accept(result);
                             } catch (Exception e) {
-                                storyTurnTransactionService.compensateTurn(sessionId, statLogsDTO);
+                                boolean alreadyCompensated = result != null
+                                        && (result.getChoices() == null || result.getChoices().isEmpty())
+                                        && result.getEndingType() == null;
+
+                                if (!alreadyCompensated) {
+                                    storyTurnTransactionService.compensateTurn(sessionId, statLogsDTO);
+                                }
                                 errorConsumer.accept(e);
                             }
                         })

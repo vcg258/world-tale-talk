@@ -1,5 +1,7 @@
 package com.worldtaletalk.session.controller;
 
+import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.story.service.StoryService;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -23,6 +26,7 @@ public class StoryWebSocketController {
     private final StoryService storyService;
     private final SimpMessagingTemplate messagingTemplate;
     private final StoryCacheService storyCacheService;
+    private final StorySessionsService storySessionsService;
 
     // 메인 스토리 턴 요청 메시지 - 선택지 번호 입력와 자유 입력 두 타입을 하나의 레코드로 처리함
     private record StoryInputMessage(
@@ -55,10 +59,19 @@ public class StoryWebSocketController {
      * WS-00: 스토리 시작 (첫 서사 생성)
      *
      * @param sessionId 세션 PK
+     * @param user      현재 로그인 유저
      */
     @MessageMapping("/story/{sessionId}/start")
-    public void startStory(@DestinationVariable Long sessionId) {
+    public void startStory(@DestinationVariable Long sessionId,
+                           @AuthenticationPrincipal AuthenticatedUser user) {
         String destination = "/topic/story/" + sessionId;
+
+        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+            return;
+        }
+
         log.info("스토리 시작 요청 sessionId: {}", sessionId);
         storyService.processStoryStream(
                 sessionId, "이야기를 시작해주세요.", null,
@@ -96,12 +109,20 @@ public class StoryWebSocketController {
      *
      * @param sessionId 세션 PK
      * @param message   유저 입력 (CHOICE / FREE_TEXT)
+     * @param user      현재 로그인 유저
      */
     @MessageMapping("/story/{sessionId}")
     public void processTurn(@DestinationVariable Long sessionId,
-                            @Valid @Payload StoryInputMessage message
+                            @Valid @Payload StoryInputMessage message,
+                            @AuthenticationPrincipal AuthenticatedUser user
     ) {
         String destination = "/topic/story/" + sessionId;
+
+        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+            return;
+        }
 
         log.info("스토리 턴 요청 sessionId: {} type: {}", sessionId, message.type());
 
@@ -143,12 +164,20 @@ public class StoryWebSocketController {
      *
      * @param sessionId 세션 PK
      * @param message   유저 입력
+     * @param user      현재 로그인 유저
      */
     @MessageMapping("/epilogue/{sessionId}")
     public void processEpilogue(@DestinationVariable Long sessionId,
-                                @Valid @Payload EpilogueInputMessage message
+                                @Valid @Payload EpilogueInputMessage message,
+                                @AuthenticationPrincipal AuthenticatedUser user
     ) {
         String destination = "/topic/epilogue/" + sessionId;
+
+        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+            return;
+        }
 
         log.info("에필로그 턴 요청 sessionId: {} content: {}", sessionId, message.content());
 

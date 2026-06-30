@@ -46,6 +46,18 @@ public class WorldsServiceImpl implements WorldsService {
     }
 
     /**
+     * 세계관 단건 조회 (활성화)
+     *
+     * @param id PK
+     * @return 세계관
+     */
+    @Override
+    public WorldsDTO getWorldByActiveId(Long id) {
+        return worldsRepository.findByIdAndActiveTrue(id).map(worldsMapper::toDTO).orElseThrow(() ->
+                new NoSuchElementException("지정한 세계관이 없습니다."));
+    }
+
+    /**
      * 활성화 된 세계관만 조회
      *
      * @return 활성화 세계관
@@ -137,8 +149,8 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional
     @Override
     public void deleteWorld(Long id) {
-        storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         worldsRepository.deleteById(id);
+        storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         log.info("세계관 삭제 : {}", id);
     }
 }

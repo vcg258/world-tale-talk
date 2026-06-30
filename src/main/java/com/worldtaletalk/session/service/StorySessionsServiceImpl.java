@@ -179,6 +179,19 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     }
 
     /**
+     * 세션 소유자 검증 (WebSocket 인가용)
+     *
+     * @param sessionId 세션 PK
+     * @param userId    회원 PK
+     * @return 소유자 여부
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean isOwner(Long sessionId, Long userId) {
+        return storySessionsRepository.existsByIdAndUsersId(sessionId, userId);
+    }
+
+    /**
      * 세션 삭제
      *
      * @param id PK

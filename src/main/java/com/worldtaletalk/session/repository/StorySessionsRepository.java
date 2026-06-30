@@ -24,20 +24,6 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
     @Query("SELECT s FROM StorySessionsEntity s JOIN FETCH s.users JOIN FETCH s.worlds WHERE s.id = :id")
     Optional<StorySessionsEntity> findByIdWithUserAndWorld(@Param("id") long id);
 
-    // 해당 세계관의 완결 횟수
-    @Query("""
-                SELECT COUNT(s) FROM StorySessionsEntity s
-                    WHERE s.users.id = :userId
-                        AND s.worlds.id = :worldId
-                            AND s.status = 'COMPLETED'
-                                AND s.id <= :sessionId
-            """)
-    int countPlayNumber(
-            @Param("userId") Long userId,
-            @Param("worldId") Long worldId,
-            @Param("sessionId") Long sessionId
-    );
-
     // 회원 세션 전체 조회
     @Query(value = """
             SELECT s FROM StorySessionsEntity s
@@ -76,4 +62,21 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             @Param("status") SessionStatus status,
             Pageable pageable
     );
+
+    // 해당 세계관의 완결 횟수
+    @Query("""
+                SELECT COUNT(s) FROM StorySessionsEntity s
+                    WHERE s.users.id = :userId
+                        AND s.worlds.id = :worldId
+                            AND s.status = 'COMPLETED'
+                                AND s.id <= :sessionId
+            """)
+    int countPlayNumber(
+            @Param("userId") Long userId,
+            @Param("worldId") Long worldId,
+            @Param("sessionId") Long sessionId
+    );
+
+    // 세션 소유자 검증 (WebSocket 인가용)
+    boolean existsByIdAndUsersId(Long id, Long userId);
 }

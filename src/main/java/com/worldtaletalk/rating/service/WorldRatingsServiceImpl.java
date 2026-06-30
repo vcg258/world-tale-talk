@@ -142,7 +142,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         log.info("평점 및 리뷰 생성 {}", worldRatingSave);
 
         // 세계관 평균 평점 업데이트 (TODO 2자리 고정 반올림으로 지정함 필요하면 수정)
-        double ratingAvg = getWorldRatingAverage(world.getId());
+        double ratingAvg = worldRatingsRepository.findAverageScoreByWorldId(world.getId());
         world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
         WorldsEntity worldSave = worldsRepository.save(world);
         log.info("새로운 평점 및 리뷰 등록으로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());
@@ -173,7 +173,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         WorldsEntity world = rating.getWorld();
 
         // 세계관 평균 평점 재계산
-        double ratingAvg = getWorldRatingAverage(world.getId());
+        double ratingAvg = worldRatingsRepository.findAverageScoreByWorldId(world.getId());
         world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
         WorldsEntity worldSave = worldsRepository.save(world);
         log.info("평점 및 리뷰 수정으로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());
@@ -198,7 +198,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
 
 
         // 세계관 평균 평점 재계산
-        double ratingAvg = getWorldRatingAverage(world.getId());
+        double ratingAvg = worldRatingsRepository.findAverageScoreByWorldId(world.getId());
         world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
         WorldsEntity worldSave = worldsRepository.save(world);
         log.info("평점 및 리뷰 삭제로 인해 세계관 평균 평점 재계산 값 : {}", worldSave.getRatingAvg());

@@ -1,5 +1,6 @@
 package com.worldtaletalk.global.handler;
 
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
     public String handlerNoSuchElementException(NoSuchElementException e, Model model) {
         model.addAttribute("message", e.getMessage());
         return "error/404"; // 404
+    }
+
+    // 동시 요청이 들어왔을시 나중에 커밋된 사용자 예외
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public String handleOptimisticLock(ObjectOptimisticLockingFailureException e, Model model) {
+        model.addAttribute("error", e.getMessage());
+        return "error/409";
     }
 
     // 그 외 서버에러

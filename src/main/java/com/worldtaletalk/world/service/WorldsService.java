@@ -21,6 +21,14 @@ public interface WorldsService {
     WorldsDTO getWorldById(Long id);
 
     /**
+     * 세계관 단건 조회 (활성화)
+     *
+     * @param id PK
+     * @return 세계관
+     */
+    WorldsDTO getWorldByActiveId(Long id);
+
+    /**
      * 활성화 된 세계관만 조회
      *
      * @return 활성화 세계관

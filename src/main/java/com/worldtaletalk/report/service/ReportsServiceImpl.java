@@ -65,6 +65,12 @@ public class ReportsServiceImpl implements ReportsService {
         UserEntity user = userRepository.findById(reportsDTO.getUserId()).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 존재 하지 않습니다."));
 
+        // 중복 신고 예외
+        if (reportsRepository.existsByUserIdAndReport(
+                reportsDTO.getUserId(), reportsDTO.getTargetType(), reportsDTO.getTargetId())) {
+            throw new IllegalStateException("이미 신고한 대상입니다.");
+        }
+
         ReportsEntity report = ReportsEntity.createReport(
                 reportsDTO.getTargetType(),
                 reportsDTO.getTargetId(),
