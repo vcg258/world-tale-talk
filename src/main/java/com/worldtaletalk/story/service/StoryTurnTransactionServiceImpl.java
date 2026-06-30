@@ -108,6 +108,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         WorldsEntity worlds = worldsRepository.findById(state.getWorlds().getId()).orElseThrow(() ->
                 new NoSuchElementException("해당 세계관은 존재하지 않습니다."));
 
+        // 현재 진행도 %
         int progressPercent = Math.min(100, (int) (state.getCurrentTurn() * 100.0 / worlds.getTargetTurn()));
 
         // 지정된 targetTurn에는 무조건적으로 엔딩 처리
@@ -151,7 +152,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
 
         // 스텟, 아이템, 엔딩 도달 처리
         StorySessionsDTO storySessionsDTO = storySessionsMapper.toDTO(state);
-        TurnProcessResult turnProcessResult = applyStoryResult(storySessionsDTO, llmTurnResult);
+        TurnProcessResult turnProcessResult = applyStoryResult(storySessionsDTO, llmTurnResult, worlds.getTargetTurn());
         SessionStatSnapshotsDTO sessionStatSnapshotsDTO = null;
 
         if (turnProcessResult.getEndingType() != null) {
@@ -270,8 +271,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @param storySessionsDTO 세션 정보
      * @return 진행도
      */
-    private PhaseType resolvePhase(StorySessionsDTO storySessionsDTO, int currentTurn) {
-        double ratio = (double) storySessionsDTO.getCurrentTurn() / currentTurn;
+    private PhaseType resolvePhase(StorySessionsDTO storySessionsDTO, int targetTurn) {
+        double ratio = (double) storySessionsDTO.getCurrentTurn() / targetTurn;
         if (ratio < 0.33) return PhaseType.EARLY; // 초입
         if (ratio < 0.66) return PhaseType.MID; // 중간
         return PhaseType.LATE; // 완결
@@ -299,8 +300,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @param storySessionsDTO 세션 정보
      * @return 아이템 등급 확정
      */
-    private ItemGrade resolveItemGrade(ItemContext itemContext, StorySessionsDTO storySessionsDTO) {
-        PhaseType phaseType = resolvePhase(storySessionsDTO, storySessionsDTO.getCurrentTurn());
+    private ItemGrade resolveItemGrade(ItemContext itemContext, StorySessionsDTO storySessionsDTO, int currentTurn) {
+        PhaseType phaseType = resolvePhase(storySessionsDTO, currentTurn);
         List<ItemGradeProbabilitiesEntity> probabilities = itemGradeProbabilitiesRepository.findAllByPhase(phaseType);
         // Phase로 조회를 했는데 비었을 경우 COMMON 으로 fallback
         if (probabilities.isEmpty()) {
@@ -409,14 +410,14 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * @param llmTurnResult    LLM 응답 파싱 결과
      * @return 턴 처리 결과
      */
-    private TurnProcessResult applyStoryResult(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult) {
+    private TurnProcessResult applyStoryResult(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult, int currentTurn) {
         // 아이템 처리 로직
         SessionItemsDTO sessionItemsDTO = null;
         Long removeItemId = null;
         String removeItemName = null;
 
         if (llmTurnResult.getItemEvent() != null) {
-            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO);
+            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO, currentTurn);
             log.info("아이템 이벤트 type : {}, 힌트 : {}, 확정 등급 : {}",
                     llmTurnResult.getItemEvent().getType(), llmTurnResult.getItemEvent().getItemContext(), itemGrade);
 

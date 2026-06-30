@@ -29,20 +29,23 @@ public interface WorldRatingsRepository extends JpaRepository<WorldRatingsEntity
     // 해당 세계관에 회원이 남긴 별점 및 리뷰 조회
     Optional<WorldRatingsEntity> findByUsersIdAndWorldId(Long userId, Long worldId);
 
+    // 해당 세션의 별점 등록 여부 확인 (중복 방지용)
+    boolean existsByStorySessionId(Long storySessionId);
+
     // 별점 및 리뷰 전체 조회 (관리자용) (필터 조건)
     @Query(value = """
             SELECT w FROM WorldRatingsEntity w
                 JOIN FETCH w.users
                     JOIN FETCH w.world
                         WHERE (:worldId IS NULL OR w.world.id = :worldId)
-                            AND (:nickname IS NULL OR w.users.nickname LIKE '%' + :nickname + '%')
+                            AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', :nickname, '%') )
             """,
             countQuery = """
                     SELECT COUNT(w) FROM WorldRatingsEntity w
                         JOIN w.users
                             JOIN w.world
                                 WHERE (:worldId IS NULL OR w.world.id = :worldId)
-                                    AND (:nickname IS NULL OR w.users.nickname LIKE '%' + :nickname + '%')
+                                    AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', :nickname, '%') )
                     """)
     Page<WorldRatingsEntity> findAllByWorldIdAndNickname(
             @Param("worldId") Long worldId,

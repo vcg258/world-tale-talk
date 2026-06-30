@@ -42,10 +42,18 @@ public class RememberMeTokenRepository implements PersistentTokenRepository {
     @Override
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         String seriesKey = SERIES_KEY.formatted(series);
+
+        // userKey 갱신을 위한 기존 토큰 조회
+        Map<Object, Object> existing = redisTemplate.opsForHash().entries(seriesKey);
+        if (!existing.isEmpty()) {
+            String username = (String) existing.get("username");
+            String userKey = USER_KEY.formatted(username);
+            redisTemplate.expire(userKey, TOKEN_TTL);
+        }
+
         redisTemplate.opsForHash().put(seriesKey, "tokenValue", tokenValue);
         redisTemplate.opsForHash().put(seriesKey, "date", String.valueOf(lastUsed.getTime()));
         redisTemplate.expire(seriesKey, TOKEN_TTL);
-
     }
 
     @Override

@@ -51,6 +51,14 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 최초 소셜 로그인 요청 시 rememberMe 파라미터를 세션에 저장 (쿠키 체크 전에 처리해야 신규 로그인에서도 저장됨)
+        if (request.getRequestURI().startsWith("/oauth2/authorization")) {
+            String rememberMe = request.getParameter("rememberMe");
+            if ("true".equals(rememberMe)) {
+                request.getSession().setAttribute("oauth2RememberMe", true);
+            }
+        }
+
         String cookieValue = extractCookie(request, "oauth2-remember-me");
         // 쿠키 값 확인 없으면 스킵
         if (cookieValue == null) {
@@ -136,12 +144,6 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             invalidateCookie(response);
         }
 
-        if (request.getRequestURI().startsWith("/oauth2/authorization")) {
-            String rememberMe = request.getParameter("rememberMe");
-            if ("true".equals(rememberMe)) {
-                request.getSession().setAttribute("oauth2RememberMe", true);
-            }
-        }
         filterChain.doFilter(request, response);
     }
 

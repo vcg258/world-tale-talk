@@ -140,10 +140,12 @@ public class UserEntity extends BaseTimeEntity {
      * 회원 삭제
      */
     public void userWithdrawal() {
-        this.loginId = null;
-        this.nickname = "del_" + this.id + "_" + this.nickname;
-        this.email = "del_" + this.id + "_" + this.email;
+        String delNickname = "del_" + this.id + "_" + this.nickname;
+        String delEmail    = "del_" + this.id + "_" + this.email;
+        this.loginId  = null;
+        this.nickname = delNickname.length() > 50 ? delNickname.substring(0, 50) : delNickname;
+        this.email    = delEmail.length()    > 70 ? delEmail.substring(0, 70)    : delEmail;
         this.password = null;
-        this.status = UserStatus.DELETED;
+        this.status   = UserStatus.DELETED;
     }
 }

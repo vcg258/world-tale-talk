@@ -118,6 +118,11 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         if (storySession.getStatus() != SessionStatus.COMPLETED) {
             throw new IllegalStateException("완결된 세션만 평점을 등록할 수 있습니다.");
         }
+
+        // 세션 기준 중복 등록 방지
+        if (worldRatingsRepository.existsByStorySessionId(storySession.getId())) {
+            throw new IllegalStateException("이미 평점을 등록한 세션입니다.");
+        }
         if (!Objects.equals(storySession.getUsers().getId(), worldRatingsDTO.getUserId())) {
             throw new IllegalArgumentException("해당 세션의 유저가 아닙니다.");
         }
