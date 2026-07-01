@@ -149,7 +149,9 @@ public class WorldsServiceImpl implements WorldsService {
     @Transactional
     @Override
     public void deleteWorld(Long id) {
-        worldsRepository.deleteById(id);
+        WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제할 세계관을 찾을 수 없습니다."));
+        worldsRepository.delete(world);
         storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         log.info("세계관 삭제 : {}", id);
     }

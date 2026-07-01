@@ -4,6 +4,7 @@ import com.worldtaletalk.global.security.CustomUserDetails;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2User;
 import com.worldtaletalk.user.domain.user.UserRole;
 import com.worldtaletalk.user.domain.user.UserStatus;
+import com.worldtaletalk.user.dto.SocialAccountsDTO;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.dto.UserSuspensionsDTO;
 import com.worldtaletalk.user.service.UserService;
@@ -48,8 +49,9 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         UserDTO userDTO = UserDTO.builder().id(1L).email("user@test.com").role(UserRole.USER).status(UserStatus.ACTIVE).build();
+        SocialAccountsDTO socialAccountsDTO = SocialAccountsDTO.builder().id(1L).build();
         loginUser = new CustomUserDetails(userDTO);
-        CustomOAuth2User oauthUser = new CustomOAuth2User(userDTO, Map.of(), false);
+        CustomOAuth2User oauthUser = new CustomOAuth2User(userDTO, socialAccountsDTO, Map.of(), false);
         oauthToken = new OAuth2AuthenticationToken(oauthUser, oauthUser.getAuthorities(), "google");
 
         given(userService.getUser(any())).willReturn(

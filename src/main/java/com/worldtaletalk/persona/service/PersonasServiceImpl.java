@@ -142,7 +142,9 @@ public class PersonasServiceImpl implements PersonasService {
     @Transactional
     @Override
     public void removePersona(Long id) {
-        personasRepository.deleteById(id);
+        PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제할 페르소나를 찾을 수 없습니다."));
+        personasRepository.delete(persona);
         log.info("페르소나 제거 완료 personaId : {}", id);
     }
 }

@@ -48,7 +48,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             String token = UUID.randomUUID().toString();
 
             rememberMeTokenRepository.createNewToken(
-                    new PersistentRememberMeToken(userDTO.getEmail(), series, token, new Date()));
+                    new PersistentRememberMeToken(String.valueOf(userDTO.getId()), series, token, new Date()));
 
             String cookieValue = Base64.getEncoder().encodeToString((series + ":" + token).getBytes());
 

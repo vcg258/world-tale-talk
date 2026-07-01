@@ -66,9 +66,7 @@ public class StoryWebSocketController {
                            @AuthenticationPrincipal AuthenticatedUser user) {
         String destination = "/topic/story/" + sessionId;
 
-        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
-            messagingTemplate.convertAndSend(destination,
-                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+        if (isForbidden(sessionId, user, destination)) {
             return;
         }
 
@@ -118,9 +116,7 @@ public class StoryWebSocketController {
     ) {
         String destination = "/topic/story/" + sessionId;
 
-        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
-            messagingTemplate.convertAndSend(destination,
-                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+        if (isForbidden(sessionId, user, destination)) {
             return;
         }
 
@@ -173,9 +169,7 @@ public class StoryWebSocketController {
     ) {
         String destination = "/topic/epilogue/" + sessionId;
 
-        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
-            messagingTemplate.convertAndSend(destination,
-                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+        if (isForbidden(sessionId, user, destination)) {
             return;
         }
 
@@ -186,11 +180,32 @@ public class StoryWebSocketController {
                 message.content(),
                 chunk -> messagingTemplate.convertAndSend(
                         destination, new StoryMessageResponse("DELTA", "story", chunk, null)),
+                () -> messagingTemplate.convertAndSend(
+                        destination, new StoryMessageResponse("COMPLETE", null, null, null)),
                 e -> {
                     log.error("에필로그 처리 실패 sessionId: {}", sessionId, e);
                     messagingTemplate.convertAndSend(
                             destination, new StoryMessageResponse("ERROR", null, e.getMessage(), null));
                 }
         );
+    }
+
+    /* Helper Methode */
+
+    /**
+     * 세션 소유자 검증, 아니면 STOMP로 에러 응답 전송
+     *
+     * @param sessionId   세션 PK
+     * @param user        현재 로그인 유저
+     * @param destination STOMP 응답 destination
+     * @return 소유자면 true, 아니면 false (에러 응답은 이 메서드 안에서 이미 전송됨)
+     */
+    private boolean isForbidden(Long sessionId, AuthenticatedUser user, String destination) {
+        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse("ERROR", null, "권한이 없습니다.", null));
+            return true;
+        }
+        return false;
     }
 }

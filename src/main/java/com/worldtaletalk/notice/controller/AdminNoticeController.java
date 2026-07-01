@@ -59,7 +59,11 @@ public class AdminNoticeController {
      */
     @GetMapping("/new")
     public String noticeForm(Model model) {
-        model.addAttribute("notice", NoticesDTO.builder().build()); // TODO 협의 필요 모델에 아무것도 넘기지 않았기때문에 NPE 방지 필요시 수정
+        model.addAttribute("notice", NoticesDTO.builder()
+                .title("")
+                .content("")
+                .active(false)
+                .build());
         return "admin/notices/form";
     }
 

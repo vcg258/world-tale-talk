@@ -269,6 +269,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      * 아이템 확률을 정하기 위한 진행도 퍼센트 계산
      *
      * @param storySessionsDTO 세션 정보
+     * @param targetTurn       세계관 목표 턴수
      * @return 진행도
      */
     private PhaseType resolvePhase(StorySessionsDTO storySessionsDTO, int targetTurn) {
@@ -298,10 +299,11 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      *
      * @param itemContext LLM 아이템 힌트
      * @param storySessionsDTO 세션 정보
+     * @param targetTurn  세계관 목표 턴수
      * @return 아이템 등급 확정
      */
-    private ItemGrade resolveItemGrade(ItemContext itemContext, StorySessionsDTO storySessionsDTO, int currentTurn) {
-        PhaseType phaseType = resolvePhase(storySessionsDTO, currentTurn);
+    private ItemGrade resolveItemGrade(ItemContext itemContext, StorySessionsDTO storySessionsDTO, int targetTurn) {
+        PhaseType phaseType = resolvePhase(storySessionsDTO, targetTurn);
         List<ItemGradeProbabilitiesEntity> probabilities = itemGradeProbabilitiesRepository.findAllByPhase(phaseType);
         // Phase로 조회를 했는데 비었을 경우 COMMON 으로 fallback
         if (probabilities.isEmpty()) {
@@ -408,16 +410,17 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
      *
      * @param storySessionsDTO 세션 정보
      * @param llmTurnResult    LLM 응답 파싱 결과
+     * @param targetTurn       세계관 목표 턴수
      * @return 턴 처리 결과
      */
-    private TurnProcessResult applyStoryResult(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult, int currentTurn) {
+    private TurnProcessResult applyStoryResult(StorySessionsDTO storySessionsDTO, LlmTurnResult llmTurnResult, int targetTurn) {
         // 아이템 처리 로직
         SessionItemsDTO sessionItemsDTO = null;
         Long removeItemId = null;
         String removeItemName = null;
 
         if (llmTurnResult.getItemEvent() != null) {
-            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO, currentTurn);
+            ItemGrade itemGrade = resolveItemGrade(llmTurnResult.getItemEvent().getItemContext(), storySessionsDTO, targetTurn);
             log.info("아이템 이벤트 type : {}, 힌트 : {}, 확정 등급 : {}",
                     llmTurnResult.getItemEvent().getType(), llmTurnResult.getItemEvent().getItemContext(), itemGrade);
 

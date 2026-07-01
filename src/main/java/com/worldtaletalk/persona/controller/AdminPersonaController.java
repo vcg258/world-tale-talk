@@ -137,4 +137,49 @@ public class AdminPersonaController {
                 .build());
         return "redirect:/admin/personas";
     }
+
+    /**
+     * AP-05: 페르소나 수정
+     *
+     * @param id                 페르소나 PK
+     * @param form               페르소나 폼
+     * @param bindingResult      폼 검증 결과
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/personas (페르소나 목록 페이지)
+     */
+    @PostMapping("/{id}")
+    public String update(
+            @PathVariable Long id,
+            @Valid @ModelAttribute PersonaForm form,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error",
+                    bindingResult.getFieldError().getDefaultMessage());
+            return "redirect:/admin/personas/" + id + "/edit";
+        }
+
+        PersonasBaseStatsDTO existingBaseStats = personasBaseStatsService.getPersonasBaseStatsByPersonaId(id);
+        personasService.modifyPersona(PersonasDTO.builder()
+                .id(id)
+                .worldId(form.worldId())
+                .name(form.name())
+                .description(form.description())
+                .background(form.background())
+                .active(form.isActive())
+                .build());
+
+        personasBaseStatsService.modifyPersonaBaseStats(PersonasBaseStatsDTO.builder()
+                .id(existingBaseStats.getId())
+                .personaId(id)
+                .wisdom(form.wisdom())
+                .strength(form.strength())
+                .agility(form.agility())
+                .charisma(form.charisma())
+                .luck(form.luck())
+                .build());
+
+        return "redirect:/admin/personas";
+    }
 }

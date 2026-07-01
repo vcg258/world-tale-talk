@@ -24,7 +24,7 @@ public interface UserService {
     UserDTO getUser(Long id);
 
     /**
-     * 이메일로 유저 조회 (OAuth2 로그인시 기존 회원 여부 확인용)
+     * 이메일로 유저 조회 (OAuth2 기존 회원 계정 중복 확인용)
      *
      * @param email 이메일
      * @return 유저 정보 (미가입시 null)
@@ -32,18 +32,47 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
 
     /**
-     * 유저 생성 (OAuth2 최초 로그인시 자동 가입)
+     * 유저 생성 (OAuth2전용 회원가입)
      *
      * @param userDTO 유저 정보
      */
     UserDTO createUser(UserDTO userDTO);
 
     /**
-     * 회원 정보 수정
+     * 회원가입 (일반 회원가입)
      *
-     * @param userDTO 변경할 회원 정보
+     * @param userDTO 가입할 유저 정보
+     * @param confirmPassword 비밀번호 확인
+     * @return 생성된 유저 정보
      */
-    void modifyUser(UserDTO userDTO);
+    UserDTO signUp(UserDTO userDTO, String confirmPassword);
+
+    /**
+     * 비밀번호 변경 (일반 회원 전용, 소셜 전용 계정은 대상 아님)
+     *
+     * @param id              유저 PK
+     * @param newPassword     변경할 새 비밀번호
+     * @param currentPassword 현재 비밀번호 (재확인용)
+     * @param confirmPassword 새 비밀번호 재입력
+     */
+    void modifyPassword(Long id, String newPassword, String currentPassword, String confirmPassword);
+
+    /**
+     * 이메일 변경 (OTP 인증 완료 후 호출)
+     *
+     * @param id              유저 PK
+     * @param newEmail        변경할 새 이메일 (OTP 인증 완료된 이메일)
+     * @param currentPassword 현재 비밀번호 (재확인용, 소셜 전용 계정은 검증 생략)
+     */
+    void modifyEmail(Long id, String newEmail, String currentPassword);
+
+    /**
+     * 현재 비밀번호 재확인
+     *
+     * @param id              유저 PK
+     * @param currentPassword 현재 비밀번호
+     */
+    void verifyCurrentPassword(Long id, String currentPassword);
 
     /**
      * 계정 상태 변경 (정지 / 삭제 / 활성화) (관리자용)
@@ -76,6 +105,14 @@ public interface UserService {
      * @return 중복 여부 (true: 중복)
      */
     boolean existsByNickname(String nickname);
+
+    /**
+     * 로그인 아이디 중복 여부 확인
+     *
+     * @param loginId 로그인 아이디
+     * @return 중복 여부 (true: 중복)
+     */
+    boolean existsByLoginId(String loginId);
 
     /**
      * 회원 탈퇴

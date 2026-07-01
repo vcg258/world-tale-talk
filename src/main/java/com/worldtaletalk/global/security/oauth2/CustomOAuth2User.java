@@ -1,6 +1,7 @@
 package com.worldtaletalk.global.security.oauth2;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.user.dto.SocialAccountsDTO;
 import com.worldtaletalk.user.dto.UserDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2User implements OAuth2User, AuthenticatedUser {
     private final UserDTO userDTO; // 회원 정보
+    private final SocialAccountsDTO socialAccountsDTO;
     private final Map<String, Object> attributes; // 회원 속성
     private final boolean isNewUser; // 최초 소셜로그인시 닉네임 변경 여부 (소셜로그인으로 들어올시 무조건적으로 닉네임을 받기 때문에 닉네임을 설정하도록 강제하기 위함)
 
     /**
-     * 유저 식별자 반환 (이메일)
+     * 유저 식별자 반환 (제공사 고유 아이디)
      *
-     * @return 이메일
+     * @return 제공사 고유 아이디
      */
     @Override
     public String getName() {
-        return userDTO.getEmail();
+        return socialAccountsDTO.getProviderId();
     }
 
     /**

@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     // 닉네임 중복 체크
     boolean existsByNickname(String nickname);
+
+    // 로그인 아이디 중복 체크
+    boolean existsByLoginId(String loginId);
 }

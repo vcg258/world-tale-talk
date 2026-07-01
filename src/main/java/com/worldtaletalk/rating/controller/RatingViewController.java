@@ -115,23 +115,13 @@ public class RatingViewController {
             return "redirect:/worlds/" + worldId + "/ratings?sessionId=" + form.sessionId();
         }
 
-        WorldRatingsDTO existingRating = worldRatingsService.getMyRatingByWorldAndUser(worldId, user.getUser().getId());
-        if (existingRating == null) {
-            worldRatingsService.addWorldRating(WorldRatingsDTO.builder()
-                    .userId(user.getUser().getId())
-                    .worldId(worldId)
-                    .storySessionId(form.sessionId())
-                    .score(form.score())
-                    .review(form.review())
-                    .build());
-        } else {
-            worldRatingsService.modifyWorldRating(WorldRatingsDTO.builder()
-                    .id(existingRating.getId())
-                    .userId(user.getUser().getId())
-                    .score(form.score())
-                    .review(form.review())
-                    .build());
-        }
+        worldRatingsService.saveRating(WorldRatingsDTO.builder()
+                .userId(user.getUser().getId())
+                .worldId(worldId)
+                .storySessionId(form.sessionId())
+                .score(form.score())
+                .review(form.review())
+                .build());
 
         redirectAttributes.addFlashAttribute("message", "별점이 저장되었습니다");
         return "redirect:/mypage/ratings";

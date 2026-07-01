@@ -27,10 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -92,7 +89,7 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             }
 
             // 조회한 유저가 없거나 정지, 탈퇴된 상태라면 만료처리
-            UserDTO user = userService.getUserByEmail(stored.getUsername());
+            UserDTO user = userService.getUser(Long.parseLong(stored.getUsername()));
             if (user == null || !UserStatus.ACTIVE.equals(user.getStatus())) {
                 invalidateCookie(response);
                 filterChain.doFilter(request, response);
@@ -100,15 +97,18 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             }
 
             // 기존 소셜회원 확인
-            SocialAccountsDTO socialAccounts = socialAccountsService.getSocialAccountByEmail(stored.getUsername());
-            if (socialAccounts == null) {
+            List<SocialAccountsDTO> socialAccounts = socialAccountsService.getSocialAccountsByUserId(user.getId());
+            if (socialAccounts.isEmpty()) {
                 invalidateCookie(response);
                 filterChain.doFilter(request, response);
                 return;
             }
 
             String newToken = UUID.randomUUID().toString();
-            String registrationId = socialAccounts.getProvider().name().toLowerCase();
+            // TODO: 소셜 연동 추가 기능(다건 연동) 도입 후에는 리멤버미 쿠키 자체에 provider 정보도 같이 저장해서
+            // 정확히 어떤 계정으로 로그인했었는지 복원하도록 재작업 필요
+            SocialAccountsDTO socialAccountsDTO = socialAccounts.get(0);
+            String registrationId = socialAccountsDTO.getProvider().name().toLowerCase();
 
             rememberMeTokenRepository.updateToken(series, newToken, new Date());
 
@@ -124,7 +124,7 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
 
             response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
-            CustomOAuth2User oAuth2User = new CustomOAuth2User(user, Map.of(), false);
+            CustomOAuth2User oAuth2User = new CustomOAuth2User(user, socialAccountsDTO, Map.of(), false);
             OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(
                     oAuth2User, oAuth2User.getAuthorities(), registrationId);
 

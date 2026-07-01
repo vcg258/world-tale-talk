@@ -185,6 +185,28 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     }
 
     /**
+     * 별점 등록/수정 (기존 별점 존재 여부를 내부에서 판단해서 등록/수정 분기)
+     *
+     * @param worldRatingsDTO 별점 정보
+     */
+    @Transactional
+    @Override
+    public void saveRating(WorldRatingsDTO worldRatingsDTO) {
+        WorldRatingsDTO existingRating = getMyRatingByWorldAndUser(worldRatingsDTO.getWorldId(), worldRatingsDTO.getUserId());
+
+        if (existingRating == null) {
+            addWorldRating(worldRatingsDTO);
+        } else {
+            modifyWorldRating(WorldRatingsDTO.builder()
+                    .id(existingRating.getId())
+                    .userId(worldRatingsDTO.getUserId())
+                    .score(worldRatingsDTO.getScore())
+                    .review(worldRatingsDTO.getReview())
+                    .build());
+        }
+    }
+
+    /**
      * 별점 삭제
      *
      * @param id 별점 PK

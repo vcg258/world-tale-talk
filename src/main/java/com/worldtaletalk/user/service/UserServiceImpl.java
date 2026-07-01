@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 이메일로 유저 조회 (OAuth2 로그인시 기존 회원 여부 확인용)
+     * 이메일로 유저 조회 (OAuth2 기존 회원 계정 중복 확인용)
      *
      * @param email 이메일
      * @return 유저 정보 (미가입시 null)
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 유저 생성 (OAuth2 최초 로그인시 자동 가입)
+     * 유저 생성 (OAuth2전용 회원가입)
      *
      * @param userDTO 유저 정보
      */
@@ -82,10 +82,8 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity user = UserEntity.createUser(
-                userDTO.getLoginId(), // 소셜 로그인 유저는 아이디가 필요없으므로 null 예외안함
                 userDTO.getNickname(),
-                userDTO.getEmail(),
-                userDTO.getPassword() != null ? passwordEncoder.encode(userDTO.getPassword()) : null
+                userDTO.getEmail()
         );
         UserEntity save = userRepository.save(user);
         log.info("회원가입 완료 : {}", save);
@@ -94,22 +92,123 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 회원 정보 수정
+     * 회원가입 (일반 회원가입)
      *
-     * @param userDTO 변경할 회원 정보
+     * @param userDTO         가입할 유저 정보
+     * @param confirmPassword 비밀번호 확인
+     * @return 생성된 유저 정보
      */
     @Transactional
     @Override
-    public void modifyUser(UserDTO userDTO) {
-        UserEntity user = userRepository.findById(userDTO.getId()).orElseThrow(() ->
-                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
-        user.modifyInformationUser(
-                userDTO.getEmail() != null ? userDTO.getEmail() : user.getEmail(),
-                userDTO.getPassword() != null ?
-                        passwordEncoder.encode(userDTO.getPassword()) : user.getPassword()
+    public UserDTO signUp(UserDTO userDTO, String confirmPassword) {
+        if (userDTO.getLoginId() == null || userDTO.getLoginId().trim().isEmpty()) {
+            throw new IllegalArgumentException("아이디는 필수 값입니다.");
+        }
+        if (userDTO.getNickname() == null || userDTO.getNickname().trim().isEmpty()) {
+            throw new IllegalArgumentException("닉네임은 필수 값입니다.");
+        }
+        if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("이메일은 필수 값입니다.");
+        }
+        if (userRepository.existsByLoginId(userDTO.getLoginId())) {
+            throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
+        }
+        if (userRepository.existsByNickname(userDTO.getNickname())) {
+            throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+        }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+        }
+        if (userDTO.getPassword() == null || !userDTO.getPassword().equals(confirmPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        if (userDTO.getPassword().length() < 8 || userDTO.getPassword().length() > 50) {
+            throw new IllegalArgumentException("비밀번호는 8~50자로 입력해주세요.");
+        }
+        if (containsHangul(userDTO.getPassword())) {
+            throw new IllegalArgumentException("비밀번호에 한글은 사용할 수 없습니다.");
+        }
+
+        UserEntity user = UserEntity.createBasicUser(
+                userDTO.getLoginId(),
+                userDTO.getNickname(),
+                userDTO.getEmail(),
+                passwordEncoder.encode(userDTO.getPassword())
         );
         UserEntity save = userRepository.save(user);
-        log.info("회원정보 수정 완료 : {}", save);
+        log.info("일반 회원가입 완료 : {}", save);
+
+        return userMapper.toDTO(save);
+    }
+
+    /**
+     * 비밀번호 변경 (일반 회원 전용, 소셜 전용 계정은 대상 아님)
+     *
+     * @param id              유저 PK
+     * @param newPassword     변경할 새 비밀번호
+     * @param currentPassword 현재 비밀번호 (재확인용)
+     * @param confirmPassword 새 비밀번호 재입력
+     */
+    @Transactional
+    @Override
+    public void modifyPassword(Long id, String newPassword, String currentPassword, String confirmPassword) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        validateCurrentPassword(user, currentPassword);
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+        }
+        if (newPassword.length() < 8 || newPassword.length() > 50) {
+            throw new IllegalArgumentException("비밀번호는 8~50자로 입력해주세요.");
+        }
+        if (containsHangul(newPassword)) {
+            throw new IllegalArgumentException("비밀번호에 한글은 사용할 수 없습니다.");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 다른 비밀번호를 입력해주세요.");
+        }
+
+        user.modifyInformationUser(user.getEmail(), passwordEncoder.encode(newPassword));
+        UserEntity save = userRepository.save(user);
+        log.info("비밀번호 변경 완료 : {}", save);
+    }
+
+    /**
+     * 이메일 변경 (OTP 인증 완료 후 호출)
+     *
+     * @param id              유저 PK
+     * @param newEmail        변경할 새 이메일 (OTP 인증 완료된 이메일)
+     * @param currentPassword 현재 비밀번호 (재확인용, 소셜 전용 계정은 검증 생략)
+     */
+    @Transactional
+    @Override
+    public void modifyEmail(Long id, String newEmail, String currentPassword) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+
+        // 소셜 전용 계정(비밀번호 없음)은 재확인 자체를 생략, 일반/연동 계정은 검증
+        if (user.getPassword() != null) {
+            validateCurrentPassword(user, currentPassword);
+        }
+
+        user.modifyInformationUser(newEmail, user.getPassword());
+        UserEntity save = userRepository.save(user);
+        log.info("이메일 변경 완료 : {}", save);
+    }
+
+    /**
+     * 현재 비밀번호 재확인
+     *
+     * @param id              유저 PK
+     * @param currentPassword 현재 비밀번호
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public void verifyCurrentPassword(Long id, String currentPassword) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        validateCurrentPassword(user, currentPassword);
     }
 
     /**
@@ -139,6 +238,11 @@ public class UserServiceImpl implements UserService {
     public void modifyNickname(Long id, String nickname) {
         UserEntity user = userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+
+        // 중복 예외처리
+        if (!nickname.equals(user.getNickname()) && userRepository.existsByNickname(nickname)) {
+            throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+        }
         user.changeNickname(nickname);
         UserEntity save = userRepository.save(user);
         log.info("닉네임 변경 완료 : {}", save);
@@ -169,6 +273,18 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 로그인 아이디 중복 여부 확인
+     *
+     * @param loginId 로그인 아이디
+     * @return 중복 여부 (true: 중복)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByLoginId(String loginId) {
+        return userRepository.existsByLoginId(loginId);
+    }
+
+    /**
      * 회원 탈퇴
      *
      * @param id 유저 PK
@@ -181,5 +297,33 @@ public class UserServiceImpl implements UserService {
         user.userWithdrawal();
         UserEntity save = userRepository.save(user);
         log.info("회원 탈퇴 완료 : {}", save);
+    }
+
+
+    /* Helper Methode */
+
+    /**
+     * 현재 비밀번호 재확인 (비밀번호 / 이메일 변경 공통 검증)
+     *
+     * @param user            유저 엔티티
+     * @param currentPassword 입력받은 현재 비밀번호
+     */
+    private void validateCurrentPassword(UserEntity user, String currentPassword) {
+        if (user.getPassword() == null) {
+            throw new IllegalStateException("소셜 로그인 계정은 이 기능을 사용할 수 없습니다.");
+        }
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    /**
+     * 비밀번호 한글 체크
+     *
+     * @param value 비밀번호
+     * @return 한글 사용 여부
+     */
+    private boolean containsHangul(String value) {
+        return value.chars().anyMatch(c -> Character.UnicodeScript.of(c) == Character.UnicodeScript.HANGUL);
     }
 }

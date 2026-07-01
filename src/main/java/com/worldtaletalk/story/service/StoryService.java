@@ -27,9 +27,11 @@ public interface StoryService {
      * @param sessionId     세션 PK
      * @param userInput     유저 프롬프트
      * @param chunkConsumer 에필로그 토큰 수신 콜백
+     * @param completeConsumer 스트리밍 정상 종료 콜백 (구조화된 결과가 없어 Runnable)
      * @param errorConsumer 오류 발생 시 예외 전달 콜백
      */
     void processEpilogueStream(Long sessionId, String userInput,
                                Consumer<String> chunkConsumer,
+                               Runnable completeConsumer,
                                Consumer<Exception> errorConsumer);
 }

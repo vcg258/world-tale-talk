@@ -27,24 +27,12 @@ class UserServiceImplTest {
     @Test
     void createUser() {
         UserDTO userDTO = UserDTO.builder()
-                .loginId("test")
                 .nickname("test")
-                .password("test")
                 .email("test@example.com")
                 .build();
         userService.createUser(userDTO);
     }
 
-    @Test
-    void modifyUser() {
-        UserDTO userDTO = UserDTO.builder()
-                .id(1L)
-                .nickname("test12")
-//                .password("test")
-//                .email("test@example.com")
-                .build();
-        userService.modifyUser(userDTO);
-    }
 
     @Test
     void modifyUserStatus() {

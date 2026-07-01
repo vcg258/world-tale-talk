@@ -21,7 +21,8 @@ import java.util.List;
 @Table(name = "users")
 public class UserEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private Long id; // PK
+    @Id
+    private Long id; // PK
 
     @Column(length = 30, unique = true) // null허용 이유 : 소셜로그인 할시 아이디 불필요
     private String loginId; // 로그인 아이디
@@ -83,22 +84,39 @@ public class UserEntity extends BaseTimeEntity {
     /* 도메인 행위 메서드 */
 
     /**
-     * 회원가입
+     * 회원가입 (OAuth2 전용)
      *
-     * @param login_id 로그인 아이디
      * @param nickname 닉네임
-     * @param email 이메일
-     * @param password 비밀번호 (BCrypt)
+     * @param email    이메일
      * @return 회원정보
      */
     public static UserEntity createUser(
-            String login_id,
+            String nickname,
+            String email
+    ) {
+        return UserEntity.builder()
+                .nickname(nickname)
+                .email(email)
+                .build();
+    }
+
+    /**
+     * 회원가입 (일반 전용)
+     *
+     * @param loginId 로그인 아이디
+     * @param nickname 닉네임
+     * @param email 이메일
+     * @param password 비밀번호
+     * @return 회원정보
+     */
+    public static UserEntity createBasicUser(
+            String loginId,
             String nickname,
             String email,
             String password
     ) {
         return UserEntity.builder()
-                .loginId(login_id)
+                .loginId(loginId)
                 .nickname(nickname)
                 .email(email)
                 .password(password)
@@ -108,7 +126,7 @@ public class UserEntity extends BaseTimeEntity {
     /**
      * 회원 정보 수정
      *
-     * @param email 이메일
+     * @param email    이메일
      * @param password 비밀번호
      */
     public void modifyInformationUser(
@@ -121,6 +139,7 @@ public class UserEntity extends BaseTimeEntity {
 
     /**
      * 닉네임 변경
+     *
      * @param nickname 변경할 닉네임
      */
     public void changeNickname(String nickname) {
@@ -141,11 +160,11 @@ public class UserEntity extends BaseTimeEntity {
      */
     public void userWithdrawal() {
         String delNickname = "del_" + this.id + "_" + this.nickname;
-        String delEmail    = "del_" + this.id + "_" + this.email;
-        this.loginId  = null;
+        String delEmail = "del_" + this.id + "_" + this.email;
+        this.loginId = null;
         this.nickname = delNickname.length() > 50 ? delNickname.substring(0, 50) : delNickname;
-        this.email    = delEmail.length()    > 70 ? delEmail.substring(0, 70)    : delEmail;
+        this.email = delEmail.length() > 70 ? delEmail.substring(0, 70) : delEmail;
         this.password = null;
-        this.status   = UserStatus.DELETED;
+        this.status = UserStatus.DELETED;
     }
 }

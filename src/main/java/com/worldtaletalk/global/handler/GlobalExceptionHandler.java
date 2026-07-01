@@ -1,6 +1,7 @@
 package com.worldtaletalk.global.handler;
 
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +17,13 @@ public class GlobalExceptionHandler {
     public String handleIllegalArgumentException(IllegalArgumentException e, Model model) {
         model.addAttribute("message", e.getMessage());
         return "error/400"; // 400
+    }
+
+    // 본인 소유가 아닌 리소스 접근 예외
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleAccessDeniedException(AccessDeniedException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "error/403"; // 403
     }
 
     // 중복, 이미 처리됨 예외

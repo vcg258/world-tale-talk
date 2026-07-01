@@ -2,6 +2,7 @@ package com.worldtaletalk.config;
 
 import com.worldtaletalk.global.security.CustomUserDetailsService;
 import com.worldtaletalk.global.security.RememberMeTokenRepository;
+import com.worldtaletalk.global.security.TempNicknameEnforcementFilter;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2UserService;
 import com.worldtaletalk.global.security.oauth2.OAuth2RememberMeFilter;
 import com.worldtaletalk.global.security.oauth2.OAuth2SuccessHandler;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final RememberMeTokenRepository rememberMeTokenRepository;
     private final OAuth2RememberMeFilter oAuth2RememberMeFilter;
+    private final TempNicknameEnforcementFilter tempNicknameEnforcementFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,6 +39,7 @@ public class SecurityConfig {
                                 "/auth/nickname", // 닉네임 설정
                                 "/auth/suspended", // 정지 안내
                                 "/css/**", "/js/**", "/images/**",
+                                "/auth/signup", "/auth/signup/**", // 회원가입
                                 "/test" // TODO 테스트용
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 시작 관리자 권한 아니면 접근 불가
@@ -47,7 +50,7 @@ public class SecurityConfig {
                                 .sessionFixation(fix -> fix.changeSessionId())
                                 .maximumSessions(-1)
                                 .sessionRegistry(sessionRegistry())
-                                .expiredUrl("/auth/suspended")
+                                .expiredUrl("/auth/login?expired=true")
                 )
                 .formLogin(auth -> auth
                         .loginPage("/auth/login")
@@ -62,6 +65,7 @@ public class SecurityConfig {
                         .loginPage("/auth/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
+                        .failureUrl("/auth/login?error=true")
                 )
                 .rememberMe(remember -> remember
                         .rememberMeParameter("rememberMe")
@@ -82,6 +86,7 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_FORBIDDEN))
                 )
                 .addFilterBefore(oAuth2RememberMeFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tempNicknameEnforcementFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/ws/**") // 웹소켓 제외
                 );

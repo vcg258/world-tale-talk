@@ -142,7 +142,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @param userInput 유저 입력
      * @return 서사 텍스트 토큰 단위 스트리밍 Flux
      */
-    @Transactional(readOnly = true)
     @Override
     public Flux<String> streamNarrative(Long sessionId, String userInput) {
         return Mono.fromCallable(() -> {
@@ -379,7 +378,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @param userInput 유저 입력
      * @return 에필로그 텍스트 토큰 단위 스트리밍 Flux
      */
-    @Transactional(readOnly = true)
     @Override
     public Flux<String> streamEpilogue(Long sessionId, String userInput) {
         return Mono.fromCallable(() -> {

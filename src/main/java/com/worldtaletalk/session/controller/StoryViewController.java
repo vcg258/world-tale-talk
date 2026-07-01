@@ -1,6 +1,7 @@
 package com.worldtaletalk.session.controller;
 
 import com.worldtaletalk.chat.service.ChatMessagesService;
+import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.inventory.service.SessionItemsService;
 import com.worldtaletalk.persona.service.PersonasService;
 import com.worldtaletalk.session.domain.SessionStatus;
@@ -11,6 +12,8 @@ import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +36,7 @@ public class StoryViewController {
     private final SessionStatsService sessionStatsService;
     private final StoryCacheService storyCacheService;
 
-    // 플레이 화면 스탯 뷰 모델 - 5가지 스탯 수치를 묶어 Thymeleaf에 전달하는 레코드
+    // 플레이 화면 스탯 뷰 모델 - 5가지 스탯 수치를 묶어 타임리프에 전달하는 레코드
     private record CurrentStatsVM(
             int wisdom,
             int strength,
@@ -46,11 +49,13 @@ public class StoryViewController {
      * S-01: 플레이 화면 조회
      *
      * @param id    세션 PK
+     * @param user  현재 로그인 유저
      * @param model 뷰에 전달할 모델
      * @return story/play (플레이 화면)
      */
     @GetMapping("/{id}/play")
-    public String play(@PathVariable Long id, Model model) {
+    public String play(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
+        validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         Map<String, Integer> stats = sessionStatsService.getCurrentStats(id);
         PlayStateCacheDTO playState = storyCacheService.getPlayState(id);
@@ -79,11 +84,13 @@ public class StoryViewController {
     /**
      * S-02: 세션 포기
      *
-     * @param id 세션 PK
+     * @param id   세션 PK
+     * @param user 현재 로그인 유저
      * @return redirect:/mypage/sessions (내 세션 목록 페이지)
      */
     @PostMapping("/{id}/abandon")
-    public String abandon(@PathVariable Long id) {
+    public String abandon(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
+        validateOwner(id, user);
         storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
         return "redirect:/mypage/sessions";
     }
@@ -92,11 +99,13 @@ public class StoryViewController {
      * S-03: 엔딩 화면 조회
      *
      * @param id    세션 PK
+     * @param user  현재 로그인 유저
      * @param model 뷰에 전달할 모델
      * @return story/ending (엔딩 화면)
      */
     @GetMapping("/{id}/ending")
-    public String ending(@PathVariable Long id, Model model) {
+    public String ending(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
+        validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         model.addAttribute("session", storySession);
         model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
@@ -109,11 +118,13 @@ public class StoryViewController {
     /**
      * S-04: 에필로그 시작
      *
-     * @param id 세션 PK
+     * @param id   세션 PK
+     * @param user 현재 로그인 유저
      * @return redirect:/sessions/{id}/epilogue (에필로그 화면)
      */
     @PostMapping("/{id}/epilogue")
-    public String epilogue(@PathVariable Long id) {
+    public String epilogue(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
+        validateOwner(id, user);
         storySessionsService.modifyStorySessionByStatus(id, SessionStatus.EPILOGUE);
         return "redirect:/sessions/" + id + "/epilogue";
     }
@@ -122,11 +133,13 @@ public class StoryViewController {
      * S-05: 에필로그 화면 조회
      *
      * @param id    세션 PK
+     * @param user  현재 로그인 유저
      * @param model 뷰에 전달할 모델
      * @return story/epilogue (에필로그 화면)
      */
     @GetMapping("/{id}/epilogue")
-    public String epilogue(@PathVariable Long id, Model model) {
+    public String epilogue(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
+        validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         model.addAttribute("session", storySession);
         model.addAttribute("snapshotStats", sessionStatsService.getSnapshot(id));
@@ -137,11 +150,13 @@ public class StoryViewController {
     /**
      * S-06: 세션 완료
      *
-     * @param id 세션 PK
+     * @param id   세션 PK
+     * @param user 현재 로그인 유저
      * @return redirect:/worlds/{worldId}/ratings (별점 등록 폼 페이지)
      */
     @PostMapping("/{id}/complete")
-    public String complete(@PathVariable Long id) {
+    public String complete(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
+        validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
         storySessionsService.modifyStorySessionByStatus(storySession.getId(), SessionStatus.COMPLETED);
         return "redirect:/worlds/" + storySession.getWorldId() + "/ratings?sessionId=" + storySession.getId();
@@ -152,11 +167,28 @@ public class StoryViewController {
      *
      * @param sessionId 세션 PK
      * @param itemId    아이템 PK
+     * @param user      현재 로그인 유저
      * @return redirect:/sessions/{sessionId}/play (플레이 화면)
      */
     @PostMapping("/{sessionId}/items/{itemId}/drop")
-    public String drop(@PathVariable Long sessionId, @PathVariable Long itemId) {
+    public String drop(@PathVariable Long sessionId, @PathVariable Long itemId, @AuthenticationPrincipal AuthenticatedUser user) {
+        validateOwner(sessionId, user);
         sessionItemsService.dropItem(sessionId, itemId);
         return "redirect:/sessions/" + sessionId + "/play";
+    }
+
+
+    /* Helper Method */
+
+    /**
+     * 세션 소유자 검증 (HTTP 요청용)
+     *
+     * @param sessionId 세션 PK
+     * @param user      현재 로그인 유저
+     */
+    private void validateOwner(Long sessionId, AuthenticatedUser user) {
+        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
+            throw new AccessDeniedException("본인 세션만 접근할 수 있습니다.");
+        }
     }
 }

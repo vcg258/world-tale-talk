@@ -1,5 +1,6 @@
 package com.worldtaletalk.global.security.oauth2;
 
+import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.user.domain.socialaccounts.SocialProvider;
 import com.worldtaletalk.user.dto.SocialAccountsDTO;
 import com.worldtaletalk.user.dto.UserDTO;
@@ -7,6 +8,8 @@ import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -38,9 +41,44 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 소셜 제공자별 이메일 검증
         String email = extractEmail(registrationId, attributes);
 
-        // 기존 회원인지 확인 조회
-        UserDTO existsUser = userService.getUserByEmail(email);
+        // 소셜 제공사 고유 번호
+        String providerId = extractProviderId(registrationId, attributes);
 
+        // 소셜 제공사
+        SocialProvider provider = SocialProvider.valueOf(registrationId.toUpperCase());
+
+        // 현재 로그인이 됐는지 확인
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (currentAuth != null && currentAuth.isAuthenticated() &&
+                currentAuth.getPrincipal() instanceof AuthenticatedUser currentUser) {
+            // 기존 연동된 계정 여부 확인
+            SocialAccountsDTO existingLink = socialAccountsService.getSocialAccount(provider, providerId);
+            if (existingLink != null) {
+                if(existingLink.getUserId().equals(currentUser.getUser().getId())) {
+                    throw new OAuth2AuthenticationException("이미 연동된 계정입니다.");
+                }
+                throw new OAuth2AuthenticationException("이미 다른계정과 연동된 계정입니다.");
+            }
+            UserDTO linkUser = currentUser.getUser();
+            SocialAccountsDTO newSocialAccount = SocialAccountsDTO.builder()
+                    .userId(linkUser.getId())
+                    .providerId(providerId)
+                    .providerId(providerId)
+                    .build();
+            socialAccountsService.createSocialAccount(newSocialAccount);
+            return new CustomOAuth2User(linkUser, newSocialAccount, attributes, true);
+
+        }
+
+        // 이미 소셜 연동된 계정인지 확인
+        SocialAccountsDTO existingLink = socialAccountsService.getSocialAccount(provider, providerId);
+        if (existingLink != null) {
+            UserDTO user = userService.getUser(existingLink.getUserId());
+            return new CustomOAuth2User(user, existingLink, attributes, false);
+        }
+
+        // 기존 회원인지 확인 조회 (소셜계정 연동)
+        UserDTO existsUser = userService.getUserByEmail(email);
         if (existsUser == null) {
             // 임시로 닉네임 지정 (소셜로그인으로 인해 소셜에 사용하던 닉네임이 중복될 수 있으므로 강제 지정)
             String tempNickname = "TEMP_" + UUID.randomUUID().toString().substring(0, 8);
@@ -51,16 +89,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO user = userService.createUser(newUser);
 
             // 소셜계정 등록 (신규)
-            String providerId = extractProviderId(registrationId, attributes);
-            socialAccountsService.createSocialAccount(SocialAccountsDTO.builder()
+            SocialAccountsDTO newSocialAccounts = SocialAccountsDTO.builder()
                     .userId(user.getId())
-                    .provider(SocialProvider.valueOf(registrationId.toUpperCase()))
+                    .provider(provider)
                     .providerId(providerId)
-                    .build());
-            // 새로운 유저 true (임시닉네임이 부여받았기 때문에 강제로 닉네임 변경 시켜줄 예정)
-            return new CustomOAuth2User(user, attributes, true);
+                    .build();
+            socialAccountsService.createSocialAccount(newSocialAccounts);
+            // 새로운 유저 true (임시닉네임이 부여받았기 때문에 강제로 닉네임 변경 시켜주도록 함)
+            return new CustomOAuth2User(user, newSocialAccounts, attributes, true);
         }
-        return new CustomOAuth2User(existsUser, attributes, false);
+        log.warn("이미 가입된 이메일입니다. 기존 방식으로 로그인후 회원정보에서 연동후 다시시도 하세요.");
+        throw new OAuth2AuthenticationException("이미 가입된 이메일입니다. 기존 방식으로 로그인후 회원정보에서 연동후 다시시도 하세요.");
     }
 
     /**

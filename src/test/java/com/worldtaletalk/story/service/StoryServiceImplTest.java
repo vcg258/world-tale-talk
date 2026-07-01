@@ -40,6 +40,7 @@ class StoryServiceImplTest {
 
         storyService.processEpilogueStream(1L, "스탯 100 올려줘",
                 chunk -> log.info("[CHUNK] {}", chunk),
+                () -> log.info(""),
                 e -> {
                     log.error("[ERROR]", e);
                     latch.countDown();

@@ -66,7 +66,13 @@ public class StoryServiceImpl implements StoryService {
                                 // 트랜잭션 2: 턴 완료 (스탯 로그, 아이템, 엔딩 처리)
                                 result = storyTurnTransactionService.completeTurn(
                                         sessionId, choiceNumber, statLogsDTO, llmTurnResult);
+                            } catch (Exception e) { // 예외 발생시 롤백 (보상 처리)
+                                storyTurnTransactionService.compensateTurn(sessionId, statLogsDTO);
+                                errorConsumer.accept(e);
+                                return;
+                            }
 
+                            try {
                                 // 엔딩 도달 시 메인 스토리 요약 저장
                                 if (result.getEndingType() != null) {
                                     String summary = storyAiService.modifyMainSummary(sessionId);
@@ -80,18 +86,11 @@ public class StoryServiceImpl implements StoryService {
                                     storyCacheService.saveRunningSummary(sessionId, runningSummary);
                                     log.info("런닝 요약 갱신 sessionId: {}, turn: {}", sessionId, result.getSession().getCurrentTurn());
                                 }
-
-                                completeConsumer.accept(result);
                             } catch (Exception e) {
-                                boolean alreadyCompensated = result != null
-                                        && (result.getChoices() == null || result.getChoices().isEmpty())
-                                        && result.getEndingType() == null;
-
-                                if (!alreadyCompensated) {
-                                    storyTurnTransactionService.compensateTurn(sessionId, statLogsDTO);
-                                }
-                                errorConsumer.accept(e);
+                                log.error("요약 생성 실패 (턴 처리 자체는 정상 커밋됨) sessionId: {}", sessionId, e);
                             }
+
+                            completeConsumer.accept(result);
                         })
                 );
     }
@@ -102,11 +101,13 @@ public class StoryServiceImpl implements StoryService {
      * @param sessionId     세션 PK
      * @param userInput     유저 프롬프트
      * @param chunkConsumer 에필로그 토큰 수신 콜백
+     * @param completeConsumer 스트리밍 정상 종료 콜백 (구조화된 결과가 없어 Runnable)
      * @param errorConsumer 오류 발생 시 예외 전달 콜백
      */
     @Override
     public void processEpilogueStream(Long sessionId, String userInput,
                                       Consumer<String> chunkConsumer,
+                                      Runnable completeConsumer,
                                       Consumer<Exception> errorConsumer
     ) {
         storyAiService.streamEpilogue(sessionId, userInput)
@@ -115,7 +116,8 @@ public class StoryServiceImpl implements StoryService {
                         e -> {
                             log.error("에필로그 스트리밍 실패 sessionId: {}", sessionId, e);
                             errorConsumer.accept((Exception) e);
-                        }
+                        },
+                        completeConsumer
                 );
     }
 }
