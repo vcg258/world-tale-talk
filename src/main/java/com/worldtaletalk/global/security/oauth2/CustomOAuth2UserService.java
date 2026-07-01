@@ -66,7 +66,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .build();
             socialAccountsService.createSocialAccount(newSocialAccount);
-            return new CustomOAuth2User(linkUser, newSocialAccount, attributes, true);
+            return new CustomOAuth2User(linkUser, newSocialAccount, attributes, false);
 
         }
 
