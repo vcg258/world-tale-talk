@@ -62,7 +62,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO linkUser = currentUser.getUser();
             SocialAccountsDTO newSocialAccount = SocialAccountsDTO.builder()
                     .userId(linkUser.getId())
-                    .providerId(providerId)
+                    .provider(provider)
                     .providerId(providerId)
                     .build();
             socialAccountsService.createSocialAccount(newSocialAccount);
