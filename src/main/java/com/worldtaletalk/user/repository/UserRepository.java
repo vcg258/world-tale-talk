@@ -17,8 +17,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     // 회원 로그인 아이디로 조회
     Optional<UserEntity> findByLoginId(String loginId);
 
-    // 닉네임으로 조회
-    Optional<UserEntity> findByNickname(String nickname);
+    // 로그인 아이디 + 이메일 동시 조회
+    Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email);
 
     // 회원 전체 조회 (필터 적용 닉네임이나 상태로 조회를 하는데 null이 들어올경우 필터 미적용으로 처리)
     @Query("SELECT u FROM UserEntity u WHERE (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%')) AND (:userStatus IS NULL OR u.status = :userStatus)")

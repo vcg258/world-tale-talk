@@ -17,4 +17,7 @@ public interface PersonasRepository extends JpaRepository<PersonasEntity, Long> 
     // 해당 세계관 페르소나 + 기본 스탯 전체 조회
     @Query("SELECT p FROM PersonasEntity p LEFT JOIN FETCH p.personaBaseStats WHERE p.world.id = :worldId")
     List<PersonasEntity> findAllByWorldIdWithBaseStats(@Param("worldId") Long worldId);
+
+    // 해당 세계관에 페르소나가 존재하는지 확인 (세계관 삭제 가드용)
+    boolean existsByWorldId(Long worldId);
 }

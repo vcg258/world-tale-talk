@@ -1,5 +1,6 @@
 package com.worldtaletalk.world.service;
 
+import com.worldtaletalk.persona.repository.PersonasRepository;
 import com.worldtaletalk.story.service.StoryAiService;
 import com.worldtaletalk.world.WorldsMapper;
 import com.worldtaletalk.world.domain.WorldsEntity;
@@ -20,6 +21,7 @@ public class WorldsServiceImpl implements WorldsService {
     private final WorldsRepository worldsRepository;
     private final WorldsMapper worldsMapper;
     private final StoryAiService storyAiService;
+    private final PersonasRepository personasRepository;
 
     /**
      * 세계관 전체 조회 비활성화 포함 (관리자용)
@@ -151,6 +153,9 @@ public class WorldsServiceImpl implements WorldsService {
     public void deleteWorld(Long id) {
         WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("삭제할 세계관을 찾을 수 없습니다."));
+        if (personasRepository.existsByWorldId(id)) {
+            throw new IllegalStateException("연결된 페르소나가 있어 삭제할 수 없습니다. 비활성화를 이용해주세요.");
+        }
         worldsRepository.delete(world);
         storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         log.info("세계관 삭제 : {}", id);

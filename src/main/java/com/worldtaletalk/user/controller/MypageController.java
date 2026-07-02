@@ -9,6 +9,7 @@ import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.user.dto.UserDTO;
+import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +42,7 @@ public class MypageController {
     private final StorySessionsService storySessionsService;
     private final WorldRatingsService worldRatingsService;
     private final EmailOtpService emailOtpService;
+    private final SocialAccountsService socialAccountsService;
 
     // 마이페이지 프로필 수정 요청 폼 - 닉네임 단일 필드를 레코드로 처리함
     private record ProfileForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
@@ -109,6 +111,7 @@ public class MypageController {
     @GetMapping("/profile")
     public String profile(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
         model.addAttribute("user", userService.getUser(user.getUser().getId()));
+        model.addAttribute("socialAccounts", socialAccountsService.getSocialAccountsByUserId(user.getUser().getId()));
         return "mypage/profile";
     }
 
@@ -343,5 +346,29 @@ public class MypageController {
         model.addAttribute("ratingsPage", myRatings);
         return "mypage/ratings";
 
+    }
+
+    /**
+     * M-07: 소셜 계정 연동 해제
+     *
+     * @param user               현재 로그인 유저
+     * @param socialAccountId    해제할 소셜 계정 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/mypage/profile (프로필 페이지)
+     */
+    @PostMapping("/social/{socialAccountId}")
+    public String unlinkSocialAccount(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable Long socialAccountId,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            socialAccountsService.deleteSocialAccount(socialAccountId, user.getUser().getId());
+        } catch (NoSuchElementException  | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            return "redirect:/mypage/profile";
+        }
+        redirectAttributes.addFlashAttribute("message", "소셜 계정 연동이 해제되었습니다.");
+        return "redirect:/mypage/profile";
     }
 }

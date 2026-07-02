@@ -6,11 +6,13 @@ import com.worldtaletalk.user.dto.UserDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.stereotype.Component;
@@ -38,7 +40,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         if (UserStatus.SUSPENDED.equals(userDTO.getStatus())) {
             log.info("정지된 유저 로그인 시도: email={}", userDTO.getEmail());
+            invalidateAuthentication(request);
             response.sendRedirect("/auth/suspended");
+            return;
+        }
+
+        // 탈퇴 회원은 소셜 연동 정보가 남아있어도 비회원과 동일하게 취급 (재로그인 차단)
+        if (UserStatus.DELETED.equals(userDTO.getStatus())) {
+            log.info("탈퇴한 유저 로그인 시도: email={}", userDTO.getEmail());
+            invalidateAuthentication(request);
+            response.sendRedirect("/auth/login?error=true");
             return;
         }
 
@@ -75,5 +86,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         log.info("기존 유저 로그인 성공: email={}", userDTO.getEmail());
         response.sendRedirect("/");
+    }
+
+    /**
+     * 이미 세션에 반영된 인증 정보 무효화 (정지/탈퇴 계정 로그인 시도 시, 인증 자체는 성공했기 때문에 별도 무효화 필요)
+     *
+     * @param request HTTP 요청
+     */
+    private void invalidateAuthentication(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
     }
 }

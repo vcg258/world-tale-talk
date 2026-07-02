@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/worlds")
@@ -29,14 +32,20 @@ public class PersonaViewController {
     public String createSession(
             @PathVariable Long worldId,
             @PathVariable Long personaId,
-            @AuthenticationPrincipal AuthenticatedUser user
+            @AuthenticationPrincipal AuthenticatedUser user,
+            RedirectAttributes redirectAttributes
             ) {
         StorySessionsDTO storySessionsDTO = StorySessionsDTO.builder()
                 .userId(user.getUser().getId())
                 .worldId(worldId)
                 .personaId(personaId)
                 .build();
-        Long storySessionId = storySessionsService.createStorySession(storySessionsDTO);
-        return "redirect:/sessions/" + storySessionId + "/play";
+        try {
+            Long storySessionId = storySessionsService.createStorySession(storySessionsDTO);
+            return "redirect:/sessions/" + storySessionId + "/play";
+        } catch (IllegalStateException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/worlds/{worldId}/personas";
+        }
     }
 }

@@ -42,6 +42,7 @@ public interface SocialAccountsService {
      * 소셜 계정 연동 해제
      *
      * @param id 소셜 계정 PK
+     * @param userId 연동 해제를 요청한 회원 PK
      */
-    void deleteSocialAccount(Long id);
+    void deleteSocialAccount(Long id, Long userId);
 }

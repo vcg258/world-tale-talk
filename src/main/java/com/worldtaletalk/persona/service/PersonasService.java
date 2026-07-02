@@ -48,6 +48,7 @@ public interface PersonasService {
      * 페르소나 추가
      *
      * @param personasDTO 페르소나 정보
+     * @return 생성된 페르소나 PK
      */
     Long addPersona(PersonasDTO personasDTO);
 
@@ -63,5 +64,5 @@ public interface PersonasService {
      *
      * @param id PK
      */
-    void removePersona(Long id);
+    void deletePersona(Long id);
 }

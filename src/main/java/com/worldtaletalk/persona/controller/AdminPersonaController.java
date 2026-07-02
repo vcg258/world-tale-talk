@@ -182,4 +182,23 @@ public class AdminPersonaController {
 
         return "redirect:/admin/personas";
     }
+
+    /**
+     * AP-06: 페르소나 삭제
+     *
+     * @param id                 페르소나 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/personas (페르소나 목록 페이지)
+     */
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            personasService.deletePersona(id);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
+        }
+        redirectAttributes.addFlashAttribute("message", "페르소나가 삭제되었습니다.");
+        return "redirect:/admin/personas";
+    }
 }

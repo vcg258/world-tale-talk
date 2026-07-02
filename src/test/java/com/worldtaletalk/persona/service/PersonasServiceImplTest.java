@@ -49,8 +49,8 @@ class PersonasServiceImplTest {
     }
 
     @Test
-    void removePersona() {
-        personasService.removePersona(5L);
+    void deletePersona() {
+        personasService.deletePersona(5L);
     }
 
     @Test

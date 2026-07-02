@@ -4,6 +4,7 @@ import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.mapper.UserMapper;
+import com.worldtaletalk.user.repository.SocialAccountsRepository;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SocialAccountsRepository socialAccountsRepository;
 
     /**
      * 전체 회원 조회
@@ -64,6 +66,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::toDTO).orElse(null);
+    }
+
+    /**
+     * 로그인 아이디로 유저 조회
+     *
+     * @param loginId 로그인 아이디
+     * @return 유저 정보 (미가입시 null)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public UserDTO getUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId).map(userMapper::toDTO).orElse(null);
+    }
+
+    /**
+     * 로그인 아이디 + 이메일 동시 조회 (비밀번호 찾기 본인 확인용)
+     *
+     * @param loginId 로그인 아이디
+     * @param email   이메일
+     * @return 유저 정보 (불일치시 null)
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public UserDTO getUserByLoginIdAndEmail(String loginId, String email) {
+        return userRepository.findByLoginIdAndEmail(loginId, email).map(userMapper::toDTO).orElse(null);
     }
 
     /**
@@ -172,6 +199,34 @@ public class UserServiceImpl implements UserService {
         user.modifyInformationUser(user.getEmail(), passwordEncoder.encode(newPassword));
         UserEntity save = userRepository.save(user);
         log.info("비밀번호 변경 완료 : {}", save);
+    }
+
+    /**
+     * 비밀번호 재설정 (비밀번호 찾기 기능)
+     *
+     * @param id              유저 PK
+     * @param newPassword     새 비밀번호
+     * @param confirmPassword 새 비밀번호 확인
+     */
+    @Transactional
+    @Override
+    public void resetPassword(Long id, String newPassword, String confirmPassword) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+        }
+        if (newPassword.length() < 8 || newPassword.length() > 50) {
+            throw new IllegalArgumentException("비밀번호는 8~50자로 입력해주세요.");
+        }
+        if (containsHangul(newPassword)) {
+            throw new IllegalArgumentException("비밀번호에 한글은 사용할 수 없습니다.");
+        }
+
+        user.modifyInformationUser(user.getEmail(), passwordEncoder.encode(newPassword));
+        UserEntity save = userRepository.save(user);
+        log.info("비밀번호 재설정 완료 : {}", save);
     }
 
     /**
@@ -296,6 +351,11 @@ public class UserServiceImpl implements UserService {
                 new NoSuchElementException("해당 유저는 존재하지 않습니다."));
         user.userWithdrawal();
         UserEntity save = userRepository.save(user);
+
+        // 연동된 소셜 계정 전체 해제 (재가입시 신규 유저로 인식되도록)
+        long deletedCount = socialAccountsRepository.deleteAllByUsersId(id);
+        log.info("회원 탈퇴로 인한 소셜 계정 연동 전체 해제 userId : {}, 삭제 건수 : {}", id, deletedCount);
+
         log.info("회원 탈퇴 완료 : {}", save);
     }
 

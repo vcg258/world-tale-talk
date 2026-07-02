@@ -32,6 +32,6 @@ class SocialAccountsServiceImplTest {
 
     @Test
     void deleteSocialAccount() {
-        socialAccountsService.deleteSocialAccount(5L);
+        socialAccountsService.deleteSocialAccount(5L, 5L);
     }
 }

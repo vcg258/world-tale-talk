@@ -16,4 +16,10 @@ public interface SocialAccountsRepository extends JpaRepository<SocialAccountsEn
 
     // 회원 이메일로 조회
     Optional<SocialAccountsEntity> findByUsersEmail(String email);
+
+    // 회원계정에 연동된 소셜계정 개수 조회
+    long countByUsersId(Long userId);
+
+    // 회원 탈퇴시 연동된 소셜계정 전체 삭제 (재가입시 신규 유저로 인식되도록)
+    long deleteAllByUsersId(Long userId);
 }

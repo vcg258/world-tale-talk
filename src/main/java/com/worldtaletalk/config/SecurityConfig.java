@@ -1,5 +1,6 @@
 package com.worldtaletalk.config;
 
+import com.worldtaletalk.global.security.CustomAuthenticationFailureHandler;
 import com.worldtaletalk.global.security.CustomUserDetailsService;
 import com.worldtaletalk.global.security.RememberMeTokenRepository;
 import com.worldtaletalk.global.security.TempNicknameEnforcementFilter;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final RememberMeTokenRepository rememberMeTokenRepository;
     private final OAuth2RememberMeFilter oAuth2RememberMeFilter;
     private final TempNicknameEnforcementFilter tempNicknameEnforcementFilter;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,6 +42,8 @@ public class SecurityConfig {
                                 "/auth/suspended", // 정지 안내
                                 "/css/**", "/js/**", "/images/**",
                                 "/auth/signup", "/auth/signup/**", // 회원가입
+                                "/auth/find-id", // 아이디 찾기
+                                "/auth/find-password", "/auth/reset-password", // 비밀번호 찾기
                                 "/test" // TODO 테스트용
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 시작 관리자 권한 아니면 접근 불가
@@ -56,7 +60,7 @@ public class SecurityConfig {
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
                         .defaultSuccessUrl("/", true)
-                        .failureUrl("/auth/login?error=true")
+                        .failureHandler(customAuthenticationFailureHandler)
                         .usernameParameter("loginId")
                         .passwordParameter("password")
 

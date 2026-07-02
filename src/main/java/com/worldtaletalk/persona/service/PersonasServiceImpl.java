@@ -4,6 +4,7 @@ import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.persona.dto.PersonasDTO;
 import com.worldtaletalk.persona.mapper.PersonasMapper;
 import com.worldtaletalk.persona.repository.PersonasRepository;
+import com.worldtaletalk.session.repository.StorySessionsRepository;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class PersonasServiceImpl implements PersonasService {
     private final PersonasRepository personasRepository;
     private final PersonasMapper personasMapper;
     private final WorldsRepository worldsRepository;
+    private final StorySessionsRepository storySessionsRepository;
 
     /**
      * 페르소나 여러건 조회
@@ -86,6 +88,7 @@ public class PersonasServiceImpl implements PersonasService {
      * 페르소나 추가
      *
      * @param personasDTO 페르소나 정보
+     * @return 생성된 페르소나 PK
      */
     @Transactional
     @Override
@@ -141,9 +144,12 @@ public class PersonasServiceImpl implements PersonasService {
      */
     @Transactional
     @Override
-    public void removePersona(Long id) {
+    public void deletePersona(Long id) {
         PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("삭제할 페르소나를 찾을 수 없습니다."));
+        if (storySessionsRepository.existsByPersonasId(id)) {
+            throw new IllegalStateException("해당 페르소나로 진행된 세션이 있어 삭제할 수 없습니다.");
+        }
         personasRepository.delete(persona);
         log.info("페르소나 제거 완료 personaId : {}", id);
     }

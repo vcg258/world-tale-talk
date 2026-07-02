@@ -50,7 +50,7 @@ public interface WorldsService {
     void addWorld(WorldsDTO worldsDTO);
 
     /**
-     * 세꼐관 수정
+     * 세계관 수정
      *
      * @param worldsDTO 수정할 세계관 정보
      */

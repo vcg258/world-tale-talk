@@ -32,6 +32,23 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
 
     /**
+     * 로그인 아이디로 유저 조회
+     *
+     * @param loginId 로그인 아이디
+     * @return 유저 정보 (미가입시 null)
+     */
+    UserDTO getUserByLoginId(String loginId);
+
+    /**
+     * 로그인 아이디 + 이메일 동시 조회 (비밀번호 찾기 본인 확인용)
+     *
+     * @param loginId 로그인 아이디
+     * @param email   이메일
+     * @return 유저 정보 (불일치시 null)
+     */
+    UserDTO getUserByLoginIdAndEmail(String loginId, String email);
+
+    /**
      * 유저 생성 (OAuth2전용 회원가입)
      *
      * @param userDTO 유저 정보
@@ -56,6 +73,15 @@ public interface UserService {
      * @param confirmPassword 새 비밀번호 재입력
      */
     void modifyPassword(Long id, String newPassword, String currentPassword, String confirmPassword);
+
+    /**
+     * 비밀번호 재설정 (비밀번호 찾기 기능)
+     *
+     * @param id              유저 PK
+     * @param newPassword     새 비밀번호
+     * @param confirmPassword 새 비밀번호 확인
+     */
+    void resetPassword(Long id, String newPassword, String confirmPassword);
 
     /**
      * 이메일 변경 (OTP 인증 완료 후 호출)

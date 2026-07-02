@@ -163,4 +163,23 @@ public class AdminWorldController {
                 .build());
         return "redirect:/admin/worlds";
     }
+
+    /**
+     * AW-07: 세계관 삭제
+     *
+     * @param id                 세계관 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/worlds (세계관 목록 페이지)
+     */
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            worldsService.deleteWorld(id);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/worlds";
+        }
+        redirectAttributes.addFlashAttribute("message", "세계관이 삭제되었습니다.");
+        return "redirect:/admin/worlds";
+    }
 }

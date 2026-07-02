@@ -47,9 +47,9 @@ public class CustomUserDetails implements UserDetails, AuthenticatedUser {
     }
 
     /**
-     * 유저 이메일 반환
+     * 유저 로그인 아이디 반환
      *
-     * @return 이메일
+     * @return 로그인 아이디
      */
     @Override
     public String getUsername() {

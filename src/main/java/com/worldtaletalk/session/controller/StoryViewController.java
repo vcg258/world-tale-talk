@@ -92,6 +92,7 @@ public class StoryViewController {
     public String abandon(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user) {
         validateOwner(id, user);
         storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
+        storyCacheService.deleteSessionCache(id);
         return "redirect:/mypage/sessions";
     }
 

@@ -104,9 +104,15 @@ public class StorySessionsServiceImpl implements StorySessionsService {
 
         WorldsEntity world = worldsRepository.findById(storySessionsDTO.getWorldId()).orElseThrow(() ->
                 new NoSuchElementException("해당 세계관은 찾을 수 없습니다."));
+        if (!world.isActive()) {
+            throw new IllegalStateException("비활성화된 세계관에서는 새로운 세션을 시작할 수 없습니다.");
+        }
 
         PersonasEntity persona = personasRepository.findById(storySessionsDTO.getPersonaId()).orElseThrow(() ->
                 new NoSuchElementException("해당 페르소나는 찾을 수 없습니다."));
+        if (!persona.isActive()) {
+            throw new IllegalStateException("비활성화된 페르소나로는 새로운 세션을 시작할 수 없습니다.");
+        }
 
         StorySessionsEntity storySessions = StorySessionsEntity.createSession(
                 user,

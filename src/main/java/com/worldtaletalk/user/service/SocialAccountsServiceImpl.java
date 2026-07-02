@@ -9,6 +9,7 @@ import com.worldtaletalk.user.repository.SocialAccountsRepository;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,12 +86,22 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * 소셜 계정 연동 해제
      *
      * @param id 소셜 계정 PK
+     * @param userId 연동 해제를 요청한 회원 PK
      */
     @Transactional
     @Override
-    public void deleteSocialAccount(Long id) {
+    public void deleteSocialAccount(Long id, Long userId) {
         SocialAccountsEntity socialAccount = socialAccountsRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("해당 소셜 계정이 존재하지 않습니다."));
+
+        if (!socialAccount.getUsers().getId().equals(userId)) {
+            throw new AccessDeniedException("본인이 연동한 소셜 계정만 해제할 수 있습니다.");
+        }
+        if (socialAccount.getUsers().getPassword() == null &&
+                socialAccountsRepository.countByUsersId(userId) <= 1) {
+            throw new IllegalStateException("마지막 남은 수단은 연동 해제할 수 없습니다.");
+        }
+
         socialAccountsRepository.delete(socialAccount);
         log.info("소셜 계정 연동 해제 : {}", socialAccount);
     }

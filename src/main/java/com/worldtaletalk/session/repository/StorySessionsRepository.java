@@ -79,4 +79,7 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
 
     // 세션 소유자 검증 (WebSocket 인가용)
     boolean existsByIdAndUsersId(Long id, Long userId);
+
+    // 해당 페르소나로 진행된 세션이 존재하는지 확인 (페르소나 삭제 가드용)
+    boolean existsByPersonasId(Long personaId);
 }
