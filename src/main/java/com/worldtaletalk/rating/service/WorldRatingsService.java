@@ -40,14 +40,6 @@ public interface WorldRatingsService {
     Page<WorldRatingsDTO> getMyRatings(Long userId, int page);
 
     /**
-     * 세계관 평균 평점 조회
-     *
-     * @param worldId 세계관 PK
-     * @return 평균 평점
-     */
-    double getWorldRatingAverage(Long worldId);
-
-    /**
      * 별점 등록 (세션 완료 후 등록 가능)
      *
      * @param worldRatingsDTO 별점 정보

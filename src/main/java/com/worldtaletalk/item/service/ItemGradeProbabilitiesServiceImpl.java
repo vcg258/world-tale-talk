@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -58,7 +59,19 @@ public class ItemGradeProbabilitiesServiceImpl implements ItemGradeProbabilities
         ItemGradeProbabilitiesEntity entity = itemGradeProbabilitiesRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("해당 확률 설정이 존재하지 않습니다."));
 
-        entity.updateProbability(probability != null ? probability : entity.getProbability());
+        int newValue = probability != null ? probability : entity.getProbability();
+
+        int othersSum = itemGradeProbabilitiesRepository.findAllByPhase(entity.getPhase()).stream()
+                .filter(f -> !Objects.equals(f.getId(), id))
+                .mapToInt(ItemGradeProbabilitiesEntity::getProbability)
+                .sum();
+
+        if (newValue + othersSum != 100) {
+            throw new IllegalArgumentException(
+                    "아이템 전체 등급 총합은 항상 100이여야 합니다. 현재 확률 합 : " + (newValue + othersSum));
+        }
+
+        entity.updateProbability(newValue);
 
         ItemGradeProbabilitiesEntity saved = itemGradeProbabilitiesRepository.save(entity);
         log.info("확률 수정 완료 phase: {}, grade: {}, probability: {}",

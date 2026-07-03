@@ -40,10 +40,10 @@ public class SecurityConfig {
                                 "/auth/login", // 로그인
                                 "/auth/nickname", // 닉네임 설정
                                 "/auth/suspended", // 정지 안내
-                                "/css/**", "/js/**", "/images/**",
                                 "/auth/signup", "/auth/signup/**", // 회원가입
                                 "/auth/find-id", // 아이디 찾기
                                 "/auth/find-password", "/auth/reset-password", // 비밀번호 찾기
+                                "/css/**", "/js/**", "/images/**",
                                 "/test" // TODO 테스트용
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 시작 관리자 권한 아니면 접근 불가

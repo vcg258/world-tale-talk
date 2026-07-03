@@ -3,6 +3,7 @@ package com.worldtaletalk.session.controller;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
+import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ public class AdminSessionController {
 
     private final StorySessionsService storySessionsService;
     private final WorldsService worldsService;
+    private final StoryCacheService storyCacheService;
 
     /**
      * AS-01: 세션 목록 조회
@@ -57,6 +59,7 @@ public class AdminSessionController {
             @PathVariable Long id
     ) {
         storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
+        storyCacheService.deleteSessionCache(id);
         return "redirect:/admin/sessions";
     }
 }

@@ -258,7 +258,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @param narrative streamNarrative가 생성한 서사 텍스트 전문
      * @return 선택지/스탯 변화/아이템 이벤트 등이 담긴 LlmTurnResult
      */
-    @Transactional(readOnly = true)
     @Override
     public LlmTurnResult generateMetadata(Long sessionId, String userInput, String narrative) {
         StorySessionsEntity storySession = storySessionsRepository.findByIdWithWorldAndPersonas(sessionId).orElseThrow(() ->
@@ -471,7 +470,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @param sessionId 세션 PK
      * @return 메인 스토리 요약
      */
-    @Transactional(readOnly = true)
     @Override
     public String generateRunningSummary(Long sessionId) {
         String systemPrompt = """
@@ -499,7 +497,6 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @param sessionId 세션 PK
      * @return 메인스토리 요약
      */
-    @Transactional(readOnly = true)
     @Override
     public String modifyMainSummary(Long sessionId) {
         StorySessionsEntity storySession = storySessionsRepository.findById(sessionId)

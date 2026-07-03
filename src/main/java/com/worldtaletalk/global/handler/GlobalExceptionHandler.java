@@ -1,5 +1,6 @@
 package com.worldtaletalk.global.handler;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
@@ -43,7 +44,14 @@ public class GlobalExceptionHandler {
     // 동시 요청이 들어왔을시 나중에 커밋된 사용자 예외
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public String handleOptimisticLock(ObjectOptimisticLockingFailureException e, Model model) {
-        model.addAttribute("error", e.getMessage());
+        model.addAttribute("message", e.getMessage());
+        return "error/409"; // 409
+    }
+
+    // DB unique 제약 위반 (동시 요청으로 인한 중복 데이터 삽입 시도)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public String handleDataIntegrityViolation(DataIntegrityViolationException e, Model model) {
+        model.addAttribute("message", "이미 사용 중인 값입니다. 다시 시도해주세요.");
         return "error/409";
     }
 

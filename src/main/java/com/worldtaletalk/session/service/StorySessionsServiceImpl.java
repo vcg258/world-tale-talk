@@ -204,8 +204,10 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      */
     @Transactional
     @Override
-    public void deleteStorySessionByStatus(Long id) {
-        storySessionsRepository.deleteById(id);
+    public void deleteStorySession(Long id) {
+        StorySessionsEntity session = storySessionsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        storySessionsRepository.deleteById(session.getId());
         log.info("세션 삭제 완료 : id={}", id);
     }
 }

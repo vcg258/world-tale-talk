@@ -22,8 +22,8 @@ spring:
       ddl-auto: validate # Migration(Flyway) 사용으로 JPA에서 테이블 자동 생성을 하지 않음
     properties:
       hibernate:
-        format_sql: true #쿼리문 보여주는 설정
-    show-sql: true #쿼리문 보여주는 설정
+        format_sql: true # 쿼리문 보여주는 설정
+    show-sql: true # 쿼리문 보여주는 설정
 
 # Migration 설정
   flyway:
@@ -143,7 +143,7 @@ spring:
             enable: true
           timeout: 5000
 
-#Logging 설정
+# Logging 설정
 logging:
   level:
     org:

@@ -89,5 +89,5 @@ public interface StorySessionsService {
      *
      * @param id PK
      */
-    void deleteStorySessionByStatus(Long id);
+    void deleteStorySession(Long id);
 }

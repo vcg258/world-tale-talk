@@ -90,20 +90,6 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     }
 
     /**
-     * 세계관 평균 평점 조회
-     *
-     * @param worldId 세계관 PK
-     * @return 평균 평점
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public double getWorldRatingAverage(Long worldId) {
-        double worldRatings = worldRatingsRepository.findAverageScoreByWorldId(worldId);
-        log.info("평균 평점 : {}",  worldRatings);
-        return worldRatings;
-    }
-
-    /**
      * 별점 등록 (세션 완료 후 등록 가능)
      *
      * @param worldRatingsDTO 별점 정보 (유저 PK, 세계관 PK, 세션 PK, 점수, 한줄 리뷰 포함)
@@ -113,6 +99,10 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     public void addWorldRating(WorldRatingsDTO worldRatingsDTO) {
         StorySessionsEntity storySession = storySessionsRepository.findByIdWithUserAndWorld(worldRatingsDTO.getStorySessionId())
                 .orElseThrow(() -> new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+
+        if (!storySession.getWorlds().isActive()) {
+            throw new IllegalStateException("해당 세계관은 비활성화 상태입니다. 별점 및 리뷰 등록 불가");
+        }
 
         // 완결만 등록
         if (storySession.getStatus() != SessionStatus.COMPLETED) {
@@ -154,7 +144,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     }
 
     /**
-     * 평점 및 리뷰 수정
+     * 별점 및 리뷰 수정
      *
      * @param worldRatingsDTO 수정할 별점 정보
      */
@@ -163,6 +153,10 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
     public void modifyWorldRating(WorldRatingsDTO worldRatingsDTO) {
         WorldRatingsEntity rating = worldRatingsRepository.findById(worldRatingsDTO.getId()).orElseThrow(() ->
                 new NoSuchElementException("해당 평점 및 리뷰는 존재 하지 않습니다."));
+
+        if (!rating.getWorld().isActive()) {
+            throw new IllegalStateException("해당 세계관은 비활성화 상태입니다. 별점 수정 불가");
+        }
 
         if (!Objects.equals(rating.getUsers().getId(), worldRatingsDTO.getUserId())) {
             throw new IllegalArgumentException("해당 작성자와 다릅니다. 수정 불가");
@@ -173,7 +167,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
                 worldRatingsDTO.getReview() != null ? worldRatingsDTO.getReview() : rating.getReview()
         );
         worldRatingsRepository.save(rating);
-        log.info("평점 및 리뷰 수정 완료 : {}", rating);
+        log.info("별점 및 리뷰 수정 완료 : {}", rating);
 
         WorldsEntity world = rating.getWorld();
 

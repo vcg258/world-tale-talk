@@ -94,9 +94,13 @@ public class ReportViewController {
         String serverName = request.getServerName();
 
         // 직접적으로 referer를 사용하기 때문에 외부 도메인이 들어올 수 도 있음 현재 서버 도메인인지 검증
-        if (referer != null && URI.create(referer).getHost().equals(serverName)) {
-            return "redirect:" + referer;
+        boolean isSameHost = false;
+        if (referer != null) {
+            // 정상적인 Referer의 양식이 아닌경우 예외를 던지기 때문에 try문으로 감싸줌
+            try {
+                isSameHost = serverName.equals(URI.create(referer).getHost());
+            } catch (IllegalArgumentException ignored) {}
         }
-        return "redirect:/";
+        return isSameHost ? "redirect:" + referer : "redirect:/";
     }
 }

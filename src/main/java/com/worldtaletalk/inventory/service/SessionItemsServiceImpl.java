@@ -163,7 +163,8 @@ public class SessionItemsServiceImpl implements SessionItemsService {
             int value;
             if (itemGradeConfigsDTO.getCanNegative() && random.nextBoolean()) {
                 // 음수 허용 등급 (CURSED 같은 저주 아이템) - singleMin 기준으로 음수 생성
-                value = -random.nextInt(Math.abs(itemGradeConfigsDTO.getSingleMin()) + 1);
+                int min = Math.min(Math.abs(itemGradeConfigsDTO.getSingleMin()), budget);
+                value = -random.nextInt(min + 1);
             } else {
                 // 0 이상 max 이하의 양수 보정치 생성
                 value = random.nextInt(max + 1);

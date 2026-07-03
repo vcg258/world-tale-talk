@@ -1,5 +1,6 @@
 package com.worldtaletalk.user.service;
 
+import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -352,9 +354,15 @@ public class UserServiceImpl implements UserService {
         user.userWithdrawal();
         UserEntity save = userRepository.save(user);
 
-        // 연동된 소셜 계정 전체 해제 (재가입시 신규 유저로 인식되도록)
-        long deletedCount = socialAccountsRepository.deleteAllByUsersId(id);
-        log.info("회원 탈퇴로 인한 소셜 계정 연동 전체 해제 userId : {}, 삭제 건수 : {}", id, deletedCount);
+        if (!user.getSocialAccounts().isEmpty()) {
+            List<SocialAccountsEntity> socialAccounts = user.getSocialAccounts();
+            for (SocialAccountsEntity socialAccountsEntity : socialAccounts) {
+                socialAccountsEntity.socialUserWithdrawal();
+            }
+            socialAccountsRepository.saveAll(socialAccounts);
+        }
+
+        log.info("회원 탈퇴로 인한 소셜 계정 연동 전체 익명화 처리 userId : {}", id);
 
         log.info("회원 탈퇴 완료 : {}", save);
     }

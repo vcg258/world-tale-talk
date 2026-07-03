@@ -53,4 +53,12 @@ public class SocialAccountsEntity extends BaseTimeEntity {
                 .users(user)
                 .build();
     }
+
+    /**
+     * 소셜 계정 회원 탈퇴
+     */
+    public void socialUserWithdrawal() {
+        String providerId = "del_" + this.id + "_" + this.providerId;
+        this.providerId = providerId.length() > 100 ? providerId.substring(0, 100) : providerId;
+    }
 }

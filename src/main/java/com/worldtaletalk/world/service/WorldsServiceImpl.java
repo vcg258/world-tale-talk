@@ -53,6 +53,7 @@ public class WorldsServiceImpl implements WorldsService {
      * @param id PK
      * @return 세계관
      */
+    @Transactional(readOnly = true)
     @Override
     public WorldsDTO getWorldByActiveId(Long id) {
         return worldsRepository.findByIdAndActiveTrue(id).map(worldsMapper::toDTO).orElseThrow(() ->
