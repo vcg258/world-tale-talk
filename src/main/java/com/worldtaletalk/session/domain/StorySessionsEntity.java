@@ -47,6 +47,10 @@ public class StorySessionsEntity extends BaseTimeEntity {
     @Column(length = Integer.MAX_VALUE)
     private String runningSummary; // 지정 턴마다 갱신되는 스토리 요약본
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean hiddenByUser = false; // 세션 삭제 여부
+
     /* FK (부모) */
     @ToString.Exclude
     @OneToMany(mappedBy = "storySession")
@@ -150,5 +154,12 @@ public class StorySessionsEntity extends BaseTimeEntity {
      */
     public void changeRunningSummary(String runningSummary) {
         this.runningSummary = runningSummary;
+    }
+
+    /**
+     * 회원이 세션을 삭제 했을경우 처리 (관리자는 다시 복구 할 수 도 있도록 반전처리함)
+     */
+    public void changeHiddenByUser() {
+        this.hiddenByUser = !this.hiddenByUser;
     }
 }

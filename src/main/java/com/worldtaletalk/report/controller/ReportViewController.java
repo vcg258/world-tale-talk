@@ -1,6 +1,7 @@
 package com.worldtaletalk.report.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.report.domain.ReportTargetType;
 import com.worldtaletalk.report.dto.ReportsDTO;
 import com.worldtaletalk.report.service.ReportsService;
@@ -76,7 +77,7 @@ public class ReportViewController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/reports/new?targetType=" + form.targetType() + "&targetId=" + form.targetId();
         }
 

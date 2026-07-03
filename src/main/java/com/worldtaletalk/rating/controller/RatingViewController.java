@@ -1,6 +1,7 @@
 package com.worldtaletalk.rating.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.rating.dto.WorldRatingsDTO;
 import com.worldtaletalk.rating.service.WorldRatingsService;
 import com.worldtaletalk.world.service.WorldsService;
@@ -111,7 +112,8 @@ public class RatingViewController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", bindingResult.getFieldError().getDefaultMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/worlds/" + worldId + "/ratings?sessionId=" + form.sessionId();
         }
 

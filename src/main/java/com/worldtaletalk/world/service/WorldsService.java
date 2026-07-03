@@ -62,4 +62,18 @@ public interface WorldsService {
      * @param id PK
      */
     void deleteWorld(Long id);
+
+    /**
+     * 세계관 삭제 대기 처리 (유예기간 시작, 배치가 이후 최종 삭제 여부 판단)
+     *
+     * @param id PK
+     */
+    void scheduleWorldDeletion(Long id);
+
+    /**
+     * 세계관 삭제 대기 취소
+     *
+     * @param id PK
+     */
+    void cancelWorldDeletion(Long id);
 }

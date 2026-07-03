@@ -7,13 +7,21 @@ import org.springframework.data.domain.Page;
 public interface UserService {
 
     /**
-     * 전체 회원 조회
+     * 전체 회원 조회 (탈퇴 회원 제외)
      * @param q 검색어
      * @param status 회원 상태
      * @param page 페이지
      * @return 회원 목록
      */
     Page<UserDTO> getUsers(String q, UserStatus status, int page);
+
+    /**
+     * 전체 회원 조회 (탈퇴 회원만)
+     * @param q 검색어
+     * @param page 페이지
+     * @return 회원 목록
+     */
+    Page<UserDTO> getDelUsers(String q, int page);
 
     /**
      * 유저 단건 조회

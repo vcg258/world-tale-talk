@@ -6,6 +6,7 @@ import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.global.security.CustomUserDetails;
 import com.worldtaletalk.global.security.SecurityContextUtil;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2User;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.service.UserService;
 import com.worldtaletalk.user.service.UserSuspensionsService;
@@ -128,14 +129,14 @@ public class AuthController {
                                  HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("nicknameError", bindingResult.getFieldError("nickname").getDefaultMessage());
+            model.addAttribute("nicknameError", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "auth/nickname";
         }
 
         try {
             userService.modifyNickname(customOAuth2User.getUser().getId(), form.nickname());
         } catch (IllegalArgumentException | NoSuchElementException e) {
-            model.addAttribute("errors", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "auth/nickname";
         }
 
@@ -202,7 +203,7 @@ public class AuthController {
             HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "auth/signup";
         }
 
@@ -216,7 +217,7 @@ public class AuthController {
                     .build(), form.confirmPassword()
             );
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errors", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "auth/signup";
         }
 
@@ -273,7 +274,7 @@ public class AuthController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "auth/find-password";
         }
         passwordResetService.sendResetLink(form.loginId(), form.email());
@@ -293,7 +294,7 @@ public class AuthController {
         try {
             passwordResetService.verifyToken(token);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errors", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "auth/find-password";
         }
         model.addAttribute("token", token);
@@ -316,7 +317,7 @@ public class AuthController {
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("token", form.token());
-            model.addAttribute("errors", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "auth/reset-password";
         }
         try {
@@ -324,7 +325,7 @@ public class AuthController {
             userService.resetPassword(userId, form.newPassword(), form.confirmPassword());
         } catch (IllegalArgumentException | NoSuchElementException e) {
             model.addAttribute("token", form.token());
-            model.addAttribute("errors", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "auth/reset-password";
         }
 
@@ -357,7 +358,7 @@ public class AuthController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "auth/find-id";
         }
 

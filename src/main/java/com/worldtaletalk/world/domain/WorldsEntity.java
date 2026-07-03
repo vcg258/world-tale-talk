@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -52,6 +53,8 @@ public class WorldsEntity extends BaseTimeEntity {
     @Builder.Default
     @Column(nullable = false)
     private int playCount = 0; // 전체 플레이 수 (생성 시 0 고정)
+
+    private LocalDateTime deletedAt; // 삭제 대기 지정일시 (Batch)
 
     // 별점 및 리뷰가 동시적으로 요청이 들어올 경우를 생각해서 버전관리 명시용으로 적용 (나중에 요청이 들어온쪽을 JPA가 예외 발생을 시킴)
     @Version
@@ -141,6 +144,20 @@ public class WorldsEntity extends BaseTimeEntity {
      */
     public void changeRating(BigDecimal rating) {
         this.ratingAvg = rating;
+    }
+
+    /**
+     * 세계관 삭제 대기 처리 (유예기간 시작 시각 기록, 배치가 이 값을 기준으로 최종 삭제 여부 판단)
+     */
+    public void scheduleDeletion() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 세계관 삭제 대기 취소 (유예기간 중 철회)
+     */
+    public void cancelDeletion() {
+        this.deletedAt = null;
     }
 
 }

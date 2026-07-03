@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,6 +150,43 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     }
 
     /**
+     * 회원이 세션을 삭제 했을경우 처리 (관리자는 다시 복구 할 수 도 있도록 반전처리함)
+     *
+     * @param id 세션 PK
+     */
+    @Transactional
+    @Override
+    public void modifyHiddenByUserWithAdmin(Long id) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        storySession.changeHiddenByUser();
+        StorySessionsEntity save = storySessionsRepository.save(storySession);
+        log.info("세션 뷰 노출처리 변경 완료 : {}", save);
+    }
+
+    /**
+     * 회원이 세션을 삭제 했을경우 처리
+     *
+     * @param id 세션 PK
+     * @param userId 회원 PK
+     */
+    @Transactional
+    @Override
+    public void modifyHiddenByUser(Long id, Long userId) {
+        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
+        if (!storySession.getUsers().getId().equals(userId)) {
+            throw new IllegalStateException("본인의 세션만 삭제할 수 있습니다.");
+        }
+        if (storySession.isHiddenByUser()) {
+            throw new IllegalStateException("이미 삭제된 채팅방입니다.");
+        }
+        storySession.changeHiddenByUser();
+        StorySessionsEntity save = storySessionsRepository.save(storySession);
+        log.info("세션 뷰 노출처리 변경 완료 : {}", save);
+    }
+
+    /**
      * 세션 엔딩 결정
      *
      * @param id         PK
@@ -195,6 +233,20 @@ public class StorySessionsServiceImpl implements StorySessionsService {
     @Override
     public boolean isOwner(Long sessionId, Long userId) {
         return storySessionsRepository.existsByIdAndUsersId(sessionId, userId);
+    }
+
+    /**
+     * 세션 소유자 검증 (HTTP 요청)
+     *
+     * @param sessionId 세션 PK
+     * @param userId    회원 PK
+     */
+    @Override
+    public void validateOwner(Long sessionId, Long userId) {
+        boolean exists = storySessionsRepository.existsByIdAndUsersId(sessionId, userId);
+        if (userId == null || !exists) {
+            throw new AccessDeniedException("본인 세션만 접근할 수 있습니다.");
+        }
     }
 
     /**

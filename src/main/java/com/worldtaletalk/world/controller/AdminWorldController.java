@@ -1,5 +1,6 @@
 package com.worldtaletalk.world.controller;
 
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.world.domain.WorldGenre;
 import com.worldtaletalk.world.dto.WorldsDTO;
 import com.worldtaletalk.world.service.WorldsService;
@@ -100,7 +101,7 @@ public class AdminWorldController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/worlds/new";
         }
         worldsService.addWorld(WorldsDTO.builder()
@@ -132,7 +133,7 @@ public class AdminWorldController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/worlds/" + id + "/edit";
         }
 

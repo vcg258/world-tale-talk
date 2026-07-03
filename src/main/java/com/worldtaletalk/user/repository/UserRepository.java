@@ -20,9 +20,23 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     // 로그인 아이디 + 이메일 동시 조회
     Optional<UserEntity> findByLoginIdAndEmail(String loginId, String email);
 
-    // 회원 전체 조회 (필터 적용 닉네임이나 상태로 조회를 하는데 null이 들어올경우 필터 미적용으로 처리)
-    @Query("SELECT u FROM UserEntity u WHERE (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%')) AND (:userStatus IS NULL OR u.status = :userStatus)")
+    // 회원 전체 조회 삭제처리 회원 제외 (필터 적용 닉네임이나 상태로 조회를 하는데 null이 들어올경우 필터 미적용으로 처리)
+    @Query("""
+        SELECT u FROM UserEntity u
+                WHERE u.status <> 'DELETED'
+                        AND(:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%'))
+                        AND (:userStatus IS NULL OR u.status = :userStatus)
+        """)
     Page<UserEntity> findAllBySearch(@Param("q") String q, @Param("userStatus") UserStatus userStatus, Pageable pageable);
+
+    // 회원 전체 삭제처리 회원만 조회 (필터 적용 닉네임이나 상태로 조회를 하는데 null이 들어올경우 필터 미적용으로 처리)
+    @Query("""
+        SELECT u FROM UserEntity u
+                 WHERE u.status = 'DELETED'
+                         AND (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%'))
+        """)
+    Page<UserEntity> findAllBySearchAndDelete(@Param("q") String q, Pageable pageable);
+
 
     // 이메일 중복 체크
     boolean existsByEmail(String email);

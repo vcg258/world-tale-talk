@@ -60,6 +60,21 @@ public interface StorySessionsService {
     void modifyStorySessionByStatus(Long id, SessionStatus status);
 
     /**
+     * 회원이 세션을 삭제 했을 경우 처리 (관리자는 다시 복구 할 수 도 있도록 반전처리함)
+     *
+     * @param id 세션 PK
+     */
+    void modifyHiddenByUserWithAdmin(Long id);
+
+    /**
+     * 회원이 세션을 삭제 했을 경우 처리
+     *
+     * @param id 세션 PK
+     * @param userId 회원 PK
+     */
+    void modifyHiddenByUser(Long id, Long userId);
+
+    /**
      * 세션 엔딩 결정
      *
      * @param id PK
@@ -83,6 +98,14 @@ public interface StorySessionsService {
      * @return 소유자 여부
      */
     boolean isOwner(Long sessionId, Long userId);
+
+    /**
+     * 세션 소유자 검증 (HTTP 요청)
+     *
+     * @param sessionId 세션 PK
+     * @param userId    회원 PK
+     */
+    void validateOwner(Long sessionId, Long userId);
 
     /**
      * 세션 삭제

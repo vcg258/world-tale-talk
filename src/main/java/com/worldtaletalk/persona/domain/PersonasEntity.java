@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,9 @@ public class PersonasEntity extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "is_active", nullable = false)
     private boolean active = false; // 활성화 여부 (false = 비공개)
+
+    private LocalDateTime deletedAt; // 삭제 대기 지정일시 (Batch)
+
 
     /* FK (부모) */
     @ToString.Exclude
@@ -109,5 +113,19 @@ public class PersonasEntity extends BaseTimeEntity {
         this.background = background;
         this.active = active;
         this.world = worldsEntity;
+    }
+
+    /**
+     * 페르소나 삭제 대기 처리 (유예기간 시작 시각 기록, 배치가 이 값을 기준으로 최종 삭제 여부 판단)
+     */
+    public void scheduleDeletion() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 페르소나 삭제 대기 취소 (유예기간 중 철회)
+     */
+    public void cancelDeletion() {
+        this.deletedAt = null;
     }
 }

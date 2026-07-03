@@ -1,6 +1,7 @@
 package com.worldtaletalk.user.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.dto.UserSuspensionsDTO;
@@ -32,7 +33,7 @@ public class AdminUserController {
     }
 
     /**
-     * AU-01: 회원 목록 조회
+     * AU-01: 회원 목록 조회 (탈퇴 회원 제외)
      *
      * @param q      검색어 (닉네임 부분 일치, null이면 전체 조회)
      * @param status 회원 상태 필터 (null이면 전체 조회)
@@ -53,6 +54,27 @@ public class AdminUserController {
         model.addAttribute("q", q);
         model.addAttribute("status", status);
         return "admin/users/list";
+    }
+
+    /**
+     * AU-01-1: 회원 목록 조회 (탈퇴 회원만)
+     *
+     * @param q      검색어 (닉네임 부분 일치, null이면 전체 조회)
+     * @param page   페이지 번호
+     * @param model  뷰에 전달할 모델
+     * @return admin/users/list-del (탈퇴 회원 목록 페이지)
+     */
+    @GetMapping("/del")
+    public String delList(
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "1") int page,
+            Model model
+    ) {
+        Page<UserDTO> users = userService.getDelUsers(q, page);
+        model.addAttribute("users", users.getContent());
+        model.addAttribute("usersPage", users);
+        model.addAttribute("q", q);
+        return "admin/users/list-del";
     }
 
     /**
@@ -90,7 +112,7 @@ public class AdminUserController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/users/" + id;
         }
         userSuspensionsService.addUserSuspension(UserSuspensionsDTO.builder()

@@ -1,6 +1,7 @@
 package com.worldtaletalk.notice.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.notice.dto.NoticesDTO;
 import com.worldtaletalk.notice.service.NoticesService;
 import jakarta.validation.Valid;
@@ -98,7 +99,7 @@ public class AdminNoticeController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/notices/new";
         }
         noticesService.createNotice(NoticesDTO.builder()
@@ -130,7 +131,7 @@ public class AdminNoticeController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/notices/" + id + "/edit";
         }
         noticesService.modifyNotice(NoticesDTO.builder()

@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/sessions")
@@ -93,6 +95,29 @@ public class StoryViewController {
         validateOwner(id, user);
         storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
         storyCacheService.deleteSessionCache(id);
+        return "redirect:/mypage/sessions";
+    }
+
+    /**
+     * S-02-1: 세션 삭제
+     *
+     * @param id   세션 PK
+     * @param user 현재 로그인 유저
+     * @return redirect:/mypage/sessions (내 세션 목록 페이지)
+     */
+    @PostMapping("/{id}/hide")
+    public String hide(@PathVariable Long id,
+                       @AuthenticationPrincipal AuthenticatedUser user,
+                       RedirectAttributes redirectAttributes
+    ) {
+        validateOwner(id, user);
+        try {
+            storySessionsService.modifyHiddenByUser(id, user.getUser().getId());
+        } catch (IllegalStateException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/mypage/sessions";
+        }
+        redirectAttributes.addFlashAttribute("message", "세션이 삭제되었습니다.");
         return "redirect:/mypage/sessions";
     }
 
@@ -188,8 +213,6 @@ public class StoryViewController {
      * @param user      현재 로그인 유저
      */
     private void validateOwner(Long sessionId, AuthenticatedUser user) {
-        if (user == null || !storySessionsService.isOwner(sessionId, user.getUser().getId())) {
-            throw new AccessDeniedException("본인 세션만 접근할 수 있습니다.");
-        }
+        storySessionsService.validateOwner(sessionId, user != null ? user.getUser().getId() : null);
     }
 }

@@ -153,4 +153,37 @@ public class PersonasServiceImpl implements PersonasService {
         personasRepository.delete(persona);
         log.info("페르소나 제거 완료 personaId : {}", id);
     }
+
+    /**
+     * 페르소나 삭제 대기 처리 (유예기간 시작, 배치가 이후 최종 삭제 여부 판단)
+     *
+     * @param id PK
+     */
+    @Transactional
+    @Override
+    public void schedulePersonaDeletion(Long id) {
+        PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제 대기 처리할 페르소나를 찾을 수 없습니다."));
+        if (persona.isActive()) {
+            throw new IllegalStateException("비활성화된 페르소나만 삭제 대기 처리할 수 있습니다.");
+        }
+        persona.scheduleDeletion();
+        PersonasEntity save = personasRepository.save(persona);
+        log.info("페르소나 삭제 대기 처리 : {}", save);
+    }
+
+    /**
+     * 페르소나 삭제 대기 취소
+     *
+     * @param id PK
+     */
+    @Transactional
+    @Override
+    public void cancelPersonaDeletion(Long id) {
+        PersonasEntity persona = personasRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제 대기 취소할 페르소나를 찾을 수 없습니다."));
+        persona.cancelDeletion();
+        PersonasEntity save = personasRepository.save(persona);
+        log.info("페르소나 삭제 대기 취소 : {}", save);
+    }
 }

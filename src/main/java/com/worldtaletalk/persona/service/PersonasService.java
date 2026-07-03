@@ -65,4 +65,18 @@ public interface PersonasService {
      * @param id PK
      */
     void deletePersona(Long id);
+
+    /**
+     * 페르소나 삭제 대기 처리 (유예기간 시작, 배치가 이후 최종 삭제 여부 판단)
+     *
+     * @param id PK
+     */
+    void schedulePersonaDeletion(Long id);
+
+    /**
+     * 페르소나 삭제 대기 취소
+     *
+     * @param id PK
+     */
+    void cancelPersonaDeletion(Long id);
 }

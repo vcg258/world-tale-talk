@@ -3,6 +3,7 @@ package com.worldtaletalk.user.controller;
 import com.worldtaletalk.global.mail.EmailOtpService;
 import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.global.security.SecurityContextUtil;
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.rating.dto.WorldRatingsDTO;
 import com.worldtaletalk.rating.service.WorldRatingsService;
 import com.worldtaletalk.session.domain.SessionStatus;
@@ -134,18 +135,15 @@ public class MypageController {
             HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
-            String errorMsg = bindingResult.getFieldError() != null
-                    ? bindingResult.getFieldError().getDefaultMessage()
-                    : "입력값을 확인해주세요.";
             redirectAttributes.addFlashAttribute(
-                    "errors", errorMsg);
+                    "error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/mypage/profile";
         }
 
         try {
             userService.modifyNickname(user.getUser().getId(), form.nickname());
         } catch (IllegalArgumentException | NoSuchElementException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
 
@@ -176,15 +174,15 @@ public class MypageController {
             HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errors",
-                    bindingResult.getFieldError().getDefaultMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/mypage/profile";
         }
 
         try {
             userService.modifyPassword(user.getUser().getId(), form.newPassword(), form.currentPassword(),  form.confirmPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
 
@@ -213,8 +211,8 @@ public class MypageController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errors",
-                    bindingResult.getFieldError().getDefaultMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/mypage/profile";
         }
 
@@ -222,7 +220,7 @@ public class MypageController {
             emailOtpService.sendOtp(user.getUser().getId(), form.newEmail());
             redirectAttributes.addFlashAttribute("message", "인증코드를 발송했습니다.");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
         return "redirect:/mypage/profile";
@@ -247,8 +245,9 @@ public class MypageController {
             HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errors",
-                    bindingResult.getFieldError().getDefaultMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요.")
+            );
             return "redirect:/mypage/profile";
         }
 
@@ -256,13 +255,13 @@ public class MypageController {
         try {
             userService.verifyCurrentPassword(user.getUser().getId(), form.currentPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
 
         // 2. OTP 검증 (여기서부터 소모됨)
         if (!emailOtpService.verifyOtp(user.getUser().getId(), form.newEmail(), form.code())) {
-            redirectAttributes.addFlashAttribute("errors", "인증코드가 일치하지 않거나 만료되었습니다.");
+            redirectAttributes.addFlashAttribute("error", "인증코드가 일치하지 않거나 만료되었습니다.");
             return "redirect:/mypage/profile";
         }
 
@@ -270,7 +269,7 @@ public class MypageController {
         try {
             userService.modifyEmail(user.getUser().getId(), form.newEmail(), form.currentPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
         UserDTO updateUser = userService.getUser(user.getUser().getId());
@@ -365,7 +364,7 @@ public class MypageController {
         try {
             socialAccountsService.deleteSocialAccount(socialAccountId, user.getUser().getId());
         } catch (NoSuchElementException  | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("errors", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile";
         }
         redirectAttributes.addFlashAttribute("message", "소셜 계정 연동이 해제되었습니다.");

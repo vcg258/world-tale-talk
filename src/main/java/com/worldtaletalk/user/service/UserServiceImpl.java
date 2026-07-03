@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private final SocialAccountsRepository socialAccountsRepository;
 
     /**
-     * 전체 회원 조회
+     * 전체 회원 조회 (탈퇴 회원 제외)
      *
      * @param q      검색어
      * @param status 회원 상태
@@ -42,6 +42,21 @@ public class UserServiceImpl implements UserService {
     public Page<UserDTO> getUsers(String q, UserStatus status, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "updatedAt"));
         Page<UserEntity> users = userRepository.findAllBySearch(q, status, pageable);
+        return users.map(userMapper::toDTO);
+    }
+
+    /**
+     * 전체 회원 조회 (탈퇴 회원만)
+     *
+     * @param q      검색어
+     * @param page   페이지
+     * @return 회원 목록
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<UserDTO> getDelUsers(String q, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.ASC, "updatedAt"));
+        Page<UserEntity> users = userRepository.findAllBySearchAndDelete(q, pageable);
         return users.map(userMapper::toDTO);
     }
 

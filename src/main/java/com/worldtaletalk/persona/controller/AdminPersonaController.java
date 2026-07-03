@@ -1,5 +1,6 @@
 package com.worldtaletalk.persona.controller;
 
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.persona.dto.PersonasBaseStatsDTO;
 import com.worldtaletalk.persona.dto.PersonasDTO;
 import com.worldtaletalk.persona.service.PersonasBaseStatsService;
@@ -117,7 +118,7 @@ public class AdminPersonaController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/personas/new";
         }
         Long persona = personasService.addPersona(PersonasDTO.builder()
@@ -156,7 +157,7 @@ public class AdminPersonaController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/personas/" + id + "/edit";
         }
 

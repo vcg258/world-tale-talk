@@ -1,5 +1,6 @@
 package com.worldtaletalk.item.controller;
 
+import com.worldtaletalk.global.util.BindingResultUtils;
 import com.worldtaletalk.item.domain.itemgradeprobabilities.PhaseType;
 import com.worldtaletalk.item.dto.ItemGradeConfigsDTO;
 import com.worldtaletalk.item.dto.ItemGradeProbabilitiesDTO;
@@ -82,7 +83,7 @@ public class AdminItemController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/items/grades";
         }
         itemGradeConfigsService.modifyGradeConfig(id, ItemGradeConfigsDTO.builder()
@@ -129,7 +130,7 @@ public class AdminItemController {
     ) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
-                    bindingResult.getFieldError().getDefaultMessage());
+                    BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/items/probabilities";
         }
         itemGradeProbabilitiesService.modifyProbability(id, form.probability());

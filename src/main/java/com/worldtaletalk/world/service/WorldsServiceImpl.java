@@ -161,4 +161,37 @@ public class WorldsServiceImpl implements WorldsService {
         storyAiService.deleteWorldIndex(id); // ETL : 벡터 인덱스 삭제
         log.info("세계관 삭제 : {}", id);
     }
+
+    /**
+     * 세계관 삭제 대기 처리 (유예기간 시작, 배치가 이후 최종 삭제 여부 판단)
+     *
+     * @param id PK
+     */
+    @Transactional
+    @Override
+    public void scheduleWorldDeletion(Long id) {
+        WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제 대기 처리할 세계관을 찾을 수 없습니다."));
+        if (world.isActive()) {
+            throw new IllegalStateException("비활성화된 세계관만 삭제 대기 처리할 수 있습니다.");
+        }
+        world.scheduleDeletion();
+        WorldsEntity save = worldsRepository.save(world);
+        log.info("세계관 삭제 대기 처리 : {}", save);
+    }
+
+    /**
+     * 세계관 삭제 대기 취소
+     *
+     * @param id PK
+     */
+    @Transactional
+    @Override
+    public void cancelWorldDeletion(Long id) {
+        WorldsEntity world = worldsRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("삭제 대기 취소할 세계관을 찾을 수 없습니다."));
+        world.cancelDeletion();
+        WorldsEntity save = worldsRepository.save(world);
+        log.info("세계관 삭제 대기 취소 : {}", save);
+    }
 }
