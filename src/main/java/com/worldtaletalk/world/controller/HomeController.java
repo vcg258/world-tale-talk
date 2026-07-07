@@ -16,10 +16,6 @@ public class HomeController {
     private final WorldsService worldsService;
     private final NoticesService noticesService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test-login";
-    }
 
     /**
      * H-01: 메인 화면 조회

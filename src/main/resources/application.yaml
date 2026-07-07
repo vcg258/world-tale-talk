@@ -143,6 +143,11 @@ spring:
             enable: true
           timeout: 5000
 
+# Batch
+  batch:
+    job:
+      enabled: false # 기동시 자동 실행 방지 스케줄러로만 트리거
+
 # Logging 설정
 logging:
   level:

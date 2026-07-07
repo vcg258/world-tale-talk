@@ -40,8 +40,7 @@ public class PersonasEntity extends BaseTimeEntity {
 
     /* FK (부모) */
     @ToString.Exclude
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "persona")
     private PersonasBaseStatsEntity personaBaseStats;
 
     @ToString.Exclude

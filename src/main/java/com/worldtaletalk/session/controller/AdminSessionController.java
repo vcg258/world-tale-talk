@@ -62,4 +62,16 @@ public class AdminSessionController {
         storyCacheService.deleteSessionCache(id);
         return "redirect:/admin/sessions";
     }
+
+    /**
+     * AS-03: 세션 숨김/복구 처리 (회원이 숨긴 세션을 관리자가 복구, 반대로 숨길 수도 있음)
+     *
+     * @param id 세션 PK
+     * @return redirect:/admin/sessions (세션 목록 페이지)
+     */
+    @PostMapping("/{id}/hidden")
+    public String hidden(@PathVariable Long id) {
+        storySessionsService.modifyHiddenByUserWithAdmin(id);
+        return "redirect:/admin/sessions";
+    }
 }

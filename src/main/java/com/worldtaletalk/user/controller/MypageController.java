@@ -259,7 +259,7 @@ public class MypageController {
             return "redirect:/mypage/profile";
         }
 
-        // 2. OTP 검증 (여기서부터 소모됨)
+        // OTP 검증 (여기서부터 소모됨)
         if (!emailOtpService.verifyOtp(user.getUser().getId(), form.newEmail(), form.code())) {
             redirectAttributes.addFlashAttribute("error", "인증코드가 일치하지 않거나 만료되었습니다.");
             return "redirect:/mypage/profile";

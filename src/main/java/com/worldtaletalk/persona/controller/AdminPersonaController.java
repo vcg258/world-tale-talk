@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/admin/personas")
@@ -200,6 +201,44 @@ public class AdminPersonaController {
             return "redirect:/admin/personas";
         }
         redirectAttributes.addFlashAttribute("message", "페르소나가 삭제되었습니다.");
+        return "redirect:/admin/personas";
+    }
+
+    /**
+     * AP-07: 페르소나 삭제 대기
+     *
+     * @param id                 페르소나 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/personas (페르소나 목록 페이지)
+     */
+    @PostMapping("/{id}/schedule-deletion")
+    public String scheduleDeletion(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            personasService.schedulePersonaDeletion(id);
+        } catch (IllegalStateException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
+        }
+        redirectAttributes.addFlashAttribute("message", "페르소나 삭제 대기로 지정하였습니다.");
+        return "redirect:/admin/personas";
+    }
+
+    /**
+     * AP-08: 페르소나 삭제 대기 취소
+     *
+     * @param id                 페르소나 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/personas (페르소나 목록 페이지)
+     */
+    @PostMapping("/{id}/cancel-deletion")
+    public String cancelDeletion(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            personasService.cancelPersonaDeletion(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
+        }
+        redirectAttributes.addFlashAttribute("message", "페르소나 삭제 대기 지정이 해제되었습니다.");
         return "redirect:/admin/personas";
     }
 }

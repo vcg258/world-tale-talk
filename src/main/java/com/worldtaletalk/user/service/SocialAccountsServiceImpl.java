@@ -44,6 +44,7 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * @param userId 회원 PK
      * @return 소셜 계정 정보
      */
+    @Transactional(readOnly = true)
     @Override
     public List<SocialAccountsDTO> getSocialAccountsByUserId(Long userId) {
         return socialAccountsRepository.findAllByUsersId(userId).stream()
@@ -56,6 +57,7 @@ public class SocialAccountsServiceImpl implements SocialAccountsService {
      * @param email 이메일
      * @return 소셜 계정 정보
      */
+    @Transactional(readOnly = true)
     @Override
     public SocialAccountsDTO getSocialAccountByEmail(String email) {
         return socialAccountsRepository.findByUsersEmail(email)

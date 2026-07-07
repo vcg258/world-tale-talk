@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/admin/worlds")
@@ -166,7 +167,7 @@ public class AdminWorldController {
     }
 
     /**
-     * AW-07: 세계관 삭제
+     * AW-07: 세계관 삭제 (하드)
      *
      * @param id                 세계관 PK
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
@@ -181,6 +182,44 @@ public class AdminWorldController {
             return "redirect:/admin/worlds";
         }
         redirectAttributes.addFlashAttribute("message", "세계관이 삭제되었습니다.");
+        return "redirect:/admin/worlds";
+    }
+
+    /**
+     * AW-08: 세계관 삭제 대기 (배치)
+     *
+     * @param id                 세계관 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/worlds (세계관 목록 페이지)
+     */
+    @PostMapping("/{id}/schedule-deletion")
+    public String scheduleDeletion(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            worldsService.scheduleWorldDeletion(id);
+        } catch (IllegalStateException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/worlds";
+        }
+        redirectAttributes.addFlashAttribute("message", "세계관 삭제 대기로 지정되었습니다.");
+        return "redirect:/admin/worlds";
+    }
+
+    /**
+     * AW-09: 세계관 삭제대기 취소 (배치)
+     *
+     * @param id                 세계관 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/worlds (세계관 목록 페이지)
+     */
+    @PostMapping("/{id}/cancel-deletion")
+    public String cancelDeletion(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            worldsService.cancelWorldDeletion(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/worlds";
+        }
+        redirectAttributes.addFlashAttribute("message", "세계관 삭제 대기 지정이 해제되었습니다");
         return "redirect:/admin/worlds";
     }
 }

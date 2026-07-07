@@ -241,6 +241,7 @@ public class StorySessionsServiceImpl implements StorySessionsService {
      * @param sessionId 세션 PK
      * @param userId    회원 PK
      */
+    @Transactional(readOnly = true)
     @Override
     public void validateOwner(Long sessionId, Long userId) {
         boolean exists = storySessionsRepository.existsByIdAndUsersId(sessionId, userId);

@@ -12,7 +12,6 @@ import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
