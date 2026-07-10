@@ -1,9 +1,6 @@
 package com.worldtaletalk.config;
 
-import com.worldtaletalk.global.security.CustomAuthenticationFailureHandler;
-import com.worldtaletalk.global.security.CustomUserDetailsService;
-import com.worldtaletalk.global.security.RememberMeTokenRepository;
-import com.worldtaletalk.global.security.TempNicknameEnforcementFilter;
+import com.worldtaletalk.global.security.*;
 import com.worldtaletalk.global.security.oauth2.CustomOAuth2UserService;
 import com.worldtaletalk.global.security.oauth2.OAuth2RememberMeFilter;
 import com.worldtaletalk.global.security.oauth2.OAuth2SuccessHandler;
@@ -30,6 +27,7 @@ public class SecurityConfig {
     private final OAuth2RememberMeFilter oAuth2RememberMeFilter;
     private final TempNicknameEnforcementFilter tempNicknameEnforcementFilter;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final DormantAccountRedirectFilter dormantAccountRedirectFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,8 +41,8 @@ public class SecurityConfig {
                                 "/auth/signup", "/auth/signup/**", // 회원가입
                                 "/auth/find-id", // 아이디 찾기
                                 "/auth/find-password", "/auth/reset-password", // 비밀번호 찾기
-                                "/css/**", "/js/**", "/images/**",
-                                "/test" // TODO 테스트용
+                                "/auth/dormant", // 휴면 안내
+                                "/css/**", "/js/**", "/images/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 시작 관리자 권한 아니면 접근 불가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증 필요
@@ -91,6 +89,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(oAuth2RememberMeFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(tempNicknameEnforcementFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(dormantAccountRedirectFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/ws/**") // 웹소켓 제외
                 );

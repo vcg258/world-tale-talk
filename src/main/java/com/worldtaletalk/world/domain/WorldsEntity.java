@@ -58,7 +58,9 @@ public class WorldsEntity extends BaseTimeEntity {
 
     // 별점 및 리뷰가 동시적으로 요청이 들어올 경우를 생각해서 버전관리 명시용으로 적용 (나중에 요청이 들어온쪽을 JPA가 예외 발생을 시킴)
     @Version
-    private Long version;
+    @Builder.Default
+    @Column(nullable = false)
+    private Long version = 0L;
 
     /* FK (부모) */
     @ToString.Exclude

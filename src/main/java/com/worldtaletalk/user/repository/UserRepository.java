@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -36,6 +38,17 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
                          AND (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%'))
         """)
     Page<UserEntity> findAllBySearchAndDelete(@Param("q") String q, Pageable pageable);
+
+    // 기준시 되는 일시 보다 마지막 로그인이 적을 경우 조회
+    @Query("""
+        SELECT u FROM UserEntity u
+            WHERE u.status = :userStatus
+                AND u.lastLoginAt <= :cutoff
+    """)
+    List<UserEntity> findAllByStatusAndLastLoginAtBefore(
+            @Param("userStatus") UserStatus userStatus,
+            @Param("cutoff") LocalDateTime cutoff
+    );
 
 
     // 이메일 중복 체크

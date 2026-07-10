@@ -1,2 +1,2 @@
 ALTER TABLE worlds
-    ADD version BIGINT;
+    ADD version BIGINT NOT NULL DEFAULT 0;

@@ -18,6 +18,7 @@ public class UserDTO {
     private String password; // 비밀번호
     private UserRole role; // 유저 권한 (USER, ADMIN)
     private UserStatus status; // 계정 상태
+    private LocalDateTime lastLoginAt; // 마지막 로그인 일시
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

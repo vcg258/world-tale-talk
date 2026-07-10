@@ -39,8 +39,8 @@ public class TempNicknameEnforcementFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /* Helper Methode */
 
+    /* Helper Methode */
 
     /**
      * 접근 가능한 지정 URI 여부 확인용

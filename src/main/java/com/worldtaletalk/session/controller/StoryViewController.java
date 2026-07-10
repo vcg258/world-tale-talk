@@ -67,7 +67,7 @@ public class StoryViewController {
         }
 
 
-        model.addAttribute("session", storySession);
+        model.addAttribute("storySession", storySession);
         model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
         model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
         model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
@@ -132,7 +132,7 @@ public class StoryViewController {
     public String ending(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
         validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
-        model.addAttribute("session", storySession);
+        model.addAttribute("storySession", storySession);
         model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
         model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId())
         );
@@ -166,7 +166,7 @@ public class StoryViewController {
     public String epilogue(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
         validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
-        model.addAttribute("session", storySession);
+        model.addAttribute("storySession", storySession);
         model.addAttribute("snapshotStats", sessionStatsService.getSnapshot(id));
         model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
         return "story/epilogue";

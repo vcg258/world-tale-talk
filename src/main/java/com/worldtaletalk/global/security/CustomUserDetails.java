@@ -59,10 +59,11 @@ public class CustomUserDetails implements UserDetails, AuthenticatedUser {
     /**
      * 계정 활성화 여부
      *
-     * @return ACTIVE 상태일 때 true
+     * @return ACTIVE 또는 DORMANT 상태일 때 true
      */
     @Override
     public boolean isEnabled() {
-        return userDTO.getStatus().equals(UserStatus.ACTIVE);
+        UserStatus userStatus = userDTO.getStatus();
+        return userStatus == UserStatus.ACTIVE || userStatus == UserStatus.DORMANT;
     }
 }

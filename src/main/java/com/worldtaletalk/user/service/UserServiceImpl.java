@@ -300,6 +300,21 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 휴면 계정 해제 (본인 재로그인을 통한 자기 자신 활성화 전용)
+     *
+     * @param id 유저 PK
+     */
+    @Transactional
+    @Override
+    public void reactivateUser(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        user.changeStatus(UserStatus.ACTIVE);
+        UserEntity save = userRepository.save(user);
+        log.info("휴면 계정 해제 완료 : {}", save);
+    }
+
+    /**
      * 닉네임 변경
      *
      * @param id       유저 PK

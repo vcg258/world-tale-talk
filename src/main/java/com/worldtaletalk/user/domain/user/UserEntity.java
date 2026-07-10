@@ -10,6 +10,7 @@ import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -45,6 +46,10 @@ public class UserEntity extends BaseTimeEntity {
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE; // 계정 상태 (ACTIVE, SUSPENDED, DELETED)
+
+    @Builder.Default
+    @Column(nullable = false)
+    private LocalDateTime lastLoginAt = LocalDateTime.now();
 
 
     /* FK (부모) */
@@ -153,6 +158,13 @@ public class UserEntity extends BaseTimeEntity {
      */
     public void changeStatus(UserStatus status) {
         this.status = status;
+    }
+
+    /**
+     * 마지막 로그인 시각 갱신
+     */
+    public void changeLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 
     /**

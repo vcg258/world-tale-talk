@@ -178,6 +178,42 @@ public class AuthController {
     }
 
     /**
+     * A-05-1: 휴면 안내 화면 조회
+     *
+     * @param authenticatedUser 로그인 회원 정보
+     * @param model             뷰에 전달할 모델
+     * @return auth/dormant (휴면 안내 페이지)
+     */
+    @GetMapping("/dormant")
+    public String dormant(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                            Model model
+    ) {
+        Long userId = null;
+        if (authenticatedUser != null) {
+            userId = authenticatedUser.getUser().getId();
+        }
+
+        if (userId != null) {
+            try {
+                model.addAttribute("dormant", userService.getUser(userId));
+            } catch (NoSuchElementException ignored) {}
+        }
+        return "auth/dormant";
+    }
+
+    /**
+     * A-05-2: 휴면 계정 해제 (본인 재로그인을 통한 자기 자신 활성화)
+     *
+     * @param authenticatedUser 로그인 회원 정보
+     * @return redirect:/ (메인 화면)
+     */
+    @PostMapping("/dormant/reactivate")
+    public String reactivateDormant(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        userService.reactivateUser(authenticatedUser.getUser().getId());
+        return "redirect:/";
+    }
+
+    /**
      * A-06: 회원가입 화면 조회
      *
      * @return auth/signup (회원가입 페이지)

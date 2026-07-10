@@ -117,6 +117,13 @@ public interface UserService {
     void modifyUserStatus(Long id, UserStatus status);
 
     /**
+     * 휴면 계정 해제 (본인 재로그인을 통한 자기 자신 활성화 전용)
+     *
+     * @param id 유저 PK
+     */
+    void reactivateUser(Long id);
+
+    /**
      * 닉네임 변경
      *
      * @param id       유저 PK
