@@ -1,6 +1,7 @@
 package com.worldtaletalk.session.controller;
 
 import com.worldtaletalk.global.security.AuthenticatedUser;
+import com.worldtaletalk.moderation.ChatModerationService;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.PlayStateCacheDTO;
@@ -27,6 +28,7 @@ public class StoryWebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
     private final StoryCacheService storyCacheService;
     private final StorySessionsService storySessionsService;
+    private final ChatModerationService chatModerationService;
 
     // 메인 스토리 턴 요청 메시지 - 선택지 번호 입력와 자유 입력 두 타입을 하나의 레코드로 처리함
     private record StoryInputMessage(
@@ -120,6 +122,19 @@ public class StoryWebSocketController {
             return;
         }
 
+        // 자유 입력일 때만 모더레이션 체크 (선택지는 정해진 문구라 대상 아님)
+        boolean isFreeText = message.choiceIndex() == null && message.content() != null && !message.content().isBlank();
+        if (isFreeText && chatModerationService.isBlocked(sessionId, user.getUser().getId(), message.content())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse(
+                            "ERROR",
+                            null,
+                            "부적절한 입력이 감지되어 진행할 수 없습니다.",
+                            null)
+            );
+            return;
+        }
+
         log.info("스토리 턴 요청 sessionId: {} type: {}", sessionId, message.type());
 
         storyService.processStoryStream(
@@ -170,6 +185,18 @@ public class StoryWebSocketController {
         String destination = "/topic/epilogue/" + sessionId;
 
         if (isForbidden(sessionId, user, destination)) {
+            return;
+        }
+
+        // 에필로그는 항상 자유 입력이라 조건 없이 바로 모더레이션 체크
+        if (chatModerationService.isBlocked(sessionId, user.getUser().getId(), message.content())) {
+            messagingTemplate.convertAndSend(destination,
+                    new StoryMessageResponse(
+                            "ERROR",
+                            null,
+                            "부적절한 입력이 감지되어 진행할 수 없습니다.",
+                            null)
+            );
             return;
         }
 

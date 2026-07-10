@@ -19,11 +19,6 @@ class WorldRatingsServiceImplTest {
     }
 
     @Test
-    void getWorldRatingAverage() {
-        log.info("{}", worldRatingsService.getWorldRatingAverage(1L));
-    }
-
-    @Test
     void addWorldRating() {
         WorldRatingsDTO worldRatingsDTO = WorldRatingsDTO.builder()
                 .userId(1L)

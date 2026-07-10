@@ -62,10 +62,10 @@ VALUES (3, 6, 8, 6, 5, 3), -- 백운비 스탯
 -- 세션 1: 김판타지가 아일린으로 플레이하여 엔딩 컴플리트한 세션
 -- 세션 2: 이무협이 백운비로 플레이하여 현재 진행 중인 세션
 -- 세션 3: 김판타지가 카엘로 플레이하다가 도중에 포기(ABANDONED)한 세션
-INSERT INTO story_sessions (user_id, world_id, persona_id, status, current_turn, ending_type)
-VALUES (3, 1, 1, 'COMPLETED', 10, 'TRUE'),
-       (4, 2, 3, 'IN_PROGRESS', 2, NULL),
-       (3, 1, 2, 'ABANDONED', 1, NULL);
+INSERT INTO story_sessions (user_id, world_id, persona_id, status, current_turn, ending_type, hidden_by_user)
+VALUES (3, 1, 1, 'COMPLETED', 10, 'TRUE', false),
+       (4, 2, 3, 'IN_PROGRESS', 2, NULL, true),
+       (3, 1, 2, 'ABANDONED', 1, NULL, true);
 
 -- 세션 1 (완료됨)의 최종 확정 스탯 스냅샷 (1:1 관계)
 INSERT INTO session_stat_snapshots (session_id, wisdom, strength, agility, charisma, luck)

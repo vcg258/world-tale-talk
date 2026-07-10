@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,13 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             @Param("worldId") Long worldId,
             @Param("status") SessionStatus status,
             Pageable pageable
+    );
+
+    // 해당 세션의 상태와 갱신일시가 지정날짜보다 적은 애들만 조회 (중도이탈 처리를 위함)
+    @Query("SELECT s FROM StorySessionsEntity s WHERE s.status = :status AND s.updatedAt <= :cutoff")
+    List<StorySessionsEntity> findAllByStatusAndUpdatedAtBefore(
+            @Param("status") SessionStatus status,
+            @Param("cutoff") LocalDateTime cutoff
     );
 
     // 해당 세계관의 완결 횟수
