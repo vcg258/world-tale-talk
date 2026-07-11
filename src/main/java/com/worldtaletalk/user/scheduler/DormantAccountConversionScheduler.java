@@ -5,6 +5,7 @@ import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +17,16 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DormantAccountConversionScheduler {
-    private static final int DORMANT_INACTIVITY_DAYS = 365; // TODO 휴면상태 기간 필요시 수정
     private final UserRepository userRepository;
 
+    @Value("${app.dormant.inactivity-days}")
+    private int inactivityDays;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 10 0 * * *")
     public void run() {
         try {
-            LocalDateTime cutoff = LocalDateTime.now().minusDays(DORMANT_INACTIVITY_DAYS);
+            LocalDateTime cutoff = LocalDateTime.now().minusDays(inactivityDays);
             List<UserEntity> targets = userRepository.findAllByStatusAndLastLoginAtBefore(UserStatus.ACTIVE, cutoff);
 
             for (UserEntity target : targets) {

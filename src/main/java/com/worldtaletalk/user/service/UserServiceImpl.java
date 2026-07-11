@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final SocialAccountsRepository socialAccountsRepository;
+    private final DormantNotificationsRepository dormantNotificationsRepository;
 
     /**
      * 전체 회원 조회 (탈퇴 회원 제외)
@@ -310,6 +311,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("해당 유저는 존재하지 않습니다."));
         user.changeStatus(UserStatus.ACTIVE);
+        dormantNotificationsRepository.deleteByUserId(user.getId());
         UserEntity save = userRepository.save(user);
         log.info("휴면 계정 해제 완료 : {}", save);
     }

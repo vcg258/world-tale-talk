@@ -5,6 +5,7 @@ import com.worldtaletalk.notice.domain.NoticesEntity;
 import com.worldtaletalk.rating.domain.WorldRatingsEntity;
 import com.worldtaletalk.report.domain.ReportsEntity;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
+import com.worldtaletalk.user.domain.DormantNotificationsEntity;
 import com.worldtaletalk.user.domain.UserSuspensionsEntity;
 import com.worldtaletalk.user.domain.socialaccounts.SocialAccountsEntity;
 import jakarta.persistence.*;
@@ -84,6 +85,10 @@ public class UserEntity extends BaseTimeEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "admin")
     private List<NoticesEntity> notices;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user")
+    private DormantNotificationsEntity user;
 
 
     /* 도메인 행위 메서드 */

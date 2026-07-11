@@ -148,6 +148,12 @@ spring:
     job:
       enabled: false # 기동시 자동 실행 방지 스케줄러로만 트리거
 
+# 휴면계정 전환 기간, 메일 발송
+app:
+  dormant:
+    inactivity-days: 365
+    warning-before-days: 30
+
 # Logging 설정
 logging:
   level:

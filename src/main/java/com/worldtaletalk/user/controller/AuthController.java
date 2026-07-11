@@ -160,6 +160,7 @@ public class AuthController {
                             @RequestParam(required = false) String loginId,
                             Model model
     ) {
+
         // 정지 사유를 실패 핸들러에 전달해주기 위함
         Long userId = null;
         if (authenticatedUser != null) {

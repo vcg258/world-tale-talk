@@ -50,6 +50,17 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("cutoff") LocalDateTime cutoff
     );
 
+    // 휴면 계정 메일 발송 여부 조회
+    @Query("""
+    SELECT u FROM UserEntity u
+        WHERE u.status = :status
+            AND u.lastLoginAt <= :warningCutoff
+                AND NOT EXISTS (SELECT 1 FROM DormantNotificationsEntity d WHERE d.user = u)
+    """)
+    List<UserEntity> findAllByLastLoginAtAndNotification(
+            @Param("status") UserStatus status,
+            @Param("warningCutoff") LocalDateTime warningCutoff
+    );
 
     // 이메일 중복 체크
     boolean existsByEmail(String email);

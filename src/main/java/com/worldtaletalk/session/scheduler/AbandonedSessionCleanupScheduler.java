@@ -27,7 +27,7 @@ public class AbandonedSessionCleanupScheduler {
      * 매일 자정 실행
      */
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 20 0 * * *")
     public void run() {
         try {
             LocalDateTime cutoff = LocalDateTime.now().minusDays(INACTIVITY_DAYS);

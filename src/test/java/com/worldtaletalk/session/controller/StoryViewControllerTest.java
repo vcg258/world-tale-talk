@@ -64,7 +64,7 @@ class StoryViewControllerTest {
         mockMvc.perform(get(PLAY, 1L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("story/play"))
-                .andExpect(model().attributeExists("session"))
+                .andExpect(model().attributeExists("storySession"))
                 .andExpect(model().attributeExists("world"))
                 .andExpect(model().attributeExists("persona"))
                 .andExpect(model().attributeExists("messages"))
@@ -97,7 +97,7 @@ class StoryViewControllerTest {
         mockMvc.perform(get(ENDING, 1L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("story/ending"))
-                .andExpect(model().attributeExists("session"))
+                .andExpect(model().attributeExists("storySession"))
                 .andExpect(model().attributeExists("world"))
                 .andExpect(model().attributeExists("persona"))
                 .andDo(print());
@@ -125,7 +125,7 @@ class StoryViewControllerTest {
         mockMvc.perform(get(EPILOGUE, 1L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("story/epilogue"))
-                .andExpect(model().attributeExists("session"))
+                .andExpect(model().attributeExists("storySession"))
                 .andExpect(model().attributeExists("snapshotStats"))
                 .andExpect(model().attributeExists("messages"))
                 .andDo(print());
