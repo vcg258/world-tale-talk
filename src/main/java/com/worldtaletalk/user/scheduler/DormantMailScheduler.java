@@ -4,6 +4,7 @@ import com.worldtaletalk.global.mail.DormantWarningMailService;
 import com.worldtaletalk.user.domain.DormantNotificationsEntity;
 import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserStatus;
+import com.worldtaletalk.user.repository.DormantNotificationsRepository;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

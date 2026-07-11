@@ -6,6 +6,7 @@ CREATE TABLE dormant_notifications
     CONSTRAINT pk_dormant_notifications PRIMARY KEY (id)
 );
 
+COMMENT ON TABLE deleted_worlds IS '휴면계정 메일 발송 여부 이력';
 COMMENT ON COLUMN dormant_notifications.notified_at IS '휴면 계정 메일 발송 여부';
 COMMENT ON COLUMN dormant_notifications.user_id IS '회원 FK';
 

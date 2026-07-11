@@ -5,6 +5,7 @@ import com.worldtaletalk.user.domain.user.UserEntity;
 import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
 import com.worldtaletalk.user.mapper.UserMapper;
+import com.worldtaletalk.user.repository.DormantNotificationsRepository;
 import com.worldtaletalk.user.repository.SocialAccountsRepository;
 import com.worldtaletalk.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
