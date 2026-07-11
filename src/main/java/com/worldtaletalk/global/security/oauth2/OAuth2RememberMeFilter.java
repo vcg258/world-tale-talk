@@ -81,9 +81,16 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             // 레디스 조회
             PersistentRememberMeToken stored = rememberMeTokenRepository.getTokenForSeries(series);
 
-            if (stored == null || !stored.getTokenValue().equals(token)) {
+            if (stored == null) {
+                invalidateCookie(response);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (!stored.getTokenValue().equals(token)) {
                 log.warn("OAuth2 토큰값 불일치 탈취 감지 series : {}", series);
                 invalidateCookie(response);
+                rememberMeTokenRepository.removeUserTokens(stored.getUsername());
                 filterChain.doFilter(request, response);
                 return;
             }

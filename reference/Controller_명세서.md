@@ -17,7 +17,7 @@
 
 | 구분 | 설명 |
 |------|------|
-| Page Controller | HTML + Model → Thymeleaf |
+| Page Controller | HTML + Model -> Thymeleaf |
 | 권한 | `permitAll` / `authenticated` / `hasRole('ADMIN')` (Spring Security 적용 예정) |
 | 실시간 스토리 | WebSocket은 [API_명세서.md](./API_명세서.md) 참고 |
 
@@ -27,20 +27,20 @@
 |-------------------|--------|-------------|
 | `HomeController` | `com.worldtaletalk.view.home` | 메인, 공지 요약 |
 | `AuthController` | `com.worldtaletalk.view.auth` | 로그인, 닉네임, 정지 안내 |
-| `WorldViewController` | `com.worldtaletalk.view.world` | 세계관 목록·상세 |
+| `WorldViewController` | `com.worldtaletalk.view.world` | 세계관 목록/상세 |
 | `PersonaViewController` | `com.worldtaletalk.view.persona` | 페르소나 선택 |
 | `StoryViewController` | `com.worldtaletalk.view.story` | 플레이, 엔딩, 에필로그 |
 | `MypageController` | `com.worldtaletalk.view.mypage` | 마이페이지 |
 | `NoticeViewController` | `com.worldtaletalk.view.notice` | 공지 |
-| `RatingViewController` | `com.worldtaletalk.view.rating` | 평점·리뷰 |
+| `RatingViewController` | `com.worldtaletalk.view.rating` | 평점/리뷰 |
 | `ReportViewController` | `com.worldtaletalk.view.report` | 신고 |
-| `AdminDashboardController` | `com.worldtaletalk.view.admin` | 관리자 대시보드·통계 |
+| `AdminDashboardController` | `com.worldtaletalk.view.admin` | 관리자 대시보드/통계 |
 | `AdminUserController` | `com.worldtaletalk.view.admin` | 회원 관리 |
 | `AdminWorldController` | `com.worldtaletalk.view.admin` | 세계관 관리 |
 | `AdminPersonaController` | `com.worldtaletalk.view.admin` | 페르소나 관리 |
-| `AdminItemController` | `com.worldtaletalk.view.admin` | 아이템 등급·확률 |
+| `AdminItemController` | `com.worldtaletalk.view.admin` | 아이템 등급/확률 |
 | `AdminSessionController` | `com.worldtaletalk.view.admin` | 세션 관리 |
-| `AdminRatingController` | `com.worldtaletalk.view.admin` | 평점·리뷰 관리 |
+| `AdminRatingController` | `com.worldtaletalk.view.admin` | 평점/리뷰 관리 |
 | `AdminNoticeController` | `com.worldtaletalk.view.admin` | 공지 관리 |
 
 ---
@@ -57,12 +57,12 @@
 | `message` | `String` | 성공 플래시 메시지 (optional) |
 | `error` | `String` | 오류 플래시 메시지 (optional) |
 
-### 2.2 Redirect·HTTP Method 관례
+### 2.2 Redirect/HTTP Method 관례
 
 | 동작 | Method | 응답 |
 |------|--------|------|
 | 화면 조회 | `GET` | `200` + HTML |
-| 생성·수정·삭제 | `POST` | `302 Redirect` + FlashAttribute |
+| 생성/수정/삭제 | `POST` | `302 Redirect` + FlashAttribute |
 | 관리자 수정 | `POST` + `_method=put` 또는 `@PutMapping` | 동일 |
 
 ### 2.3 View Model (화면 전용, DTO 조합 — 구현 시 추가 권장)
@@ -77,7 +77,7 @@
 
 ---
 
-## 3. Home · 공지
+## 3. Home / 공지
 
 ### 3.1 `HomeController`
 
@@ -102,13 +102,13 @@
 | # | Method | URL | View | 권한 | Input | Output Model | Redirect / 비고 |
 |---|--------|-----|------|------|-------|----------------|-----------------|
 | A-01 | GET | `/login` | `auth/login` | permitAll | — | 공통 Model | AUTH-01 |
-| A-02 | GET | `/oauth2/authorization/{provider}` | — | permitAll | Path: `provider` (`google`, `kakao`, `naver`) | — | Spring Security 처리 → 콜백 |
+| A-02 | GET | `/oauth2/authorization/{provider}` | — | permitAll | Path: `provider` (`google`, `kakao`, `naver`) | — | Spring Security 처리 -> 콜백 |
 | A-03 | GET | `/auth/nickname` | `auth/nickname` | authenticated (닉네임 미설정) | — | `nickname`: `String` (optional)<br>`nicknameAvailable`: `Boolean` (optional) | AUTH-02 |
-| A-04 | POST | `/auth/nickname` | — | authenticated | Form: `nickname` String (max 20) | — | 성공 → `redirect:/`<br>실패 → `auth/nickname` + `nicknameError` |
+| A-04 | POST | `/auth/nickname` | — | authenticated | Form: `nickname` String (max 20) | — | 성공 -> `redirect:/`<br>실패 -> `auth/nickname` + `nicknameError` |
 | A-05 | GET | `/auth/suspended` | `auth/suspended` | permitAll | — | `suspension`: `UserSuspensionsDTO` (현재 정지) | AUTH-05 |
-| A-06 | POST | `/logout` | — | authenticated | — | — | `redirect:/` + 세션·Redis 토큰 제거 (AUTH-04) |
+| A-06 | POST | `/logout` | — | authenticated | — | — | `redirect:/` + 세션/Redis 토큰 제거 (AUTH-04) |
 
-### 4.2 Form · Validation (Auth)
+### 4.2 Form / Validation (Auth)
 
 | 파라미터 | 타입 | 필수 | 검증 |
 |----------|------|------|------|
@@ -116,14 +116,14 @@
 
 ---
 
-## 5. 세계관 · 페르소나
+## 5. 세계관 / 페르소나
 
 ### 5.1 `WorldViewController`
 
 | # | Method | URL | View | 권한 | Input | Output Model | Redirect / 비고 |
 |---|--------|-----|------|------|-------|----------------|-----------------|
 | W-01 | GET | `/worlds/{id}` | `world/detail` | permitAll | Path: `id` | `world`: `WorldsDTO` | WORLD-02 |
-| W-02 | GET | `/worlds/{id}/personas` | `persona/list` | authenticated | Path: `id` (= worldId) | `world`: `WorldsDTO`<br>`personas`: `List<PersonaListItemVM>` | WORLD-03 → 페르소나 화면 |
+| W-02 | GET | `/worlds/{id}/personas` | `persona/list` | authenticated | Path: `id` (= worldId) | `world`: `WorldsDTO`<br>`personas`: `List<PersonaListItemVM>` | WORLD-03 -> 페르소나 화면 |
 
 ### 5.2 `PersonaViewController`
 
@@ -133,18 +133,18 @@
 
 ---
 
-## 6. 스토리 · 세션
+## 6. 스토리 / 세션
 
 ### 6.1 `StoryViewController`
 
 | # | Method | URL | View | 권한 | Input | Output Model | Redirect / 비고 |
 |---|--------|-----|------|------|-------|----------------|-----------------|
 | S-01 | GET | `/sessions/{id}/play` | `story/play` | authenticated (본인 세션) | Path: `id` | `session`: `StorySessionsDTO`<br>`world`: `WorldsDTO`<br>`persona`: `PersonasDTO`<br>`messages`: `List<ChatMessagesDTO>`<br>`items`: `List<SessionItemsDTO>` (`isActive=true`)<br>`currentStats`: `CurrentStatsVM`<br>`progressPercent`: `int`<br>`currentStory`: `String` (optional)<br>`choices`: `List<String>` (optional) | STORY-01~07, INV-01 |
-| S-02 | POST | `/sessions/{id}/abandon` | — | authenticated | Path: `id` | — | `status=ABANDONED` → `redirect:/mypage/sessions` |
+| S-02 | POST | `/sessions/{id}/abandon` | — | authenticated | Path: `id` | — | `status=ABANDONED` -> `redirect:/mypage/sessions` |
 | S-03 | GET | `/sessions/{id}/ending` | `story/ending` | authenticated | Path: `id` | `session`, `world`, `persona`, `endingStory`: `String` | ENDING-02 |
-| S-04 | POST | `/sessions/{id}/epilogue` | — | authenticated | Path: `id` | — | `status=EPILOGUE` → `redirect:/sessions/{id}/epilogue` (ENDING-04) |
+| S-04 | POST | `/sessions/{id}/epilogue` | — | authenticated | Path: `id` | — | `status=EPILOGUE` -> `redirect:/sessions/{id}/epilogue` (ENDING-04) |
 | S-05 | GET | `/sessions/{id}/epilogue` | `story/epilogue` | authenticated | Path: `id` | `session`, `snapshotStats`: `SessionStatSnapshotsDTO`<br>`epilogueMessages`: `List<ChatMessagesDTO>` | EPILOGUE-01~02 |
-| S-06 | POST | `/sessions/{id}/complete` | — | authenticated | Path: `id` | — | `status=COMPLETED` → `redirect:/worlds/{worldId}/ratings?sessionId=` (평점 UI) |
+| S-06 | POST | `/sessions/{id}/complete` | — | authenticated | Path: `id` | — | `status=COMPLETED` -> `redirect:/worlds/{worldId}/ratings?sessionId=` (평점 UI) |
 
 ### 6.2 `StoryViewController` — 인벤토리
 
@@ -152,7 +152,7 @@
 |---|--------|-----|------|------|-------|----------------|-----------------|
 | S-07 | POST | `/sessions/{sessionId}/items/{itemId}/drop` | — | authenticated | Path: `sessionId`, `itemId` | — | `redirect:/sessions/{sessionId}/play` (INV-02) |
 
-> 스토리 입력·선택지 전송은 **WebSocket** ([API_명세서](./API_명세서.md) STORY-WS) 사용. 폼 POST 대체 API도 병행 가능.
+> 스토리 입력/선택지 전송은 **WebSocket** ([API_명세서](./API_명세서.md) STORY-WS) 사용. 폼 POST 대체 API도 병행 가능.
 
 ---
 
@@ -165,13 +165,13 @@
 | M-01 | GET | `/mypage` | `mypage/index` | authenticated | — | `user`: `UsersDTO`<br>`recentSessions`: `List<StorySessionListItemVM>` | MY-02 요약 |
 | M-02 | GET | `/mypage/profile` | `mypage/profile` | authenticated | — | `user`: `UsersDTO` | MY-01 |
 | M-03 | POST | `/mypage/profile` | — | authenticated | Form: `nickname` | — | `redirect:/mypage/profile` |
-| M-04 | POST | `/mypage/withdraw` | — | authenticated | — | — | `users.status=DELETED` → `redirect:/logout` (MY-05) |
+| M-04 | POST | `/mypage/withdraw` | — | authenticated | — | — | `users.status=DELETED` -> `redirect:/logout` (MY-05) |
 | M-05 | GET | `/mypage/sessions` | `mypage/sessions` | authenticated | Query: `status` (optional, `SessionStatus`) | `sessions`: `List<StorySessionListItemVM>` | MY-02, MY-03 |
 | M-06 | GET | `/mypage/ratings` | `mypage/ratings` | authenticated | — | `ratings`: `List<WorldRatingsDTO>` + `worldName` | MY-04 |
 
 ---
 
-## 8. 평점 · 리뷰
+## 8. 평점 / 리뷰
 
 ### 8.1 `RatingViewController`
 
@@ -179,7 +179,7 @@
 |---|--------|-----|------|------|-------|----------------|-----------------|
 | R-01 | GET | `/worlds/{worldId}/ratings` | `rating/form` | authenticated | Path: `worldId`<br>Query: `sessionId` Long | `world`: `WorldsDTO`<br>`sessionId`: Long<br>`existingRating`: `WorldRatingsDTO` (optional) | RATING-01~02 |
 | R-02 | GET | `/worlds/{worldId}/ratings/edit` | `rating/form` | authenticated | Path: `worldId` | R-01 동일 | RATING-03 수정 |
-| R-03 | POST | `/worlds/{worldId}/ratings` | — | authenticated | Form: `sessionId`, `score` (1~5), `review` (optional, max 200) | — | 저장·평균 재계산 → `redirect:/mypage/ratings` (RATING-04) |
+| R-03 | POST | `/worlds/{worldId}/ratings` | — | authenticated | Form: `sessionId`, `score` (1~5), `review` (optional, max 200) | — | 저장/평균 재계산 -> `redirect:/mypage/ratings` (RATING-04) |
 
 ---
 

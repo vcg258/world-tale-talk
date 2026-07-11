@@ -5,8 +5,8 @@
 | 버전 | v1.0 |
 | Base URL (REST) | `/api/v1` |
 | Base URL (Page) | `/` (Controller 명세: [Controller_명세서.md](./Controller_명세서.md)) |
-| 인증 | Session Cookie (SSR) / Bearer JWT (선택, REST·WS) |
-| Content-Type | `application/json` (REST·WS 메시지) |
+| 인증 | Session Cookie (SSR) / Bearer JWT (선택, REST/WS) |
+| Content-Type | `application/json` (REST/WS 메시지) |
 | 작성일 | 2026-05-29 |
 
 ---
@@ -16,7 +16,7 @@
 | API 종류 | 용도 | 구현 위치 권장 |
 |----------|------|----------------|
 | **Page API** | Thymeleaf HTML | `@Controller` — [Controller_명세서.md](./Controller_명세서.md) |
-| **REST API** | AJAX 검증, 모바일·분리 프론트, 관리 도구 | `@RestController` (`com.worldtaletalk.api`) |
+| **REST API** | AJAX 검증, 모바일/분리 프론트, 관리 도구 | `@RestController` (`com.worldtaletalk.api`) |
 | **WebSocket** | 스토리 실시간 스트리밍 (STORY-04) | `@Controller` + STOMP 또는 Raw WebSocket |
 | **Internal** | LLM Structured Output 파싱 | Service 계층 (클라이언트 노출 없음) |
 
@@ -49,7 +49,7 @@
 
 | 코드 | 의미 |
 |------|------|
-| 200 | 성공 (조회·WebSocket 핸드셰이크) |
+| 200 | 성공 (조회/WebSocket 핸드셰이크) |
 | 201 | 생성 성공 |
 | 400 | Validation 실패 |
 | 401 | 미인증 |
@@ -95,7 +95,7 @@
 | `name` | string | 세계관 이름 |
 | `genre` | enum | `FANTASY`, `SF`, `MARTIAL_ARTS`, `MYSTERY` |
 | `description` | string | 카드 소개 (유저용) |
-| `settingText` | string | LLM용 (관리자·내부만 노출 권장) |
+| `settingText` | string | LLM용 (관리자/내부만 노출 권장) |
 | `targetTurn` | int | 목표 턴 |
 | `isActive` | boolean | 노출 여부 |
 | `ratingAvg` | decimal | 평균 평점 |
@@ -182,13 +182,13 @@
 
 ---
 
-## 6. 채팅 · 스토리 API (REST 대안)
+## 6. 채팅 / 스토리 API (REST 대안)
 
 WebSocket 미지원 클라이언트용. 실서비스는 §7 WebSocket 우선.
 
 | # | Method | URL | 권한 | Input | Output | HTML | 비고 |
 |---|--------|-----|------|-------|--------|------|------|
-| API-C-01 | POST | `/api/v1/sessions/{id}/turns` | authenticated | Body: `TurnRequest` | `TurnResponse` | `story/play` | 선택지·자유 입력 |
+| API-C-01 | POST | `/api/v1/sessions/{id}/turns` | authenticated | Body: `TurnRequest` | `TurnResponse` | `story/play` | 선택지/자유 입력 |
 | API-C-02 | GET | `/api/v1/sessions/{id}/messages` | authenticated | Query: `turn`, `page`, `size` | `Page<ChatMessagesDTO>` | — | STORY-05 |
 | API-C-03 | POST | `/api/v1/sessions/{id}/choices` | authenticated | Body: `{ "choiceIndex": 0\|1\|2 }` | `TurnResponse` | — | STORY-02 |
 
@@ -226,7 +226,7 @@ WebSocket 미지원 클라이언트용. 실서비스는 §7 WebSocket 우선.
 
 ## 7. WebSocket API (STORY-04)
 
-| # | Protocol | URL | 권한 | Input (Client → Server) | Output (Server → Client) | HTML |
+| # | Protocol | URL | 권한 | Input (Client -> Server) | Output (Server -> Client) | HTML |
 |---|----------|-----|------|-------------------------|--------------------------|------|
 | WS-01 | WebSocket | `/ws/story/{sessionId}` | authenticated | `StoryInputMessage` | `StoryStreamMessage` (스트리밍) | `story/play` |
 | WS-02 | WebSocket | `/ws/epilogue/{sessionId}` | authenticated | `EpilogueInputMessage` | `StoryStreamMessage` | `story/epilogue` |
@@ -305,12 +305,12 @@ WebSocket 미지원 클라이언트용. 실서비스는 §7 WebSocket 우선.
 
 ---
 
-## 9. 평점 · 리뷰 API
+## 9. 평점 / 리뷰 API
 
 | # | Method | URL | 권한 | Input | Output | HTML | 비고 |
 |---|--------|-----|------|-------|--------|------|------|
 | API-R-01 | GET | `/api/v1/worlds/{worldId}/ratings/me` | authenticated | Path: `worldId` | `WorldRatingsDTO` | `rating/form` | RATING-03 |
-| API-R-02 | PUT | `/api/v1/worlds/{worldId}/ratings` | authenticated | Body: `RatingRequest` | `WorldRatingsDTO` | — | 생성·수정 |
+| API-R-02 | PUT | `/api/v1/worlds/{worldId}/ratings` | authenticated | Body: `RatingRequest` | `WorldRatingsDTO` | — | 생성/수정 |
 | API-R-03 | GET | `/api/v1/users/me/ratings` | authenticated | — | `List<WorldRatingListResponse>` | `mypage/ratings` | MY-04 |
 
 ### 9.1 `RatingRequest` (Input)
@@ -397,7 +397,7 @@ Base: `/api/v1/admin` — 전역 `@PreAuthorize("hasRole('ADMIN')")`
 
 ---
 
-## 13. LLM Internal API (서버 내부, STORY·ITEM·ENDING)
+## 13. LLM Internal API (서버 내부, STORY/ITEM/ENDING)
 
 클라이언트 직접 호출 없음. Spring AI `ChatClient` 응답 파싱용.
 
@@ -420,13 +420,13 @@ Base: `/api/v1/admin` — 전역 `@PreAuthorize("hasRole('ADMIN')")`
 | `type` | `GAIN` \| `LOSE` \| `NULL` | |
 | `itemName` | string | LLM 생성 |
 | `itemDescription` | string | LLM 생성 |
-| `itemContext` | `MINOR` \| `NORMAL` \| `SIGNIFICANT` \| `LEGENDARY` | 등급 힌트 → 서버 등급 결정 (ITEM-02) |
+| `itemContext` | `MINOR` \| `NORMAL` \| `SIGNIFICANT` \| `LEGENDARY` | 등급 힌트 -> 서버 등급 결정 (ITEM-02) |
 
 ### 13.3 서버 후처리 Output — `TurnProcessResult`
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `session` | `StorySessionsDTO` | 턴·상태 갱신 |
+| `session` | `StorySessionsDTO` | 턴/상태 갱신 |
 | `appliedStatLog` | `SessionStatLogsDTO` | STAT-02 |
 | `createdItem` | `SessionItemsDTO`? | ITEM-04 |
 | `removedItemId` | long? | INV-04 |
@@ -475,4 +475,4 @@ Base: `/api/v1/admin` — 전역 `@PreAuthorize("hasRole('ADMIN')")`
 
 | 버전 | 일자 | 내용 |
 |------|------|------|
-| v1.0 | 2026-05-29 | 템플릿·DTO·요구사항 기준 최초 작성 |
+| v1.0 | 2026-05-29 | 템플릿/DTO/요구사항 기준 최초 작성 |

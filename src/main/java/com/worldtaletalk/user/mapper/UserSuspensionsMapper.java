@@ -1,5 +1,6 @@
 package com.worldtaletalk.user.mapper;
 
+import com.worldtaletalk.config.MapStructConfig;
 import com.worldtaletalk.user.domain.UserSuspensionsEntity;
 import com.worldtaletalk.user.dto.UserSuspensionsDTO;
 import org.mapstruct.Mapper;
@@ -7,7 +8,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(config = MapStructConfig.class)
 public interface UserSuspensionsMapper {
     @Mapping(source = "users.id", target = "userId")
     @Mapping(source = "admin.id", target = "adminId")

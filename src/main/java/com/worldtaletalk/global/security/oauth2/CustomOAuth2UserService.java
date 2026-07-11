@@ -138,7 +138,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 Map<String, Object> response = (Map<String, Object>) attributes.get("response");
                 yield (String) response.get("id");
             }
-            case "kakao" -> String.valueOf(attributes.get("id")); // Long → String
+            case "kakao" -> String.valueOf(attributes.get("id")); // Long -> String
             default -> throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인: " + registrationId);
         };
     }

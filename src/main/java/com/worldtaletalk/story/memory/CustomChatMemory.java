@@ -84,7 +84,7 @@ public class CustomChatMemory implements ChatMemory {
                 .orElseThrow(() -> new NoSuchElementException("해당 세션을 찾을 수 없음"));
 
         // 에필로그 여부 확인후 에필로그 메세지만 조회를 하던 아니면 메인 메세지만 조회
-        // DESC + LIMIT N 조회 후 reverse → 시간 오름차순 유지 (Spring AI 어드바이저가 시간순 기대)
+        // DESC + LIMIT N 조회 후 reverse -> 시간 오름차순 유지 (Spring AI 어드바이저가 시간순 기대)
         Pageable pageable = PageRequest.of(0, WINDOW_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<ChatMessagesEntity> chatMessages = new ArrayList<>(
                 storySession.getStatus() == SessionStatus.EPILOGUE ?

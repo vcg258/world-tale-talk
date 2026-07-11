@@ -23,7 +23,7 @@ class ItemGradeProbabilitiesServiceImplTest {
 
     @Test
     void modifyProbability() {
-        // EARLY + COMMON(id=1): probability=60 → 50 으로 수정
+        // EARLY + COMMON(id=1): probability=60 -> 50 으로 수정
         log.info("{}", itemGradeProbabilitiesService.modifyProbability(1L, 50));
     }
 }

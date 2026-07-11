@@ -103,7 +103,7 @@ VALUES (4, 3, 2, 0, 1, 2, 1), (4, 7, 1, 1, 1, 2, 1),   -- GOOD: 전체 누적 +1
 
 -- 세션 1 (커서 페이징 테스트용 - 24개, 1분 간격으로 타임스탬프 부여)
 -- 최초 요청: 최신 20개 반환 (turn5 USER ~ turn12 USER)
--- 커서 요청: turn5 USER의 createdAt 기준 → 나머지 4개 (turn1~turn4) 반환
+-- 커서 요청: turn5 USER의 createdAt 기준 -> 나머지 4개 (turn1~turn4) 반환
 INSERT INTO chat_messages (session_id, turn, role, content, is_epilogue, created_at, updated_at)
 VALUES (1, 1,  'ASSISTANT', '마법 학당의 무너진 천장 사이로 붉은 달빛이 새어 들어옵니다. 아일린, 당신은 무엇을 합니까?', false, NOW() - INTERVAL '23 minutes', NOW() - INTERVAL '23 minutes'),
        (1, 1,  'USER',      '남아있는 마법 서적을 챙겨서 가방에 넣고 주위를 경계해.',                                   false, NOW() - INTERVAL '22 minutes', NOW() - INTERVAL '22 minutes'),
