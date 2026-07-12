@@ -391,6 +391,42 @@ tr:last-child td {
   }
 }
 
+.demo-login-box {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 18px;
+  padding: 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.demo-login-box strong {
+  color: var(--primary-dark);
+}
+
+.demo-login-box dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.demo-login-box dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.demo-login-box dt {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.demo-login-box dd {
+  margin: 0;
+  font-weight: 900;
+}
+
 .field-hint {
   margin: 0;
   color: var(--muted);

@@ -10,6 +10,13 @@
             <h1>로그인</h1>
             <p class="alert error" th:if="${param.error}">로그인 정보를 확인해주세요.</p>
             <p class="alert message" th:if="${param.expired}">세션이 만료되었습니다. 다시 로그인해주세요.</p>
+            <div class="demo-login-box">
+                <strong>포트폴리오 관리자 데모 계정</strong>
+                <dl>
+                    <div><dt>아이디</dt><dd>admin</dd></div>
+                    <div><dt>비밀번호</dt><dd>admin1234</dd></div>
+                </dl>
+            </div>
             <form class="form" th:action="@{/auth/login}" method="post">
                 <div class="field">
                     <label for="loginId">아이디</label>
