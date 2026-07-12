@@ -6,12 +6,12 @@
 <main class="page" th:attr="data-story-session=${storySession.id},data-story-mode='epilogue'">
     <div class="page-title"><h1>에필로그</h1></div>
     <div class="story-shell">
-        <section class="chat-log">
+        <section class="chat-log chronological epilogue-log">
             <article class="card"><div class="card-body">
                 <span class="badge" data-socket-status>대기</span>
                 <p class="muted" data-live-story></p>
                 <form class="form" data-story-form>
-                    <div class="field"><label>에필로그 입력</label><textarea data-story-input maxlength="500" required></textarea></div>
+                    <div class="field story-text-field"><label>에필로그 입력</label><textarea data-story-input maxlength="500" required></textarea></div>
                     <button class="btn" type="submit">전송</button>
                 </form>
             </div></article>

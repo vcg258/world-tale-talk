@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", // 메인 화면
                                 "/auth/login", // 로그인
-                                "/auth/nickname", // 닉네임 설정
+                                "/auth/nickname", "/auth/nickname/check", // 닉네임 설정 및 중복 검사
                                 "/auth/suspended", // 정지 안내
                                 "/auth/signup", "/auth/signup/**", // 회원가입
                                 "/auth/find-id", // 아이디 찾기

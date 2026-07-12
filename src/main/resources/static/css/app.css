@@ -390,3 +390,148 @@ tr:last-child td {
     padding-inline: 16px;
   }
 }
+
+.field-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.field-hint.ok {
+  color: var(--ok);
+}
+
+.field-hint.error {
+  color: var(--danger);
+}
+
+.field-hint.checking {
+  color: var(--primary);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.story-page {
+  max-width: 1280px;
+}
+
+.story-title h1 {
+  font-size: clamp(1.8rem, 3vw, 3rem);
+}
+
+.story-main {
+  min-width: 0;
+  align-content: start;
+}
+
+.story-current p,
+.live-story {
+  white-space: pre-wrap;
+}
+
+.live-story:empty {
+  display: none;
+}
+
+.choice-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.choice-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.choice-text {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  padding: 9px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.choice-text:hover {
+  border-color: var(--primary);
+  background: #eff6ff;
+}
+
+.story-input-card {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+}
+
+.story-input-card .card-body {
+  padding: 14px;
+}
+
+.story-text-field textarea {
+  min-height: 96px;
+  border-color: transparent;
+  background: var(--surface-soft);
+  box-shadow: none;
+}
+
+.story-text-field textarea:focus {
+  border-color: transparent;
+  outline: 2px solid rgba(37, 99, 235, 0.22);
+}
+
+.story-side-panel {
+  position: sticky;
+  top: 82px;
+  max-height: calc(100vh - 98px);
+  overflow-y: auto;
+  align-self: start;
+}
+
+.input-actions {
+  justify-content: flex-end;
+}
+
+.chat-log.chronological {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+}
+
+.epilogue-log {
+  align-content: start;
+}
+
+.chat-log.chronological .message {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .story-input-card,
+  .story-side-panel {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .choice-item {
+    grid-template-columns: 1fr;
+  }
+
+  .input-actions {
+    justify-content: stretch;
+  }
+
+  .input-actions .btn {
+    width: 100%;
+  }
+}

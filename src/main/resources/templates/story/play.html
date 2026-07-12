@@ -3,44 +3,50 @@
 <head th:replace="~{fragments/layout :: head('플레이')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
-<main class="page" th:attr="data-story-session=${storySession.id},data-story-mode='story'">
-    <div class="page-title">
+<main class="page story-page" th:attr="data-story-session=${storySession.id},data-story-mode='story'">
+    <div class="page-title story-title">
         <div>
             <h1 th:text="${world.name}">세계관</h1>
             <p th:text="${persona.name}">페르소나</p>
         </div>
         <div class="actions">
+            <span class="badge" th:text="${progressPercent != null ? progressPercent + '%' : '0%'}">0%</span>
+            <span class="badge" data-socket-status>대기</span>
             <form th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="세션을 포기하시겠습니까?"><button class="btn warning" type="submit">포기</button></form>
         </div>
     </div>
     <div class="story-shell">
-        <section class="stack">
-            <article class="card" th:if="${currentStory != null}"><div class="card-body">
-                <span class="badge" th:text="${progressPercent + '%'}">0%</span>
-                <span class="badge" data-socket-status>대기</span>
+        <section class="stack story-main">
+            <article class="card story-current" th:if="${currentStory != null}"><div class="card-body">
+                <h2>현재 장면</h2>
                 <p th:text="${currentStory}">현재 이야기</p>
-                <div class="actions" th:if="${choices != null}">
-                    <button class="btn secondary small" th:each="choice, stat : ${choices}" type="button" th:attr="data-choice-index=${stat.index}" th:text="${choice}">선택지</button>
+                <div class="choice-list" th:if="${choices != null}">
+                    <div class="choice-item" th:each="choice, stat : ${choices}">
+                        <button class="choice-text" type="button" th:attr="data-choice-send=${choice}" th:text="${choice}">추천문구</button>
+                        <button class="btn secondary small" type="button" th:attr="data-choice-edit=${choice}">수정</button>
+                    </div>
                 </div>
             </div></article>
-            <article class="card"><div class="card-body">
-                <h2>입력</h2>
-                <p class="muted" data-live-story></p>
-                <form class="form" data-story-form>
-                    <div class="field"><label>자유 입력</label><textarea data-story-input maxlength="500"></textarea></div>
-                    <button class="btn" type="submit">전송</button>
-                </form>
-                <button class="btn secondary section" th:if="${currentStory == null}" type="button" data-choice-index="start">이야기 시작</button>
-            </div></article>
-            <div class="chat-log">
+            <div class="chat-log chronological">
                 <div class="message" th:each="message : ${messages}" th:classappend="${message.role != null and message.role.name() == 'USER'} ? ' user'">
                     <div class="meta"><span th:text="${message.role}">ROLE</span><span th:text="'턴 ' + ${message.turn}">턴</span></div>
                     <p th:text="${message.content}">메시지</p>
                     <a class="btn secondary small" th:href="@{/reports/new(targetType='CHAT_MESSAGE',targetId=${message.id})}">신고</a>
                 </div>
             </div>
+            <article class="card story-input-card"><div class="card-body">
+                <h2>입력</h2>
+                <p class="live-story" data-live-story></p>
+                <form class="form" data-story-form>
+                    <div class="field story-text-field"><label for="story-free-input">자유 입력</label><textarea id="story-free-input" data-story-input maxlength="500" rows="4"></textarea></div>
+                    <div class="actions input-actions">
+                        <button class="btn" type="submit">전송</button>
+                        <button class="btn secondary" th:if="${currentStory == null}" type="button" data-choice-start>이야기 시작</button>
+                    </div>
+                </form>
+            </div></article>
         </section>
-        <aside class="stack">
+        <aside class="stack story-side-panel">
             <section class="card"><div class="card-body">
                 <h2>스탯</h2>
                 <div class="stat-grid">
