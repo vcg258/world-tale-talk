@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('페르소나 선택')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="page-title">
+        <div>
+            <h1 th:text="${world.name}">세계관</h1>
+            <p>플레이할 페르소나를 선택하세요.</p>
+        </div>
+        <a class="btn secondary" th:href="@{/worlds/{id}(id=${world.id})}">세계관으로</a>
+    </div>
+    <div class="grid">
+        <article class="card" th:each="item : ${personas}">
+            <div class="card-body">
+                <h2 th:text="${item.persona.name}">페르소나</h2>
+                <p class="muted" th:text="${item.persona.description}">설명</p>
+                <div class="stat-grid" th:if="${item.baseStats != null}">
+                    <div class="stat">지혜 <strong th:text="${item.baseStats.wisdom}">0</strong></div>
+                    <div class="stat">힘 <strong th:text="${item.baseStats.strength}">0</strong></div>
+                    <div class="stat">민첩 <strong th:text="${item.baseStats.agility}">0</strong></div>
+                    <div class="stat">매력 <strong th:text="${item.baseStats.charisma}">0</strong></div>
+                    <div class="stat">행운 <strong th:text="${item.baseStats.luck}">0</strong></div>
+                </div>
+                <form class="section" th:action="@{/worlds/{worldId}/personas/{personaId}/sessions(worldId=${world.id},personaId=${item.persona.id})}" method="post">
+                    <button class="btn" type="submit">새 게임 시작</button>
+                </form>
+            </div>
+        </article>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

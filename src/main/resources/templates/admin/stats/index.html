@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('세계관 통계')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="page-title"><h1>세계관 통계</h1></div>
+    <div th:replace="~{fragments/layout :: adminTabs}"></div>
+    <div class="table-wrap section"><table>
+        <thead><tr><th>ID</th><th>세계관</th><th>전체</th><th>완료</th><th>포기</th><th>평점</th></tr></thead>
+        <tbody><tr th:each="stat : ${worldStats}">
+            <td th:text="${stat.worldId}">1</td><td th:text="${stat.worldName}">세계관</td>
+            <td th:text="${stat.totalSessions}">0</td><td th:text="${stat.completedSessions}">0</td>
+            <td th:text="${stat.abandonedSessions}">0</td><td th:text="${stat.ratingAvg}">0</td>
+        </tr></tbody>
+    </table></div>
+</main>
+</body>
+</html>

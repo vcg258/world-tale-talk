@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('서버 오류')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header><main class="page narrow"><section class="card"><div class="card-body"><h1>서버 오류가 발생했습니다</h1><p class="muted" th:text="${message} ?: '잠시 후 다시 시도해주세요.'">메시지</p><a class="btn" th:href="@{/}">홈으로</a></div></section></main></body>
+</html>

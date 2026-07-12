@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('세계관 입력')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div class="page-title"><h1 th:text="${world == null ? '세계관 등록' : '세계관 수정'}">세계관 입력</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body"><form class="form" th:action="${world == null ? '/admin/worlds' : '/admin/worlds/' + world.id}" method="post">
+        <div class="field"><label>이름</label><input name="name" th:value="${world?.name}" required></div>
+        <div class="field"><label>장르</label><select name="genre" required>
+            <option value="FANTASY" th:selected="${world != null and world.genre?.name() == 'FANTASY'}">FANTASY</option>
+            <option value="SF" th:selected="${world != null and world.genre?.name() == 'SF'}">SF</option>
+            <option value="MARTIAL_ARTS" th:selected="${world != null and world.genre?.name() == 'MARTIAL_ARTS'}">MARTIAL_ARTS</option>
+            <option value="MYSTERY" th:selected="${world != null and world.genre?.name() == 'MYSTERY'}">MYSTERY</option>
+        </select></div>
+        <div class="field"><label>설명</label><textarea name="description" required th:text="${world?.description}"></textarea></div>
+        <div class="field"><label>설정 프롬프트</label><textarea name="settingText" required th:text="${world?.settingText}"></textarea></div>
+        <div class="field"><label>목표 턴</label><input name="targetTurn" type="number" min="1" th:value="${world?.targetTurn}" required></div>
+        <div class="field"><label>활성화</label><select name="isActive"><option value="true" th:selected="${world == null or world.active}">활성</option><option value="false" th:selected="${world != null and !world.active}">비활성</option></select></div>
+        <button class="btn" type="submit">저장</button>
+    </form></div></section>
+</main></body></html>

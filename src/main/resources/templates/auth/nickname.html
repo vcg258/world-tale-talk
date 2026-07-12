@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('닉네임 설정')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <p class="alert error" th:if="${nicknameError}" th:text="${nicknameError}">닉네임 오류</p>
+    <section class="card">
+        <div class="card-body">
+            <h1>닉네임 설정</h1>
+            <form class="form" th:action="@{/auth/nickname}" method="post">
+                <div class="field"><label>닉네임</label><input name="nickname" required></div>
+                <button class="btn" type="submit">저장</button>
+            </form>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

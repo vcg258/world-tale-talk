@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('프로필')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="page-title"><h1>프로필 관리</h1></div>
+    <div class="grid">
+        <section class="card"><div class="card-body">
+            <h2>닉네임</h2>
+            <form class="form" th:action="@{/mypage/profile}" method="post">
+                <div class="field"><label>닉네임</label><input name="nickname" th:value="${user.nickname}" required></div>
+                <button class="btn" type="submit">변경</button>
+            </form>
+        </div></section>
+        <section class="card"><div class="card-body">
+            <h2>비밀번호</h2>
+            <form class="form" th:action="@{/mypage/password}" method="post">
+                <div class="field"><label>현재 비밀번호</label><input name="currentPassword" type="password" required></div>
+                <div class="field"><label>새 비밀번호</label><input name="newPassword" type="password" required></div>
+                <div class="field"><label>새 비밀번호 확인</label><input name="confirmPassword" type="password" required></div>
+                <button class="btn" type="submit">변경</button>
+            </form>
+        </div></section>
+        <section class="card"><div class="card-body">
+            <h2>이메일</h2>
+            <p class="muted" th:text="${user.email}">email@example.com</p>
+            <form class="form" th:action="@{/mypage/email/send-code}" method="post">
+                <div class="field"><label>새 이메일</label><input name="newEmail" type="email" required></div>
+                <button class="btn secondary" type="submit">인증코드 발송</button>
+            </form>
+            <form class="form section" th:action="@{/mypage/email/verify}" method="post">
+                <div class="field"><label>새 이메일</label><input name="newEmail" type="email" required></div>
+                <div class="field"><label>인증코드</label><input name="code" required></div>
+                <div class="field"><label>현재 비밀번호</label><input name="currentPassword" type="password" required></div>
+                <button class="btn" type="submit">이메일 변경</button>
+            </form>
+        </div></section>
+        <section class="card"><div class="card-body">
+            <h2>소셜 계정</h2>
+            <div class="stack">
+                <form class="inline-form" th:each="account : ${socialAccounts}" th:action="@{/mypage/social/{id}(id=${account.id})}" method="post">
+                    <span class="badge" th:text="${account.provider}">PROVIDER</span>
+                    <button class="btn secondary small" type="submit">연동 해제</button>
+                </form>
+                <p class="muted" th:if="${#lists.isEmpty(socialAccounts)}">연동된 소셜 계정이 없습니다.</p>
+            </div>
+        </div></section>
+        <section class="card"><div class="card-body">
+            <h2>회원 탈퇴</h2>
+            <form th:action="@{/mypage/withdraw}" method="post" data-confirm="정말 탈퇴하시겠습니까?">
+                <button class="btn danger" type="submit">탈퇴</button>
+            </form>
+        </div></section>
+    </div>
+</main>
+</body>
+</html>

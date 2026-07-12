@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('별점 작성')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body">
+        <h1 th:text="${world.name}">세계관</h1>
+        <form class="form" th:action="@{/worlds/{id}/ratings(id=${world.id})}" method="post">
+            <input type="hidden" name="sessionId" th:value="${sessionId}">
+            <div class="field">
+                <label>별점</label>
+                <select name="score" required>
+                    <option th:each="score : ${#numbers.sequence(5,1)}" th:value="${score}" th:text="${score + '점'}" th:selected="${existingRating != null and existingRating.score == score}">5점</option>
+                </select>
+            </div>
+            <div class="field"><label>리뷰</label><textarea name="review" maxlength="200" th:text="${existingRating != null ? existingRating.review : ''}"></textarea></div>
+            <button class="btn" type="submit">저장</button>
+        </form>
+    </div></section>
+</main>
+</body>
+</html>

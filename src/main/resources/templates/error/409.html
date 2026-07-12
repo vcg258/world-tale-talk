@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('요청 충돌')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header><main class="page narrow"><section class="card"><div class="card-body"><h1>요청을 처리할 수 없습니다</h1><p class="muted" th:text="${message} ?: '현재 상태와 충돌하는 요청입니다.'">메시지</p><a class="btn" th:href="@{/}">홈으로</a></div></section></main></body>
+</html>

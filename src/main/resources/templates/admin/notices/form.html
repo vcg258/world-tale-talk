@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('공지 입력')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div class="page-title"><h1 th:text="${notice.id == null ? '공지 등록' : '공지 수정'}">공지 입력</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body"><form class="form" th:action="${notice.id == null ? '/admin/notices' : '/admin/notices/' + notice.id + '/edit'}" method="post">
+        <div class="field"><label>제목</label><input name="title" th:value="${notice.title}" required></div>
+        <div class="field"><label>내용</label><textarea name="content" required th:text="${notice.content}"></textarea></div>
+        <div class="field"><label>공개</label><select name="isActive"><option value="true" th:selected="${notice.active}">공개</option><option value="false" th:selected="${!notice.active}">비공개</option></select></div>
+        <button class="btn" type="submit">저장</button>
+    </form></div></section>
+</main></body></html>

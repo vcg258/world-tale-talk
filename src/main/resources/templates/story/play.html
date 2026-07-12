@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('플레이')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page" th:attr="data-story-session=${storySession.id},data-story-mode='story'">
+    <div class="page-title">
+        <div>
+            <h1 th:text="${world.name}">세계관</h1>
+            <p th:text="${persona.name}">페르소나</p>
+        </div>
+        <div class="actions">
+            <form th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="세션을 포기하시겠습니까?"><button class="btn warning" type="submit">포기</button></form>
+        </div>
+    </div>
+    <div class="story-shell">
+        <section class="stack">
+            <article class="card" th:if="${currentStory != null}"><div class="card-body">
+                <span class="badge" th:text="${progressPercent + '%'}">0%</span>
+                <span class="badge" data-socket-status>대기</span>
+                <p th:text="${currentStory}">현재 이야기</p>
+                <div class="actions" th:if="${choices != null}">
+                    <button class="btn secondary small" th:each="choice, stat : ${choices}" type="button" th:attr="data-choice-index=${stat.index}" th:text="${choice}">선택지</button>
+                </div>
+            </div></article>
+            <article class="card"><div class="card-body">
+                <h2>입력</h2>
+                <p class="muted" data-live-story></p>
+                <form class="form" data-story-form>
+                    <div class="field"><label>자유 입력</label><textarea data-story-input maxlength="500"></textarea></div>
+                    <button class="btn" type="submit">전송</button>
+                </form>
+                <button class="btn secondary section" th:if="${currentStory == null}" type="button" data-choice-index="start">이야기 시작</button>
+            </div></article>
+            <div class="chat-log">
+                <div class="message" th:each="message : ${messages}" th:classappend="${message.role != null and message.role.name() == 'USER'} ? ' user'">
+                    <div class="meta"><span th:text="${message.role}">ROLE</span><span th:text="'턴 ' + ${message.turn}">턴</span></div>
+                    <p th:text="${message.content}">메시지</p>
+                    <a class="btn secondary small" th:href="@{/reports/new(targetType='CHAT_MESSAGE',targetId=${message.id})}">신고</a>
+                </div>
+            </div>
+        </section>
+        <aside class="stack">
+            <section class="card"><div class="card-body">
+                <h2>스탯</h2>
+                <div class="stat-grid">
+                    <div class="stat">지혜 <strong th:text="${currentStats.wisdom}">0</strong></div>
+                    <div class="stat">힘 <strong th:text="${currentStats.strength}">0</strong></div>
+                    <div class="stat">민첩 <strong th:text="${currentStats.agility}">0</strong></div>
+                    <div class="stat">매력 <strong th:text="${currentStats.charisma}">0</strong></div>
+                    <div class="stat">행운 <strong th:text="${currentStats.luck}">0</strong></div>
+                </div>
+            </div></section>
+            <section class="card"><div class="card-body">
+                <h2>아이템</h2>
+                <div class="stack">
+                    <form th:each="item : ${items}" th:action="@{/sessions/{sid}/items/{iid}/drop(sid=${storySession.id},iid=${item.id})}" method="post">
+                        <strong th:text="${item.itemName}">아이템</strong>
+                        <p class="muted" th:text="${item.itemDescription}">설명</p>
+                        <button class="btn secondary small" type="submit">버리기</button>
+                    </form>
+                </div>
+            </div></section>
+        </aside>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/story.js}"></script>
+</body>
+</html>

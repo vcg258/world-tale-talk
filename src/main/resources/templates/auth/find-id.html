@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('아이디 찾기')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body">
+        <h1>아이디 찾기</h1>
+        <form class="form" th:action="@{/auth/find-id}" method="post">
+            <div class="field"><label>이메일</label><input name="email" type="email" required></div>
+            <button class="btn" type="submit">아이디 메일 받기</button>
+        </form>
+    </div></section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

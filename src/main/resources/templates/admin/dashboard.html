@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="page-title"><h1>관리자</h1></div>
+    <div th:replace="~{fragments/layout :: adminTabs}"></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="grid section">
+        <article class="card"><div class="card-body"><p class="muted">회원</p><h2 th:text="${stats.userCount}">0</h2></div></article>
+        <article class="card"><div class="card-body"><p class="muted">세계관</p><h2 th:text="${stats.worldCount}">0</h2></div></article>
+        <article class="card"><div class="card-body"><p class="muted">진행 세션</p><h2 th:text="${stats.activeSessionCount}">0</h2></div></article>
+        <article class="card"><div class="card-body"><p class="muted">대기 신고</p><h2 th:text="${stats.pendingReportCount}">0</h2></div></article>
+    </section>
+</main>
+</body>
+</html>

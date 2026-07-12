@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('페르소나 입력')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div class="page-title"><h1 th:text="${persona == null ? '페르소나 등록' : '페르소나 수정'}">페르소나 입력</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body"><form class="form" th:action="${persona == null ? '/admin/personas' : '/admin/personas/' + persona.id}" method="post">
+        <div class="field"><label>세계관</label><select name="worldId" required><option th:each="world : ${worlds}" th:value="${world.id}" th:text="${world.name}" th:selected="${persona != null and persona.worldId == world.id}">세계관</option></select></div>
+        <div class="field"><label>이름</label><input name="name" th:value="${persona?.name}" required></div>
+        <div class="field"><label>설명</label><textarea name="description" required th:text="${persona?.description}"></textarea></div>
+        <div class="field"><label>배경 프롬프트</label><textarea name="background" required th:text="${persona?.background}"></textarea></div>
+        <div class="field"><label>활성화</label><select name="isActive"><option value="true" th:selected="${persona == null or persona.active}">활성</option><option value="false" th:selected="${persona != null and !persona.active}">비활성</option></select></div>
+        <div class="grid">
+            <div class="field"><label>지혜</label><input name="wisdom" type="number" th:value="${baseStats?.wisdom}" required></div>
+            <div class="field"><label>힘</label><input name="strength" type="number" th:value="${baseStats?.strength}" required></div>
+            <div class="field"><label>민첩</label><input name="agility" type="number" th:value="${baseStats?.agility}" required></div>
+            <div class="field"><label>매력</label><input name="charisma" type="number" th:value="${baseStats?.charisma}" required></div>
+            <div class="field"><label>행운</label><input name="luck" type="number" th:value="${baseStats?.luck}" required></div>
+        </div>
+        <button class="btn" type="submit">저장</button>
+    </form></div></section>
+</main></body></html>

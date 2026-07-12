@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${notice.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <article class="card">
+        <div class="card-body">
+            <p class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}">작성일</p>
+            <h1 th:text="${notice.title}">공지 제목</h1>
+            <p th:text="${notice.content}">공지 내용</p>
+        </div>
+    </article>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
