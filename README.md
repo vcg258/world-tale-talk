@@ -429,9 +429,6 @@ sequenceDiagram
 | OpenAI                        | `gpt-4o-mini`(스토리 생성), `text-embedding-3-small`(임베딩), Moderation API(자유 입력 검열) |
 | Google / Naver / Kakao OAuth2 | 소셜 로그인                                                                         |
 
-### Test
-
-- JUnit 5, Spring Security Test, Spring Batch Test, Mockito
 
 ---
 
