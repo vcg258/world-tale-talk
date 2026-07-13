@@ -3,7 +3,6 @@ package com.worldtaletalk.session.service;
 import com.worldtaletalk.persona.domain.PersonasEntity;
 import com.worldtaletalk.persona.repository.PersonasRepository;
 import com.worldtaletalk.session.StorySessionsMapper;
-import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.domain.StorySessionsEntity;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
@@ -184,24 +183,6 @@ public class StorySessionsServiceImpl implements StorySessionsService {
         storySession.changeHiddenByUser();
         StorySessionsEntity save = storySessionsRepository.save(storySession);
         log.info("세션 뷰 노출처리 변경 완료 : {}", save);
-    }
-
-    /**
-     * 세션 엔딩 결정
-     *
-     * @param id         PK
-     * @param endingType 엔딩
-     */
-    @Transactional
-    @Override
-    public void modifyStorySessionByEndingType(Long id, EndingType endingType) {
-        StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 세션은 존재하지 않습니다."));
-
-        storySession.changeInformationByEndingType(endingType);
-
-        StorySessionsEntity save = storySessionsRepository.save(storySession);
-        log.info("세션 엔딩 결정 : {}", save);
     }
 
     /**

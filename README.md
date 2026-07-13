@@ -135,7 +135,9 @@ localhost:6379 (기본값, application.yaml에서 변경 가능)
 > 
 >raw WebSocket은 메시지 타입 분기나 세션별 구독자 관리를 전부 직접 구현해야 하는데, 이 프로젝트는 세션마다 목적지가 여러 개 필요하고 인증된 사용자만 접근해야 하는 구조였습니다. 
 >STOMP를 얹으면 destination 기반 라우팅(@MessageMapping)과 구독자 관리(SimpMessagingTemplate.convertAndSend)를 프레임워크가 대신 처리해주고, spring-security-messaging으로 Security 연동도 가능해서 이 구조에 더 적합하다고 판단했습니다. 
->실무에서도 WebSocket+STOMP 조합이 널리 쓰이는 데다 이번 기회에 직접 사용해보고 싶었던 것도 이유입니다.(자세한 내용은 [트러블슈팅](#트러블슈팅) 참고).
+>실무에서도 WebSocket+STOMP 조합이 널리 쓰이는 데다 이번 기회에 직접 사용해보고 싶었던 것도 이유입니다.
+> 
+>(자세한 내용은 [트러블슈팅](#트러블슈팅) 참고).
 
 ### Migration (Flyway)
 
@@ -163,7 +165,8 @@ localhost:6379 (기본값, application.yaml에서 변경 가능)
 
 ### Spring Batch
 
->세계관/페르소나는 소프트 삭제(유예기간) 후 실제로 완전히 지우는 하드 삭제가 필요했는데, 이 배치에 Spring Batch를 채택했습니다. 단순 조회 후 삭제만 하면 되는 로직이라 청크 단위 처리는 필요 없다고 판단해 Tasklet 방식으로 구현했고, 삭제 건별로 REQUIRES_NEW 트랜잭션을 분리해 하나가 실패해도 나머지 삭제에 영향이 없도록 했습니다.
+>세계관/페르소나는 소프트 삭제(유예기간) 후 실제로 완전히 지우는 하드 삭제가 필요했는데, 이 배치에 Spring Batch를 채택했습니다. 
+>단순 조회 후 삭제만 하면 되는 로직이라 청크 단위 처리는 필요 없다고 판단해 Tasklet 방식으로 구현했고, 삭제 건별로 REQUIRES_NEW 트랜잭션을 분리해 하나가 실패해도 나머지 삭제에 영향이 없도록 했습니다.
 
 
 ---
@@ -360,6 +363,7 @@ sequenceDiagram
 
 ## 트러블슈팅
 
+### - 백엔드
 ### 1. STOMP 메시지 핸들러에서 로그인 회원 정보가 null로 조회되는 문제
 - **증상**: WebSocket(STOMP)으로 들어온 메시지를 처리할 때 `@AuthenticationPrincipal`로 회원 정보를 받으려 하면 null이거나 `Cannot construct instance of AuthenticatedUser` 에러가 발생
 - **원인**: STOMP 메시징 파이프라인은 Spring MVC와 달리 `AuthenticationPrincipalArgumentResolver`가 자동 등록되지 않고, `simpUser` 헤더의 인증 정보를 스레드의 `SecurityContextHolder`로 옮겨주는 `SecurityContextChannelInterceptor`도 별도 필요
@@ -385,6 +389,8 @@ sequenceDiagram
 - **상황**: RestController가 아닌 일반 컨트롤러 + 프론트/백엔드 분리 작업 구조라, 컨트롤러 작업을 끝내도 프론트가 없어 직접 테스트할 방법이 없었습니다. 그래서 Mockito(`@WebMvcTest`)를 처음 사용하게 됐습니다.
 - **문제**: `@WebMvcTest`는 웹 계층만 로드하고 JPA 관련 설정은 올리지 않는데, `@EnableJpaAuditing`이 메인 애플리케이션 클래스에 선언돼 있으면 `@WebMvcTest`가 이 클래스를 설정 소스로 가져가면서 auditing에 필요한 빈(`EntityManagerFactory` 등)을 찾지 못해 컨텍스트 로딩이 실패했습니다.
 - **해결**: `@EnableJpaAuditing`을 메인 클래스에서 떼어내 별도의 `JpaAuditingConfig` 설정 클래스로 분리했습니다. `@WebMvcTest`가 메인 클래스만 설정 소스로 가져가도 이 어노테이션이 딸려오지 않아 문제없이 슬라이스 테스트가 가능해졌습니다.
+
+### - 프론트엔드[TODO]
 
 ---
 
@@ -507,6 +513,7 @@ Thymeleaf SSR 구조라 대부분은 뷰 렌더링(GET) + 폼 처리 후 redirec
 | GET, POST | `/admin/items/grades/**`                        | 아이템 등급 보정치 설정              |
 | GET, POST | `/admin/items/probabilities/**`                 | 아이템 등급 확률 설정               |
 | GET, POST | `/admin/sessions/**`                            | 세션 목록, 강제 포기, 숨김/복구        |
+| GET, POST | `/admin/report`                                 | 신고 목록 조회(상태 필터) / 처리       |
 
 ### AJAX / WebSocket 엔드포인트 (실제 JSON 계약이 존재하는 부분)
 
@@ -535,7 +542,7 @@ Thymeleaf SSR 구조라 대부분은 뷰 렌더링(GET) + 폼 처리 후 redirec
 
 `application.yaml`이 참조하는 값 기준입니다.
 
-```env
+```env (env.exmaple 참고)
 DB_USERNAME=
 DB_PASSWORD=
 OPENAI_API_KEY=
@@ -619,11 +626,11 @@ com.worldtaletalk
 
 ## 팀 문서
 
-| 문서              | 링크                      |
-|-----------------|-------------------------|
-| 팀원별 소감          | [TODO — Google Docs 링크] |
-| [TODO] 기획/설계 문서 | [TODO]                  |
-| [TODO] 테스트 시트   | [TODO]                  |
+| 문서             | 링크           |
+|----------------|--------------|
+| 기획/설계 문서       | [링크]()       |
+| 팀원별 소감         | 김준용 : [링크]() |
+|                | 강혜윰 : [링크]() |
 
 ---
 

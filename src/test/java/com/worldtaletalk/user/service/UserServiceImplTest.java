@@ -1,6 +1,5 @@
 package com.worldtaletalk.user.service;
 
-import com.worldtaletalk.user.domain.user.UserStatus;
 import com.worldtaletalk.user.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -33,11 +32,6 @@ class UserServiceImplTest {
         userService.createUser(userDTO);
     }
 
-
-    @Test
-    void modifyUserStatus() {
-        userService.modifyUserStatus(1L, UserStatus.SUSPENDED);
-    }
 
     @Test
     void deleteUser() {

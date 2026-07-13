@@ -138,15 +138,19 @@ public class AdminWorldController {
             return "redirect:/admin/worlds/" + id + "/edit";
         }
 
-        worldsService.modifyWorld(WorldsDTO.builder()
-                .id(id)
-                .name(form.name())
-                .genre(form.genre())
-                .description(form.description())
-                .settingText(form.settingText())
-                .targetTurn(form.targetTurn())
-                .active(form.isActive())
-                .build());
+        try {
+            worldsService.modifyWorld(WorldsDTO.builder()
+                    .id(id)
+                    .name(form.name())
+                    .genre(form.genre())
+                    .description(form.description())
+                    .settingText(form.settingText())
+                    .targetTurn(form.targetTurn())
+                    .active(form.isActive())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/worlds";
     }
 
@@ -157,12 +161,16 @@ public class AdminWorldController {
      * @return redirect:/admin/worlds (세계관 목록 페이지)
      */
     @PostMapping("/{id}/toggle")
-    public String toggle(@PathVariable Long id) {
-        WorldsDTO world = worldsService.getWorldById(id);
-        worldsService.modifyWorld(WorldsDTO.builder()
-                .id(world.getId())
-                .active(!world.getActive())
-                .build());
+    public String toggle(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            WorldsDTO world = worldsService.getWorldById(id);
+            worldsService.modifyWorld(WorldsDTO.builder()
+                    .id(world.getId())
+                    .active(!world.getActive())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/worlds";
     }
 

@@ -6,21 +6,13 @@ import org.springframework.data.domain.Page;
 
 
 public interface ReportsService {
-
-    /**
-     * 전체 신고 목록 조회 (관리자용) (페이징)
-     *
-     * @return 신고 목록
-     */
-    Page<ReportsDTO> getReports(int page);
-
     /**
      * 처리 상태별 신고 목록 조회 (관리자용) (페이징)
      *
-     * @param status 처리 상태
+     * @param status 처리 상태 (null이면 전체 조회)
      * @return 상태별 신고 목록
      */
-    Page<ReportsDTO> getReportsByStatus(ReportStatus status, int page);
+    Page<ReportsDTO> getReports(ReportStatus status, int page);
 
     /**
      * 신고 등록

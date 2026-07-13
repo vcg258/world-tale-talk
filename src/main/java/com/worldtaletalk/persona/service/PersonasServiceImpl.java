@@ -49,18 +49,6 @@ public class PersonasServiceImpl implements PersonasService {
     }
 
     /**
-     * 해당 세계관의 활성화 된 페르소나 전체 조회
-     *
-     * @param worldId 세계관 PK
-     * @return 해당 세계관 페르소나
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<PersonasDTO> getPersonasByWorldId(Long worldId) {
-        return personasMapper.toDTOList(personasRepository.findAllByWorldIdAndActiveTrue(worldId));
-    }
-
-    /**
      * 해당 세계관 페르소나 전체 조회 (비활성 포함, 관리자용)
      *
      * @param worldId 세계관 PK

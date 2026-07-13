@@ -134,13 +134,17 @@ public class AdminNoticeController {
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/notices/" + id + "/edit";
         }
-        noticesService.modifyNotice(NoticesDTO.builder()
-                .id(id)
-                .adminId(admin.getUser().getId())
-                .title(form.title())
-                .content(form.content())
-                .active(form.isActive())
-                .build());
+        try {
+            noticesService.modifyNotice(NoticesDTO.builder()
+                    .id(id)
+                    .adminId(admin.getUser().getId())
+                    .title(form.title())
+                    .content(form.content())
+                    .active(form.isActive())
+                    .build());
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/notices";
     }
 
