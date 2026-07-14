@@ -47,6 +47,30 @@
     <a th:href="@{/admin/stats}">통계</a>
 </nav>
 
+<aside class="admin-sidebar" th:fragment="adminSidebar">
+    <a class="admin-home" th:href="@{/admin}">관리자</a>
+    <div class="admin-menu-group">
+        <h2>운영 현황</h2>
+        <a th:href="@{/admin}">대시보드</a>
+        <a th:href="@{/admin/stats}">통계</a>
+    </div>
+    <div class="admin-menu-group">
+        <h2>콘텐츠 관리</h2>
+        <a th:href="@{/admin/worlds}">세계관</a>
+        <a th:href="@{/admin/personas}">페르소나</a>
+        <a th:href="@{/admin/items/grades}">아이템 등급</a>
+        <a th:href="@{/admin/items/probabilities}">아이템 확률</a>
+        <a th:href="@{/admin/notices}">공지</a>
+    </div>
+    <div class="admin-menu-group">
+        <h2>사용자 활동</h2>
+        <a th:href="@{/admin/users}">회원</a>
+        <a th:href="@{/admin/users/del}">탈퇴 회원</a>
+        <a th:href="@{/admin/sessions}">세션</a>
+        <a th:href="@{/admin/ratings}">별점</a>
+    </div>
+</aside>
+
 <footer class="footer" th:fragment="footer">World Tale Talk</footer>
 </body>
 </html>

@@ -3,8 +3,11 @@
 <head th:replace="~{fragments/layout :: head('별점 관리')}"></head>
 <body><header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
     <div class="page-title"><h1>별점 관리</h1></div>
-    <div th:replace="~{fragments/layout :: adminTabs}"></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
     <form class="filter-bar section" th:action="@{/admin/ratings}" method="get">
         <div class="field"><label>닉네임</label><input name="nickname" th:value="${nickname}"></div>
         <div class="field"><label>세계관 ID</label><input name="worldId" type="number" th:value="${worldId}"></div>
@@ -16,4 +19,6 @@
         <td><form th:action="@{/admin/ratings/{id}(id=${rating.id})}" method="post" data-confirm="별점을 삭제하시겠습니까?"><button class="btn danger small" type="submit">삭제</button></form></td>
     </tr>
     </tbody></table></div>
+        </section>
+    </div>
 </main></body></html>

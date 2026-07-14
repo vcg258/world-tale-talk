@@ -41,6 +41,7 @@ public class AdminSessionController {
             @RequestParam(defaultValue = "1") int page,
             Model model
     ) {
+        page = Math.max(page, 1);
         Page<StorySessionsDTO> sessions = storySessionsService.getSessions(userId, worldId, status, page);
         model.addAttribute("sessions", sessions.getContent());
         model.addAttribute("sessionsPage", sessions);

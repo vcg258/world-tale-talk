@@ -3,8 +3,10 @@
 <head th:replace="~{fragments/layout :: head('세계관 관리')}"></head>
 <body><header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
-    <div class="page-title"><h1>세계관 관리</h1><a class="btn" th:href="@{/admin/worlds/new}">등록</a></div>
-    <div th:replace="~{fragments/layout :: adminTabs}"></div><div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1>세계관 관리</h1><a class="btn" th:href="@{/admin/worlds/new}">등록</a></div><div th:replace="~{fragments/layout :: alerts}"></div>
     <div class="table-wrap section"><table><thead><tr><th>ID</th><th>이름</th><th>장르</th><th>턴</th><th>상태</th><th>작업</th></tr></thead><tbody>
     <tr th:each="world : ${worlds}">
         <td th:text="${world.id}">1</td><td th:text="${world.name}">이름</td><td th:text="${world.genre}">장르</td><td th:text="${world.targetTurn}">0</td>
@@ -18,4 +20,6 @@
         </td>
     </tr>
     </tbody></table></div>
+        </section>
+    </div>
 </main></body></html>

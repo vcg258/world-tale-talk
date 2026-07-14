@@ -2,7 +2,10 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('공지 입력')}"></head>
 <body><header th:replace="~{fragments/layout :: header}"></header>
-<main class="page narrow">
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
     <div class="page-title"><h1 th:text="${notice.id == null ? '공지 등록' : '공지 수정'}">공지 입력</h1></div>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <section class="card"><div class="card-body"><form class="form" th:action="${notice.id == null ? '/admin/notices' : '/admin/notices/' + notice.id + '/edit'}" method="post">
@@ -11,4 +14,6 @@
         <div class="field"><label>공개</label><select name="isActive"><option value="true" th:selected="${notice.active}">공개</option><option value="false" th:selected="${!notice.active}">비공개</option></select></div>
         <button class="btn" type="submit">저장</button>
     </form></div></section>
+        </section>
+    </div>
 </main></body></html>

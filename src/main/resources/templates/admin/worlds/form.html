@@ -2,7 +2,10 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('세계관 입력')}"></head>
 <body><header th:replace="~{fragments/layout :: header}"></header>
-<main class="page narrow">
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
     <div class="page-title"><h1 th:text="${world == null ? '세계관 등록' : '세계관 수정'}">세계관 입력</h1></div>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <section class="card"><div class="card-body"><form class="form" th:action="${world == null ? '/admin/worlds' : '/admin/worlds/' + world.id}" method="post">
@@ -19,4 +22,6 @@
         <div class="field"><label>활성화</label><select name="isActive"><option value="true" th:selected="${world == null or world.active}">활성</option><option value="false" th:selected="${world != null and !world.active}">비활성</option></select></div>
         <button class="btn" type="submit">저장</button>
     </form></div></section>
+        </section>
+    </div>
 </main></body></html>
