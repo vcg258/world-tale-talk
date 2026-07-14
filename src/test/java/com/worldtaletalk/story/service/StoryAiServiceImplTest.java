@@ -14,7 +14,7 @@ class StoryAiServiceImplTest {
 
     @Test
     void indexWorld() {
-        storyAiService.indexWorld(1L);
+        storyAiService.indexWorld(5L);
     }
 
     @Test
