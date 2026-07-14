@@ -571,3 +571,90 @@ tr:last-child td {
     width: 100%;
   }
 }
+
+.demo-login-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0 18px;
+}
+
+.demo-login-grid .demo-login-box {
+  margin: 0;
+}
+
+.demo-login-box .btn {
+  width: 100%;
+}
+
+.social-login-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.social-login-btn {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.social-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.social-login-btn.google {
+  border: 1px solid #747775;
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.social-login-btn.google .social-mark {
+  color: #4285f4;
+}
+
+.social-login-btn.kakao {
+  border-radius: 12px;
+  background: #fee500;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.social-login-btn.kakao .social-mark {
+  color: #000;
+}
+
+.social-login-btn.naver {
+  background: #03c75a;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .demo-login-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-link-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.auth-link-actions .btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 10px;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 520px) {
+  .auth-link-actions {
+    grid-template-columns: 1fr;
+  }
+}
