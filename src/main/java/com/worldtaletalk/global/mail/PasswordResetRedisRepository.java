@@ -32,7 +32,13 @@ public class PasswordResetRedisRepository {
      */
     public Long getUserId(String token) {
         Object value = redisTemplate.opsForValue().get(KEY_PREFIX + token);
-        return value != null ? (Long) value : null;
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        return Long.valueOf(value.toString());
     }
 
     /**

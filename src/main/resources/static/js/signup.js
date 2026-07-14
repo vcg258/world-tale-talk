@@ -8,6 +8,7 @@
   const submit = form.querySelector('[data-submit]');
   const state = new Map();
   const timers = new Map();
+  let submitting = false;
 
   const feedback = (name) => form.querySelector(`[data-feedback-for="${name}"]`);
 
@@ -32,7 +33,7 @@
 
     if (!value) {
       password.setCustomValidity('비밀번호를 입력해주세요.');
-      setFeedback(password, '', '8~50자, 한글 없이 입력해주세요.');
+      setFeedback(password, '', '비밀번호 조건을 만족하는지 자동으로 확인합니다.');
     } else if (value.length < 8 || value.length > 50) {
       password.setCustomValidity('비밀번호는 8~50자로 입력해주세요.');
       setFeedback(password, 'error', '비밀번호는 8~50자로 입력해주세요.');
@@ -40,7 +41,6 @@
       password.setCustomValidity('비밀번호에 한글은 사용할 수 없습니다.');
       setFeedback(password, 'error', '비밀번호에 한글은 사용할 수 없습니다.');
     } else {
-      password.setCustomValidity('');
       setFeedback(password, 'ok', '사용 가능한 비밀번호입니다.');
     }
 
@@ -73,13 +73,13 @@
       input.setCustomValidity(`${kind}를 입력해주세요.`);
       setFeedback(input, '', `${kind}를 입력해주세요.`);
       setState(input, false);
-      return;
+      return Promise.resolve(false);
     }
 
     if (!input.checkValidity()) {
       setFeedback(input, 'error', input.validationMessage);
       setState(input, false);
-      return;
+      return Promise.resolve(false);
     }
 
     setFeedback(input, 'checking', `${kind} 중복을 확인하고 있습니다.`);
@@ -88,23 +88,25 @@
     const url = new URL(input.dataset.checkUrl, window.location.origin);
     url.searchParams.set(input.dataset.checkParam, value);
 
-    fetch(url, {headers: {'Accept': 'application/json'}})
+    return fetch(url, {headers: {'Accept': 'application/json'}})
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('check failed')))
       .then((result) => {
         if (result.available) {
           input.setCustomValidity('');
           setFeedback(input, 'ok', `사용 가능한 ${kind}입니다.`);
           setState(input, true);
-          return;
+          return true;
         }
         input.setCustomValidity(`이미 사용중인 ${kind}입니다.`);
         setFeedback(input, 'error', `이미 사용중인 ${kind}입니다.`);
         setState(input, false);
+        return false;
       })
       .catch(() => {
         input.setCustomValidity(`${kind} 중복 확인에 실패했습니다.`);
         setFeedback(input, 'error', `${kind} 중복 확인에 실패했습니다.`);
         setState(input, false);
+        return false;
       });
   };
 
@@ -127,15 +129,22 @@
   password.addEventListener('input', validatePassword);
   confirmPassword.addEventListener('input', validateConfirmPassword);
 
-  form.addEventListener('submit', (event) => {
-    checkedInputs.forEach(checkDuplicate);
+  form.addEventListener('submit', async (event) => {
+    if (submitting) return;
+
+    event.preventDefault();
+    checkedInputs.forEach((input) => window.clearTimeout(timers.get(input.name)));
     validatePassword();
     validateConfirmPassword();
 
-    if (!form.checkValidity() || checkedInputs.some((input) => state.get(input.name) !== true)) {
-      event.preventDefault();
+    const duplicateResults = await Promise.all(checkedInputs.map(checkDuplicate));
+    if (!form.checkValidity() || duplicateResults.some((result) => !result)) {
       form.reportValidity();
+      return;
     }
+
+    submitting = true;
+    HTMLFormElement.prototype.submit.call(form);
   });
 
   validatePassword();
