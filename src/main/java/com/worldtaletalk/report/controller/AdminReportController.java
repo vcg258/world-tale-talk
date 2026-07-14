@@ -33,6 +33,7 @@ public class AdminReportController {
             @RequestParam(required = false) ReportStatus status,
             Model model
     ) {
+        page = Math.max(page, 1);
         Page<ReportsDTO> reports = reportsService.getReports(status, page);
         model.addAttribute("reports", reports.getContent());
         model.addAttribute("reportPage", reports);

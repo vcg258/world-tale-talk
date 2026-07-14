@@ -73,6 +73,7 @@ public class AdminUserController {
             @RequestParam(defaultValue = "1") int page,
             Model model
     ) {
+        page = Math.max(page, 1);
         Page<UserDTO> users = userService.getDelUsers(q, page);
         model.addAttribute("users", users.getContent());
         model.addAttribute("usersPage", users);

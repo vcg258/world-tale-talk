@@ -47,6 +47,7 @@ public class AdminNoticeController {
      */
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page, Model model) {
+        page = Math.max(page, 1);
         Page<NoticesDTO> notices = noticesService.getAllNotices(page);
         model.addAttribute("notices", notices.getContent());
         model.addAttribute("noticesPage", notices);

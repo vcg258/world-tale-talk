@@ -26,6 +26,7 @@ public class HomeController {
      */
     @GetMapping
     public String home(Model model, @RequestParam(defaultValue = "1") int page) {
+        page = Math.max(page, 1);
         model.addAttribute("worlds", worldsService.getActiveWorlds());
         model.addAttribute("featuredWorlds", worldsService.getFeaturedWorlds(3));
         model.addAttribute("notices", noticesService.getActiveNotices(page));

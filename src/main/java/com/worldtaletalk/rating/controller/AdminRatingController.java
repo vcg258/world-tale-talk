@@ -34,6 +34,7 @@ public class AdminRatingController {
             @RequestParam(defaultValue = "1") int page,
             Model model
     ) {
+        page = Math.max(page, 1);
         Page<WorldRatingsDTO> worldRatings = worldRatingsService.getWorldRatings(worldId, nickname, page);
         model.addAttribute("ratings", worldRatings.getContent());
         model.addAttribute("ratingsPage", worldRatings);

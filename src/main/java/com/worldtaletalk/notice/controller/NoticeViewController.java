@@ -24,6 +24,7 @@ public class NoticeViewController {
      */
     @GetMapping
     public String list(@RequestParam(defaultValue = "1") int page, Model model) {
+        page = Math.max(page, 1);
         model.addAttribute("notices", noticesService.getActiveNotices(page));
         return "notices/list";
     }
