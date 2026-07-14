@@ -5,16 +5,32 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
     <div th:replace="~{fragments/layout :: alerts}"></div>
-    <div class="page-title"><h1>내 별점</h1></div>
-    <div class="grid">
-        <article class="card" th:each="rating : ${ratings}">
-            <div class="card-body">
-                <span class="badge" th:text="${rating.score + '점'}">5점</span>
-                <h2 th:text="${rating.worldName}">세계관</h2>
-                <p class="muted" th:text="${rating.review}">리뷰</p>
-                <a class="btn secondary small" th:href="@{/worlds/{id}/ratings/edit(id=${rating.worldId})}">수정</a>
+    <div class="mypage-layout">
+        <aside class="mypage-sidebar">
+            <a class="mypage-home" th:href="@{/mypage}">마이페이지</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 세션</a>
+            <div class="mypage-menu-group">
+                <h2>프로필 관리</h2>
+                <a th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>
+                <a th:href="@{/mypage/profile(section='password')}">비밀번호 변경</a>
+                <a th:href="@{/mypage/profile(section='email')}">이메일 변경</a>
+                <a th:href="@{/mypage/profile(section='social')}">소셜 계정</a>
+                <a class="danger-link" th:href="@{/mypage/profile(section='withdraw')}">회원 탈퇴</a>
             </div>
-        </article>
+        </aside>
+        <section class="mypage-content">
+            <div class="page-title"><h1>내 별점</h1></div>
+            <div class="grid">
+                <article class="card" th:each="rating : ${ratings}">
+                    <div class="card-body">
+                        <span class="badge" th:text="${rating.score + '점'}">5점</span>
+                        <h2 th:text="${rating.worldName}">세계관</h2>
+                        <p class="muted" th:text="${rating.review}">리뷰</p>
+                        <a class="btn secondary small" th:href="@{/worlds/{id}/ratings/edit(id=${rating.worldId})}">수정</a>
+                    </div>
+                </article>
+            </div>
+        </section>
     </div>
 </main>
 </body>

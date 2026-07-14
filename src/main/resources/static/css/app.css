@@ -730,3 +730,126 @@ tr:last-child td {
 .auth-link-actions.one-column {
   grid-template-columns: 1fr;
 }
+
+.mypage-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.mypage-sidebar {
+  position: sticky;
+  top: 82px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.mypage-home,
+.mypage-menu-link,
+.mypage-menu-group a {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.mypage-home:hover,
+.mypage-menu-link:hover,
+.mypage-menu-group a:hover,
+.mypage-menu-group a.active,
+.mypage-home.active,
+.mypage-menu-link.active {
+  background: var(--surface-soft);
+  color: var(--primary);
+}
+
+.mypage-menu-group {
+  display: grid;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.mypage-menu-group h2 {
+  margin: 0 0 4px;
+  padding: 0 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.mypage-content {
+  min-width: 0;
+}
+
+.mypage-title {
+  align-items: center;
+}
+
+.mypage-section-first {
+  margin-top: 0;
+}
+
+.compact-title {
+  margin-bottom: 14px;
+}
+
+.compact-title h2 {
+  margin: 0;
+}
+
+@media (max-width: 820px) {
+  .mypage-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-sidebar {
+    position: static;
+  }
+}
+
+.mypage-menu-link.danger-link,
+.mypage-menu-group a.danger-link {
+  color: var(--danger);
+}
+
+.mypage-menu-link.danger-link:hover,
+.mypage-menu-link.danger-link.active,
+.mypage-menu-group a.danger-link:hover,
+.mypage-menu-group a.danger-link.active {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+.profile-section-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.social-account-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.social-link-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.social-login-btn.linked {
+  opacity: 0.65;
+  pointer-events: none;
+}

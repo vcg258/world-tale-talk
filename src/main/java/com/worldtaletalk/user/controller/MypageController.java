@@ -10,6 +10,7 @@ import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.user.dto.UserDTO;
+import com.worldtaletalk.user.domain.socialaccounts.SocialProvider;
 import com.worldtaletalk.user.service.SocialAccountsService;
 import com.worldtaletalk.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -90,16 +92,7 @@ public class MypageController {
      */
     @GetMapping
     public String index(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-        UserDTO userDTO = userService.getUser(user.getUser().getId());
-        Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), null, 1);
-        List<StorySessionListItemVM> recentSessions = mySessions.stream()
-                        .map(r -> new StorySessionListItemVM(
-                                r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
-                                r.getCurrentTurn(), r.getCreatedAt()
-                        )).toList();
-        model.addAttribute("user", userDTO);
-        model.addAttribute("recentSessions", recentSessions);
-        return "mypage/index";
+        return "redirect:/mypage/sessions";
     }
 
     /**
@@ -110,9 +103,17 @@ public class MypageController {
      * @return mypage/profile (프로필 페이지)
      */
     @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
+    public String profile(@AuthenticationPrincipal AuthenticatedUser user,
+                          @RequestParam(defaultValue = "nickname") String section,
+                          Model model) {
         model.addAttribute("user", userService.getUser(user.getUser().getId()));
-        model.addAttribute("socialAccounts", socialAccountsService.getSocialAccountsByUserId(user.getUser().getId()));
+        List<com.worldtaletalk.user.dto.SocialAccountsDTO> socialAccounts = socialAccountsService.getSocialAccountsByUserId(user.getUser().getId());
+        Set<SocialProvider> linkedProviders = socialAccounts.stream()
+                .map(com.worldtaletalk.user.dto.SocialAccountsDTO::getProvider)
+                .collect(java.util.stream.Collectors.toSet());
+        model.addAttribute("socialAccounts", socialAccounts);
+        model.addAttribute("linkedProviders", linkedProviders);
+        model.addAttribute("activeSection", section);
         return "mypage/profile";
     }
 
@@ -124,7 +125,7 @@ public class MypageController {
      * @param bindingResult      폼 검증 결과
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
      * @param request            세션 갱신 요청
-     * @return redirect:/mypage/profile (프로필 페이지)
+     * @return redirect:/mypage/profile?section=nickname (프로필 페이지)
      */
     @PostMapping("/profile")
     public String updateProfile(
@@ -137,14 +138,14 @@ public class MypageController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(
                     "error", BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/profile?section=nickname";
         }
 
         try {
             userService.modifyNickname(user.getUser().getId(), form.nickname());
         } catch (IllegalArgumentException | NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/profile?section=nickname";
         }
 
         // 닉네임 변경후 세션 갱신
@@ -152,7 +153,7 @@ public class MypageController {
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
 
         redirectAttributes.addFlashAttribute("message", "닉네임이 변경되었습니다");
-        return "redirect:/mypage/profile";
+        return "redirect:/mypage/profile?section=nickname";
     }
 
     /**
@@ -163,7 +164,7 @@ public class MypageController {
      * @param bindingResult      폼 검증 결과
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
      * @param request            세션 갱신 요청
-     * @return redirect:/mypage/profile (프로필 페이지)
+     * @return redirect:/mypage/profile?section=password (프로필 페이지)
      */
     @PostMapping("/password")
     public String updatePassword(
@@ -176,14 +177,14 @@ public class MypageController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/profile?section=password";
         }
 
         try {
             userService.modifyPassword(user.getUser().getId(), form.newPassword(), form.currentPassword(),  form.confirmPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/profile?section=password";
         }
 
         // 비밀번호 변경후 세션 갱신 (재로그인 없이 세션 유지)
@@ -191,7 +192,7 @@ public class MypageController {
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
 
         redirectAttributes.addFlashAttribute("message", "비밀번호가 변경되었습니다");
-        return "redirect:/mypage/profile";
+        return "redirect:/mypage/profile?section=password";
     }
 
     /**
@@ -201,7 +202,7 @@ public class MypageController {
      * @param form               이메일 변경 폼
      * @param bindingResult      폼 검증 결과
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
-     * @return redirect:/mypage/profile (프로필 페이지)
+     * @return redirect:/mypage/profile?section=email (프로필 페이지)
      */
     @PostMapping("/email/send-code")
     public String sendEmailChangeCode(
@@ -213,17 +214,25 @@ public class MypageController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error",
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            return "redirect:/mypage/profile?section=email";
         }
 
         try {
             emailOtpService.sendOtp(user.getUser().getId(), form.newEmail());
-            redirectAttributes.addFlashAttribute("message", "인증코드를 발송했습니다.");
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            redirectAttributes.addFlashAttribute("emailCodeSent", true);
+            redirectAttributes.addFlashAttribute("emailCodeNotice", "인증코드가 발송되었습니다.");
+            redirectAttributes.addFlashAttribute("emailCodeTimerSeconds", 240);
+            redirectAttributes.addFlashAttribute("message", "인증코드가 발송되었습니다.");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("error", "인증코드 발송에 실패했습니다.");
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            redirectAttributes.addFlashAttribute("emailCodeSent", false);
+            redirectAttributes.addFlashAttribute("emailCodeNotice", "인증코드 발송에 실패했습니다.");
+            return "redirect:/mypage/profile?section=email";
         }
-        return "redirect:/mypage/profile";
+        return "redirect:/mypage/profile?section=email";
     }
 
     /**
@@ -234,7 +243,7 @@ public class MypageController {
      * @param bindingResult      폼 검증 결과
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
      * @param request            세션 갱신 요청
-     * @return redirect:/mypage/profile (프로필 페이지)
+     * @return redirect:/mypage/profile?section=email (프로필 페이지)
      */
     @PostMapping("/email/verify")
     public String verifyAndChangeEmail(
@@ -248,7 +257,8 @@ public class MypageController {
             redirectAttributes.addFlashAttribute("error",
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요.")
             );
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            return "redirect:/mypage/profile?section=email";
         }
 
         // 비밀번호 재확인 먼저 검증
@@ -256,13 +266,15 @@ public class MypageController {
             userService.verifyCurrentPassword(user.getUser().getId(), form.currentPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            return "redirect:/mypage/profile?section=email";
         }
 
         // OTP 검증 (여기서부터 소모됨)
         if (!emailOtpService.verifyOtp(user.getUser().getId(), form.newEmail(), form.code())) {
             redirectAttributes.addFlashAttribute("error", "인증코드가 일치하지 않거나 만료되었습니다.");
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            return "redirect:/mypage/profile?section=email";
         }
 
         // 변경
@@ -270,12 +282,13 @@ public class MypageController {
             userService.modifyEmail(user.getUser().getId(), form.newEmail(), form.currentPassword());
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            redirectAttributes.addFlashAttribute("pendingNewEmail", form.newEmail());
+            return "redirect:/mypage/profile?section=email";
         }
         UserDTO updateUser = userService.getUser(user.getUser().getId());
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
         redirectAttributes.addFlashAttribute("message", "이메일이 변경되었습니다");
-        return "redirect:/mypage/profile";
+        return "redirect:/mypage/profile?section=email";
     }
 
     /**
@@ -319,12 +332,19 @@ public class MypageController {
                            Model model
     ) {
         Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), status, page);
-        List<StorySessionListItemVM> recentSessions = mySessions.stream()
+        Page<StorySessionsDTO> recentSessionPage = storySessionsService.getMySessions(user.getUser().getId(), null, 1);
+        List<StorySessionListItemVM> sessions = mySessions.stream()
                 .map(r -> new StorySessionListItemVM(
                         r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
                         r.getCurrentTurn(), r.getCreatedAt()
                 )).toList();
-        model.addAttribute("sessions", recentSessions);
+        List<StorySessionListItemVM> recentSessions = recentSessionPage.stream()
+                .map(r -> new StorySessionListItemVM(
+                        r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
+                        r.getCurrentTurn(), r.getCreatedAt()
+                )).toList();
+        model.addAttribute("sessions", sessions);
+        model.addAttribute("recentSessions", recentSessions);
         model.addAttribute("status", status);
         model.addAttribute("sessionPage", mySessions);
         return "mypage/sessions";
@@ -357,7 +377,7 @@ public class MypageController {
      * @param user               현재 로그인 유저
      * @param socialAccountId    해제할 소셜 계정 PK
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
-     * @return redirect:/mypage/profile (프로필 페이지)
+     * @return redirect:/mypage/profile?section=nickname (프로필 페이지)
      */
     @PostMapping("/social/{socialAccountId}")
     public String unlinkSocialAccount(
@@ -369,9 +389,9 @@ public class MypageController {
             socialAccountsService.deleteSocialAccount(socialAccountId, user.getUser().getId());
         } catch (NoSuchElementException  | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/profile?section=social";
         }
         redirectAttributes.addFlashAttribute("message", "소셜 계정 연동이 해제되었습니다.");
-        return "redirect:/mypage/profile";
+        return "redirect:/mypage/profile?section=social";
     }
 }

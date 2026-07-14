@@ -5,55 +5,107 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
     <div th:replace="~{fragments/layout :: alerts}"></div>
-    <div class="page-title"><h1>프로필 관리</h1></div>
-    <div class="grid">
-        <section class="card"><div class="card-body">
-            <h2>닉네임</h2>
-            <form class="form" th:action="@{/mypage/profile}" method="post">
-                <div class="field"><label>닉네임</label><input name="nickname" th:value="${user.nickname}" required></div>
-                <button class="btn" type="submit">변경</button>
-            </form>
-        </div></section>
-        <section class="card"><div class="card-body">
-            <h2>비밀번호</h2>
-            <form class="form" th:action="@{/mypage/password}" method="post">
-                <div class="field"><label>현재 비밀번호</label><input name="currentPassword" type="password" required></div>
-                <div class="field"><label>새 비밀번호</label><input name="newPassword" type="password" required></div>
-                <div class="field"><label>새 비밀번호 확인</label><input name="confirmPassword" type="password" required></div>
-                <button class="btn" type="submit">변경</button>
-            </form>
-        </div></section>
-        <section class="card"><div class="card-body">
-            <h2>이메일</h2>
-            <p class="muted" th:text="${user.email}">email@example.com</p>
-            <form class="form" th:action="@{/mypage/email/send-code}" method="post">
-                <div class="field"><label>새 이메일</label><input name="newEmail" type="email" required></div>
-                <button class="btn secondary" type="submit">인증코드 발송</button>
-            </form>
-            <form class="form section" th:action="@{/mypage/email/verify}" method="post">
-                <div class="field"><label>새 이메일</label><input name="newEmail" type="email" required></div>
-                <div class="field"><label>인증코드</label><input name="code" required></div>
-                <div class="field"><label>현재 비밀번호</label><input name="currentPassword" type="password" required></div>
-                <button class="btn" type="submit">이메일 변경</button>
-            </form>
-        </div></section>
-        <section class="card"><div class="card-body">
-            <h2>소셜 계정</h2>
-            <div class="stack">
-                <form class="inline-form" th:each="account : ${socialAccounts}" th:action="@{/mypage/social/{id}(id=${account.id})}" method="post">
-                    <span class="badge" th:text="${account.provider}">PROVIDER</span>
-                    <button class="btn secondary small" type="submit">연동 해제</button>
-                </form>
-                <p class="muted" th:if="${#lists.isEmpty(socialAccounts)}">연동된 소셜 계정이 없습니다.</p>
+    <div class="mypage-layout">
+        <aside class="mypage-sidebar">
+            <a class="mypage-home" th:href="@{/mypage}">마이페이지</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 세션</a>
+            <div class="mypage-menu-group">
+                <h2>프로필 관리</h2>
+                <a th:classappend="${activeSection == 'nickname'} ? 'active'" th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>
+                <a th:classappend="${activeSection == 'password'} ? 'active'" th:href="@{/mypage/profile(section='password')}">비밀번호 변경</a>
+                <a th:classappend="${activeSection == 'email'} ? 'active'" th:href="@{/mypage/profile(section='email')}">이메일 변경</a>
+                <a th:classappend="${activeSection == 'social'} ? 'active'" th:href="@{/mypage/profile(section='social')}">소셜 계정</a>
+                <a class="danger-link" th:classappend="${activeSection == 'withdraw'} ? 'active'" th:href="@{/mypage/profile(section='withdraw')}">회원 탈퇴</a>
             </div>
-        </div></section>
-        <section class="card"><div class="card-body">
-            <h2>회원 탈퇴</h2>
-            <form th:action="@{/mypage/withdraw}" method="post" data-confirm="정말 탈퇴하시겠습니까?">
-                <button class="btn danger" type="submit">탈퇴</button>
-            </form>
-        </div></section>
+        </aside>
+        <section class="mypage-content">
+            <div class="page-title"><h1>프로필 관리</h1></div>
+            <div class="grid profile-section-grid">
+                <section class="card" th:if="${activeSection == 'nickname'}"><div class="card-body">
+                    <h2>닉네임</h2>
+                    <form class="form" th:action="@{/mypage/profile}" method="post" data-mypage-nickname-form>
+                        <div class="field">
+                            <label>닉네임</label>
+                            <input name="nickname" th:value="${user.nickname}" th:attr="data-current-nickname=${user.nickname}" required data-nickname-input>
+                            <p class="field-guide">현재 닉네임과 다르게 입력하면 중복 여부를 자동으로 확인합니다.</p>
+                            <p class="field-hint" data-nickname-feedback>닉네임을 입력해주세요.</p>
+                        </div>
+                        <button class="btn" type="submit" data-nickname-submit>변경</button>
+                    </form>
+                </div></section>
+                <section class="card" th:if="${activeSection == 'password'}"><div class="card-body">
+                    <h2>비밀번호</h2>
+                    <form class="form" th:action="@{/mypage/password}" method="post">
+                        <div class="field">
+                            <label>현재 비밀번호 재확인</label>
+                            <input name="currentPassword" type="password" autocomplete="current-password" required>
+                            <p class="field-guide">보안을 위해 현재 사용 중인 비밀번호를 먼저 확인합니다.</p>
+                        </div>
+                        <div class="field">
+                            <label class="label-with-help">새 비밀번호
+                                <span class="help-tip" tabindex="0" aria-label="비밀번호 조건">?
+                                    <span class="help-bubble" role="tooltip">8~50자로 입력해야 합니다.<br>영문, 숫자, 특수문자만 사용할 수 있습니다.<br>기존 비밀번호와 다른 값이어야 합니다.</span>
+                                </span>
+                            </label>
+                            <input name="newPassword" type="password" minlength="8" maxlength="50" autocomplete="new-password" required>
+                            <p class="field-guide">8~50자, 영문/숫자/특수문자만 사용할 수 있습니다.</p>
+                        </div>
+                        <div class="field"><label>새 비밀번호 확인</label><input name="confirmPassword" type="password" autocomplete="new-password" required></div>
+                        <button class="btn" type="submit">변경</button>
+                    </form>
+                </div></section>
+                <section class="card" th:if="${activeSection == 'email'}"><div class="card-body">
+                    <h2>이메일</h2>
+                    <p class="muted" th:text="${user.email}">email@example.com</p>
+                    <form class="form" th:action="@{/mypage/email/send-code}" method="post" data-email-send-form>
+                        <div class="field">
+                            <label>새 이메일</label>
+                            <input name="newEmail" type="email" th:value="${pendingNewEmail}" required data-new-email-source>
+                            <p class="field-guide">인증코드 발송과 이메일 변경에 같은 이메일을 사용합니다.</p>
+                        </div>
+                        <button class="btn secondary" type="submit">인증코드 발송</button>
+                        <p class="field-hint email-code-notice" th:if="${emailCodeNotice}" th:classappend="${emailCodeSent} ? 'ok' : 'error'" th:text="${emailCodeNotice}">인증코드 안내</p>
+                        <p class="field-hint checking email-code-timer" th:if="${emailCodeSent}" th:attr="data-duration-seconds=${emailCodeTimerSeconds ?: 240}" data-email-code-timer>남은 시간 04:00</p>
+                    </form>
+                    <form class="form section" th:action="@{/mypage/email/verify}" method="post" data-email-verify-form>
+                        <input name="newEmail" type="hidden" th:value="${pendingNewEmail}" data-new-email-target>
+                        <div class="field"><label>인증코드</label><input name="code" required></div>
+                        <div class="field"><label>현재 비밀번호</label><input name="currentPassword" type="password" required></div>
+                        <button class="btn" type="submit">이메일 변경</button>
+                    </form>
+                </div></section>
+                <section class="card" th:if="${activeSection == 'social'}"><div class="card-body">
+                    <h2>소셜 계정</h2>
+                    <div class="stack">
+                        <div class="social-account-row" th:each="account : ${socialAccounts}">
+                            <span class="badge" th:text="${account.provider}">PROVIDER</span>
+                            <span class="muted">연동됨</span>
+                            <form th:action="@{/mypage/social/{id}(id=${account.id})}" method="post">
+                                <button class="btn secondary small" type="submit">연동 해제</button>
+                            </form>
+                        </div>
+                        <p class="muted" th:if="${#lists.isEmpty(socialAccounts)}">연동된 소셜 계정이 없습니다.</p>
+                    </div>
+                    <div class="section social-link-grid">
+                        <a class="social-login-btn google linked" th:if="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).GOOGLE)}" href="#"><span class="social-mark">G</span><span>Google 연동됨</span></a>
+                        <a class="social-login-btn google" th:unless="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).GOOGLE)}" th:href="@{/oauth2/authorization/google}"><span class="social-mark">G</span><span>Google 추가 연동</span></a>
+                        <a class="social-login-btn kakao linked" th:if="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).KAKAO)}" href="#"><span class="social-mark">●</span><span>Kakao 연동됨</span></a>
+                        <a class="social-login-btn kakao" th:unless="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).KAKAO)}" th:href="@{/oauth2/authorization/kakao}"><span class="social-mark">●</span><span>Kakao 추가 연동</span></a>
+                        <a class="social-login-btn naver linked" th:if="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).NAVER)}" href="#"><span class="social-mark">N</span><span>Naver 연동됨</span></a>
+                        <a class="social-login-btn naver" th:unless="${linkedProviders.contains(T(com.worldtaletalk.user.domain.socialaccounts.SocialProvider).NAVER)}" th:href="@{/oauth2/authorization/naver}"><span class="social-mark">N</span><span>Naver 추가 연동</span></a>
+                    </div>
+                </div></section>
+                <section class="card" th:if="${activeSection == 'withdraw'}"><div class="card-body">
+                    <h2>회원 탈퇴</h2>
+                    <p class="muted">탈퇴 후에는 계정과 이용 기록을 복구할 수 없습니다.</p>
+                    <form th:action="@{/mypage/withdraw}" method="post" data-confirm="회원 탈퇴할 경우 모든 정보들이 사라집니다. 정말 탈퇴하시겠습니까?">
+                        <button class="btn danger" type="submit">탈퇴</button>
+                    </form>
+                </div></section>
+            </div>
+        </section>
     </div>
 </main>
+<script th:src="@{/js/mypage.js}"></script>
 </body>
 </html>
