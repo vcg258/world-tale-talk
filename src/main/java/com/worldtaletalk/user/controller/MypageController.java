@@ -88,7 +88,7 @@ public class MypageController {
      * @param model 뷰에 전달할 모델
      * @return mypage/index (마이페이지 메인 페이지)
      */
-    @GetMapping
+    @GetMapping // TODO 제거?
     public String index(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
         UserDTO userDTO = userService.getUser(user.getUser().getId());
         Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), null, 1);
@@ -318,6 +318,7 @@ public class MypageController {
                            @RequestParam(defaultValue = "1") int page,
                            Model model
     ) {
+        page = Math.max(page, 1);
         Page<StorySessionsDTO> mySessions = storySessionsService.getMySessions(user.getUser().getId(), status, page);
         List<StorySessionListItemVM> recentSessions = mySessions.stream()
                 .map(r -> new StorySessionListItemVM(
@@ -344,6 +345,7 @@ public class MypageController {
             @RequestParam(defaultValue = "1") int page,
             Model model
     ) {
+        page = Math.max(page, 1);
         Page<WorldRatingsDTO> myRatings = worldRatingsService.getMyRatings(user.getUser().getId(), page);
         model.addAttribute("ratings", myRatings.getContent());
         model.addAttribute("ratingsPage", myRatings);

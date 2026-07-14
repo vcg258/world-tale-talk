@@ -3,7 +3,6 @@ package com.worldtaletalk.notice.service;
 import com.worldtaletalk.notice.dto.NoticesDTO;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 public interface NoticesService {
 
