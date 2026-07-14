@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/admin/ratings")
@@ -46,8 +49,12 @@ public class AdminRatingController {
      * @return redirect:/admin/ratings (별점 목록 페이지)
      */
     @PostMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        worldRatingsService.deleteWorldRating(id);
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            worldRatingsService.deleteWorldRating(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/ratings";
     }
 }

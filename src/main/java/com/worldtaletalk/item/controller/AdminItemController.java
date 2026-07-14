@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Controller
@@ -86,12 +87,16 @@ public class AdminItemController {
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/items/grades";
         }
-        itemGradeConfigsService.modifyGradeConfig(id, ItemGradeConfigsDTO.builder()
-                .statSumMax(form.statSumMax())
-                .singleMax(form.singleMax())
-                .singleMin(form.singleMin())
-                .canNegative(form.canNegative())
-                .build());
+        try {
+            itemGradeConfigsService.modifyGradeConfig(id, ItemGradeConfigsDTO.builder()
+                    .statSumMax(form.statSumMax())
+                    .singleMax(form.singleMax())
+                    .singleMin(form.singleMin())
+                    .canNegative(form.canNegative())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/items/grades";
     }
 
@@ -133,7 +138,11 @@ public class AdminItemController {
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/items/probabilities";
         }
-        itemGradeProbabilitiesService.modifyProbability(id, form.probability());
+        try {
+            itemGradeProbabilitiesService.modifyProbability(id, form.probability());
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/items/probabilities";
     }
 }

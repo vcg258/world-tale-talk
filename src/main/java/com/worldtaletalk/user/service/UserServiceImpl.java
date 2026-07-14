@@ -286,22 +286,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 계정 상태 변경 (정지 / 삭제 / 활성화)
-     *
-     * @param id     유저 PK
-     * @param status 변경할 계정 상태
-     */
-    @Transactional
-    @Override
-    public void modifyUserStatus(Long id, UserStatus status) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 유저는 존재하지 않습니다."));
-        user.changeStatus(status);
-        UserEntity save = userRepository.save(user);
-        log.info("회원 계정 상태 변경 완료 : {}", save);
-    }
-
-    /**
      * 휴면 계정 해제 (본인 재로그인을 통한 자기 자신 활성화 전용)
      *
      * @param id 유저 PK

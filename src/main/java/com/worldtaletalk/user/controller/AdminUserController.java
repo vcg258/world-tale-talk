@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.NoSuchElementException;
+
 @Controller
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
@@ -115,12 +117,15 @@ public class AdminUserController {
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/users/" + id;
         }
-        userSuspensionsService.addUserSuspension(UserSuspensionsDTO.builder()
-                .userId(id)
-                .adminId(admin.getUser().getId())
-                .reason(form.reason())
-                .build()
-        );
+        try {
+            userSuspensionsService.addUserSuspension(UserSuspensionsDTO.builder()
+                    .userId(id)
+                    .adminId(admin.getUser().getId())
+                    .reason(form.reason())
+                    .build());
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/users/" + id;
     }
 
@@ -131,9 +136,13 @@ public class AdminUserController {
      * @return redirect:/admin/users/{id} (회원 상세 페이지)
      */
     @PostMapping("/{id}/lift")
-    public String lift(@PathVariable Long id) {
-        UserSuspensionsDTO userSuspension = userSuspensionsService.getUserSuspension(id);
-        userSuspensionsService.liftUserSuspension(userSuspension.getId());
+    public String lift(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            UserSuspensionsDTO userSuspension = userSuspensionsService.getUserSuspension(id);
+            userSuspensionsService.liftUserSuspension(userSuspension.getId());
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/users/" + id;
     }
 
@@ -144,8 +153,12 @@ public class AdminUserController {
      * @return redirect:/admin/users (회원 목록 페이지)
      */
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/users";
     }
 }

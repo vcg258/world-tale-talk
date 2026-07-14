@@ -191,6 +191,9 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         if (existingRating == null) {
             addWorldRating(worldRatingsDTO);
         } else {
+            if (!existingRating.getUserId().equals(worldRatingsDTO.getUserId())) {
+                throw new IllegalStateException("작성자가 다릅니다. 수정 불가");
+            }
             modifyWorldRating(WorldRatingsDTO.builder()
                     .id(existingRating.getId())
                     .userId(worldRatingsDTO.getUserId())

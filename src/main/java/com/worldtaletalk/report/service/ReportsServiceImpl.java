@@ -27,18 +27,6 @@ public class ReportsServiceImpl implements ReportsService {
     private final ReportsMapper reportsMapper;
     private final UserRepository userRepository;
 
-    /**
-     * 전체 신고 목록 조회 (관리자용) (페이징)
-     *
-     * @return 신고 목록
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Page<ReportsDTO> getReports(int page) {
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ReportsEntity> reports = reportsRepository.findAll(pageable);
-        return reports.map(reportsMapper::toDTO);
-    }
 
     /**
      * 처리 상태별 신고 목록 조회 (관리자용) (페이징)
@@ -48,7 +36,7 @@ public class ReportsServiceImpl implements ReportsService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Page<ReportsDTO> getReportsByStatus(ReportStatus status, int page) {
+    public Page<ReportsDTO> getReports(ReportStatus status, int page) {
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ReportsEntity> reports = reportsRepository.findAllByStatus(status, pageable);
         return reports.map(reportsMapper::toDTO);

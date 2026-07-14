@@ -52,9 +52,4 @@ class PersonasServiceImplTest {
     void deletePersona() {
         personasService.deletePersona(5L);
     }
-
-    @Test
-    void getPersonasByWorldId() {
-        personasService.getPersonasByWorldId(1L).forEach(dto -> log.info("{}", dto));
-    }
 }

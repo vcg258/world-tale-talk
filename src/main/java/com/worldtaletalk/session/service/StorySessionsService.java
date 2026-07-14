@@ -1,6 +1,5 @@
 package com.worldtaletalk.session.service;
 
-import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import org.springframework.data.domain.Page;
@@ -73,14 +72,6 @@ public interface StorySessionsService {
      * @param userId 회원 PK
      */
     void modifyHiddenByUser(Long id, Long userId);
-
-    /**
-     * 세션 엔딩 결정
-     *
-     * @param id PK
-     * @param endingType 엔딩
-     */
-    void modifyStorySessionByEndingType(Long id, EndingType endingType);
 
     /**
      * 스토리 요약 갱신

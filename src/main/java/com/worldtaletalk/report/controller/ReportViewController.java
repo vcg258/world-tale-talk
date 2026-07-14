@@ -81,14 +81,18 @@ public class ReportViewController {
             return "redirect:/reports/new?targetType=" + form.targetType() + "&targetId=" + form.targetId();
         }
 
-        reportsService.addReport(ReportsDTO.builder()
-                .userId(user.getUser().getId())
-                .targetType(form.targetType())
-                .targetId(form.targetId())
-                .reason(form.reason())
-                .build()
-        );
-        redirectAttributes.addFlashAttribute("message", "신고 접수가 완료되었습니다.");
+        try {
+            reportsService.addReport(ReportsDTO.builder()
+                    .userId(user.getUser().getId())
+                    .targetType(form.targetType())
+                    .targetId(form.targetId())
+                    .reason(form.reason())
+                    .build()
+            );
+            redirectAttributes.addFlashAttribute("message", "신고 접수가 완료되었습니다.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
 
         // 신고는 어떤 페이지든 가능함 그래서 referer를 사용
         String referer = request.getHeader("Referer");

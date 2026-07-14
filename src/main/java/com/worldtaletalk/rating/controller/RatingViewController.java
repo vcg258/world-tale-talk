@@ -117,15 +117,19 @@ public class RatingViewController {
             return "redirect:/worlds/" + worldId + "/ratings?sessionId=" + form.sessionId();
         }
 
-        worldRatingsService.saveRating(WorldRatingsDTO.builder()
-                .userId(user.getUser().getId())
-                .worldId(worldId)
-                .storySessionId(form.sessionId())
-                .score(form.score())
-                .review(form.review())
-                .build());
+        try {
+            worldRatingsService.saveRating(WorldRatingsDTO.builder()
+                    .userId(user.getUser().getId())
+                    .worldId(worldId)
+                    .storySessionId(form.sessionId())
+                    .score(form.score())
+                    .review(form.review())
+                    .build());
 
-        redirectAttributes.addFlashAttribute("message", "별점이 저장되었습니다");
+            redirectAttributes.addFlashAttribute("message", "별점이 저장되었습니다");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/mypage/ratings";
     }
 }

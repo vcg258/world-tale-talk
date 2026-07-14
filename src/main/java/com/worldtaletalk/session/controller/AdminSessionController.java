@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/admin/sessions")
@@ -56,10 +59,15 @@ public class AdminSessionController {
      */
     @PostMapping("/{id}/abandon")
     public String abandon(
-            @PathVariable Long id
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
     ) {
-        storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
-        storyCacheService.deleteSessionCache(id);
+        try {
+            storySessionsService.modifyStorySessionByStatus(id, SessionStatus.ABANDONED);
+            storyCacheService.deleteSessionCache(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/sessions";
     }
 
@@ -70,8 +78,12 @@ public class AdminSessionController {
      * @return redirect:/admin/sessions (세션 목록 페이지)
      */
     @PostMapping("/{id}/hidden")
-    public String hidden(@PathVariable Long id) {
-        storySessionsService.modifyHiddenByUserWithAdmin(id);
+    public String hidden(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            storySessionsService.modifyHiddenByUserWithAdmin(id);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/sessions";
     }
 }

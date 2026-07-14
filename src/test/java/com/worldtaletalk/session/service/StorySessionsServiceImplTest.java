@@ -1,6 +1,5 @@
 package com.worldtaletalk.session.service;
 
-import com.worldtaletalk.session.domain.EndingType;
 import com.worldtaletalk.session.domain.SessionStatus;
 import com.worldtaletalk.session.dto.StorySessionsDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +36,6 @@ class StorySessionsServiceImplTest {
     @Test
     void modifyStorySessionByStatus() {
         storySessionsService.modifyStorySessionByStatus(1L, SessionStatus.EPILOGUE);
-    }
-
-    @Test
-    void modifyStorySessionByEndingType() {
-        storySessionsService.modifyStorySessionByEndingType(1L, EndingType.TRUE);
     }
 
     @Test

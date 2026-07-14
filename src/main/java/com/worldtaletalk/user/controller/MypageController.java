@@ -288,13 +288,17 @@ public class MypageController {
     public String withdraw(
             @AuthenticationPrincipal AuthenticatedUser user,
             HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        userService.deleteUser(user.getUser().getId());
+            HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(user.getUser().getId());
 
-        // 세션 무효화 SecurityContext 초기화를 Security가 처리
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        new SecurityContextLogoutHandler().logout(request, response, auth); // 직접 세션 무효화
+            // 세션 무효화 SecurityContext 초기화를 Security가 처리
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            new SecurityContextLogoutHandler().logout(request, response, auth); // 직접 세션 무효화
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
 
         return "redirect:/auth/login"; // 로그아웃 페이지로 굳이 이동할 필요는 없음
     }

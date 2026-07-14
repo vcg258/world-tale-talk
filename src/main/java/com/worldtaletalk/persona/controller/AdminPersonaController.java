@@ -122,21 +122,25 @@ public class AdminPersonaController {
                     BindingResultUtils.getFirstErrorMessage(bindingResult, "입력값을 확인해주세요."));
             return "redirect:/admin/personas/new";
         }
-        Long persona = personasService.addPersona(PersonasDTO.builder()
-                .worldId(form.worldId())
-                .name(form.name())
-                .description(form.description())
-                .background(form.background())
-                .active(form.isActive())
-                .build());
-        personasBaseStatsService.addPersonaBaseStats(PersonasBaseStatsDTO.builder()
-                .personaId(persona)
-                .wisdom(form.wisdom())
-                .strength(form.strength())
-                .agility(form.agility())
-                .charisma(form.charisma())
-                .luck(form.luck())
-                .build());
+        try {
+            Long persona = personasService.addPersona(PersonasDTO.builder()
+                    .worldId(form.worldId())
+                    .name(form.name())
+                    .description(form.description())
+                    .background(form.background())
+                    .active(form.isActive())
+                    .build());
+            personasBaseStatsService.addPersonaBaseStats(PersonasBaseStatsDTO.builder()
+                    .personaId(persona)
+                    .wisdom(form.wisdom())
+                    .strength(form.strength())
+                    .agility(form.agility())
+                    .charisma(form.charisma())
+                    .luck(form.luck())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/personas";
     }
 
@@ -162,25 +166,29 @@ public class AdminPersonaController {
             return "redirect:/admin/personas/" + id + "/edit";
         }
 
-        PersonasBaseStatsDTO existingBaseStats = personasBaseStatsService.getPersonasBaseStatsByPersonaId(id);
-        personasService.modifyPersona(PersonasDTO.builder()
-                .id(id)
-                .worldId(form.worldId())
-                .name(form.name())
-                .description(form.description())
-                .background(form.background())
-                .active(form.isActive())
-                .build());
+        try {
+            PersonasBaseStatsDTO existingBaseStats = personasBaseStatsService.getPersonasBaseStatsByPersonaId(id);
+            personasService.modifyPersona(PersonasDTO.builder()
+                    .id(id)
+                    .worldId(form.worldId())
+                    .name(form.name())
+                    .description(form.description())
+                    .background(form.background())
+                    .active(form.isActive())
+                    .build());
 
-        personasBaseStatsService.modifyPersonaBaseStats(PersonasBaseStatsDTO.builder()
-                .id(existingBaseStats.getId())
-                .personaId(id)
-                .wisdom(form.wisdom())
-                .strength(form.strength())
-                .agility(form.agility())
-                .charisma(form.charisma())
-                .luck(form.luck())
-                .build());
+            personasBaseStatsService.modifyPersonaBaseStats(PersonasBaseStatsDTO.builder()
+                    .id(existingBaseStats.getId())
+                    .personaId(id)
+                    .wisdom(form.wisdom())
+                    .strength(form.strength())
+                    .agility(form.agility())
+                    .charisma(form.charisma())
+                    .luck(form.luck())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
 
         return "redirect:/admin/personas";
     }

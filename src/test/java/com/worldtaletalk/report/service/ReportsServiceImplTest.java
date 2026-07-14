@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @Slf4j
 @SpringBootTest
 class ReportsServiceImplTest {
@@ -17,12 +15,7 @@ class ReportsServiceImplTest {
 
     @Test
     void getReports() {
-        reportsService.getReports(1).forEach(dto -> log.info("{}", dto));
-    }
-
-    @Test
-    void getReportsByStatus() {
-        reportsService.getReportsByStatus(ReportStatus.PENDING, 1).forEach(dto -> log.info("{}", dto));
+        reportsService.getReports(null, 1).forEach(dto -> log.info("{}", dto));
     }
 
     @Test

@@ -13,7 +13,17 @@ import java.util.Optional;
 
 public interface ReportsRepository extends JpaRepository<ReportsEntity, Long> {
     // 상태별 페이징 처리
-    Page<ReportsEntity> findAllByStatus(ReportStatus status, Pageable pageable);
+    @Query(value = """
+            SELECT r FROM ReportsEntity r
+                WHERE (:status IS NULL OR r.status = :status)
+            """,
+            countQuery = """
+            SELECT COUNT(r) FROM ReportsEntity r
+                WHERE (:status IS NULL OR r.status = :status)
+            """)
+    Page<ReportsEntity> findAllByStatus(
+            @Param("status") ReportStatus status,
+            Pageable pageable);
 
     // 신고 이력 상태별 전체 개수
     long countByStatus(ReportStatus status);

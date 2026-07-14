@@ -196,9 +196,18 @@ public class StoryViewController {
      * @return redirect:/sessions/{sessionId}/play (플레이 화면)
      */
     @PostMapping("/{sessionId}/items/{itemId}/drop")
-    public String drop(@PathVariable Long sessionId, @PathVariable Long itemId, @AuthenticationPrincipal AuthenticatedUser user) {
+    public String drop(
+            @PathVariable Long sessionId,
+            @PathVariable Long itemId,
+            @AuthenticationPrincipal AuthenticatedUser user,
+            RedirectAttributes redirectAttributes
+    ) {
         validateOwner(sessionId, user);
-        sessionItemsService.dropItem(sessionId, itemId);
+        try {
+            sessionItemsService.dropItem(sessionId, itemId);
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/sessions/" + sessionId + "/play";
     }
 

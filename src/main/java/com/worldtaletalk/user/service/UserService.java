@@ -109,14 +109,6 @@ public interface UserService {
     void verifyCurrentPassword(Long id, String currentPassword);
 
     /**
-     * 계정 상태 변경 (정지 / 삭제 / 활성화) (관리자용)
-     *
-     * @param id     유저 PK
-     * @param status 변경할 계정 상태
-     */
-    void modifyUserStatus(Long id, UserStatus status);
-
-    /**
      * 휴면 계정 해제 (본인 재로그인을 통한 자기 자신 활성화 전용)
      *
      * @param id 유저 PK
