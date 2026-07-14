@@ -623,7 +623,7 @@ com.worldtaletalk
 
 | 문서       | 링크                                                                                                           |
 |----------|--------------------------------------------------------------------------------------------------------------|
-| 기획/설계 문서 | [링크]()                                                                                                       |
+| 기획/설계 문서 | [링크](https://docs.google.com/spreadsheets/d/1G_nXWRewH5Utb7UlUwSQaGAKFmiC5GSwaM3PoUCJEHc/edit?usp=sharing)   |
 | 팀원별 소감   | 김준용 : [링크](https://docs.google.com/document/d/1tCKMNSHSzw_FwGeCAH7Vco8m-6PpcoEJXYo0E4zRRl8/edit?usp=sharing) |
 |          | 강혜윰 : [링크]()                                                                                                 |
 
