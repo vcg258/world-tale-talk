@@ -37,14 +37,14 @@ public interface WorldRatingsRepository extends JpaRepository<WorldRatingsEntity
                 JOIN FETCH w.users
                     JOIN FETCH w.world
                         WHERE (:worldId IS NULL OR w.world.id = :worldId)
-                            AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', :nickname, '%') )
+                            AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', CAST(:nickname AS string), '%') )
             """,
             countQuery = """
                     SELECT COUNT(w) FROM WorldRatingsEntity w
                         JOIN w.users
                             JOIN w.world
                                 WHERE (:worldId IS NULL OR w.world.id = :worldId)
-                                    AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', :nickname, '%') )
+                                    AND (:nickname IS NULL OR w.users.nickname LIKE CONCAT('%', CAST(:nickname AS string), '%') )
                     """)
     Page<WorldRatingsEntity> findAllByWorldIdAndNickname(
             @Param("worldId") Long worldId,

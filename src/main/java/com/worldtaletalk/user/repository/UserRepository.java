@@ -35,7 +35,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("""
         SELECT u FROM UserEntity u
                  WHERE u.status = 'DELETED'
-                         AND (:q IS NULL OR u.nickname LIKE CONCAT('%', :q, '%'))
+                         AND (:q IS NULL OR u.nickname LIKE CONCAT('%', CAST(:q AS string), '%'))
         """)
     Page<UserEntity> findAllBySearchAndDelete(@Param("q") String q, Pageable pageable);
 
