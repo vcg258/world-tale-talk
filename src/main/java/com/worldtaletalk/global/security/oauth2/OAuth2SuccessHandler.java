@@ -59,7 +59,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             String token = UUID.randomUUID().toString();
 
             rememberMeTokenRepository.createNewToken(
-                    new PersistentRememberMeToken(String.valueOf(userDTO.getId()), series, token, new Date()));
+                    new PersistentRememberMeToken(
+                            RememberMeTokenRepository.encodeOAuth2Username(userDTO.getId()), series, token, new Date()));
+            rememberMeTokenRepository.attachProvider(series, oAuth2User.getSocialAccountsDTO().getProvider().name());
 
             String cookieValue = Base64.getEncoder().encodeToString((series + ":" + token).getBytes());
 
@@ -68,7 +70,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     .maxAge(Duration.ofDays(30))
                     .path("/")
                     .sameSite("Strict")
-                    .secure(false) // TODO HTTP false (HTTPS 로 변경시 수정필요함 그럴일 없을거같긴한데)
+                    .secure(false)
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -77,7 +79,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             log.info("소셜 자동 로그인 토큰 발급 email : {}", userDTO.getEmail());
         }
 
-        // TODO 이건 협의 사항 새로운 페이지를 만들어야할 수 도 있음
+
         if (oAuth2User.isNewUser()) {
             log.info("신규 유저 닉네임 설정 페이지 이동: email={}", userDTO.getEmail());
             response.sendRedirect("/auth/nickname");

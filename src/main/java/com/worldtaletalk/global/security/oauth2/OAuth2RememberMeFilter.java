@@ -96,7 +96,7 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             }
 
             // 조회한 유저가 없거나 정지, 탈퇴된 상태라면 만료처리
-            UserDTO user = userService.getUser(Long.parseLong(stored.getUsername()));
+            UserDTO user = userService.getUser(RememberMeTokenRepository.decodeOAuth2UserId(stored.getUsername()));
             if (user == null || !UserStatus.ACTIVE.equals(user.getStatus())) {
                 invalidateCookie(response);
                 filterChain.doFilter(request, response);
@@ -112,9 +112,17 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
             }
 
             String newToken = UUID.randomUUID().toString();
-            // TODO: 소셜 연동 추가 기능(다건 연동) 도입 후에는 리멤버미 쿠키 자체에 provider 정보도 같이 저장해서
-            // 정확히 어떤 계정으로 로그인했었는지 복원하도록 재작업 필요
-            SocialAccountsDTO socialAccountsDTO = socialAccounts.get(0);
+
+            String rememberedProvider = rememberMeTokenRepository.getProvider(series);
+            SocialAccountsDTO socialAccountsDTO = socialAccounts.stream()
+                    .filter(s -> s.getProvider().name().equals(rememberedProvider))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        log.warn("리멤버미 기록된 provider({})가 더 이상 연동되어 있지 않음, userId : {}", rememberedProvider, user.getId());
+                        SocialAccountsDTO fallback = socialAccounts.get(0);
+                        rememberMeTokenRepository.attachProvider(series, fallback.getProvider().name());
+                        return fallback;
+                    });
             String registrationId = socialAccountsDTO.getProvider().name().toLowerCase();
 
             rememberMeTokenRepository.updateToken(series, newToken, new Date());
@@ -126,7 +134,7 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
                     .maxAge(Duration.ofDays(30))
                     .path("/")
                     .sameSite("Strict")
-                    .secure(false) // TODO HTTPS 로 변경시 수정
+                    .secure(false)
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
@@ -144,7 +152,7 @@ public class OAuth2RememberMeFilter extends OncePerRequestFilter {
                     HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context
             );
 
-            log.info("OAuth2 자동로그인 성공 : {}", user.getEmail());
+            log.info("OAuth2 자동로그인 성공 : email : {}, registrationId : {}", user.getEmail(), registrationId);
 
         } catch (Exception e) {
             log.warn("OAuth2 자동로그인 실패 : {}", e.getMessage());

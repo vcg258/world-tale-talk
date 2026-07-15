@@ -71,7 +71,7 @@ public class SecurityConfig {
                 )
                 .rememberMe(remember -> remember
                         .rememberMeParameter("rememberMe")
-                        .tokenValiditySeconds(60 * 60 * 24 * 30) // TODO 30일 지정 레디스에도 30일로 지정해놓음 필요시 레디스와 같이 수정
+                        .tokenValiditySeconds(60 * 60 * 24 * 30)
                         .tokenRepository(rememberMeTokenRepository)
                         .userDetailsService(customUserDetailsService)
                 )

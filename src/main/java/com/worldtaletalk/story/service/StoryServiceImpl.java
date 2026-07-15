@@ -79,7 +79,7 @@ public class StoryServiceImpl implements StoryService {
                                     sessionStatsService.modifySummary(sessionId, summary);
                                     log.info("메인스토리 요약 저장 완료 sessionId: {}", sessionId);
                                 }
-                                // 지정 턴 마다 스토리 요약본 갱신 TODO 현재는 5턴으로 지정해놓으면 필요하면 수정
+                                // 지정 턴 마다 스토리 요약본 갱신
                                 if (result.getEndingType() == null && result.getSession().getCurrentTurn() % 5 == 0) {
                                     String runningSummary = storyAiService.generateRunningSummary(sessionId);
                                     storySessionsService.modifyRunningSummary(sessionId, runningSummary);

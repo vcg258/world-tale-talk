@@ -314,7 +314,6 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         // 사실 크게 의미는 없어보이긴한데 그냥 순서보장 하기 위해서 HashMap -> LinkedHashMap으로 변경
         Map<ItemGrade, Integer> weightMap = new LinkedHashMap<>();
         for (ItemGradeProbabilitiesEntity entity : probabilities) {
-            // TODO 아이템힌트가 떳을시 확률 2배 필요하면 수정
             int weight = entity.getGrade() == boostedGrade ? entity.getProbability() * 2 : entity.getProbability();
             weightMap.put(entity.getGrade(), weight);
         }

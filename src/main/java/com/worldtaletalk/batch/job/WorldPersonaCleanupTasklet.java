@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WorldPersonaCleanupTasklet implements Tasklet {
 
-    private final static int GRACE_PERIOD_DAYS = 30; // TODO 필요하면 수정
+    private final static int GRACE_PERIOD_DAYS = 30;
 
     private final WorldPersonaPurgeJdbcService worldPersonaPurgeJdbcService;
 

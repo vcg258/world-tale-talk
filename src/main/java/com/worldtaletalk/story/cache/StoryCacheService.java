@@ -23,7 +23,7 @@ public class StoryCacheService {
     private static final String RUNNING_SUMMARY_KEY = "story:session:%d:runningSummary";
 
     // 레디스 보관 시간
-    private static final Duration CACHE_TTL = Duration.ofHours(24); // TODO 일단 24시간 지정 필요하면 수정
+    private static final Duration CACHE_TTL = Duration.ofHours(24);
 
     /**
      * 직전 턴 선택지별 스텟 변화량 저장

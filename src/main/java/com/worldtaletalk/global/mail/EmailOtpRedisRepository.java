@@ -12,7 +12,7 @@ public class EmailOtpRedisRepository {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String OTP_KEY = "email:otp:%d";
-    private static final Duration OTP_TTL = Duration.ofMinutes(4); // TODO OTP 4분으로 지정 필요하면 수정
+    private static final Duration OTP_TTL = Duration.ofMinutes(4);
 
     // OTP 재발송 남발 방지 1분 제한
     private static final String COOLDOWN_KEY = "email:otp:cooldown:%d";

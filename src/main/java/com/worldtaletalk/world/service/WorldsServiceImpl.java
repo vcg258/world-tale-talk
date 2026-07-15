@@ -102,7 +102,7 @@ public class WorldsServiceImpl implements WorldsService {
         if (worldsDTO.getSettingText() == null || worldsDTO.getSettingText().trim().isBlank()) {
             throw new IllegalArgumentException("세계관 프롬프트는 필수 값입니다.");
         }
-        if (worldsDTO.getTargetTurn() < 10) { // TODO 필요시 수정
+        if (worldsDTO.getTargetTurn() < 10) {
             throw new IllegalArgumentException("목표 턴 수는 10 이상이어야 합니다.");
         }
         WorldsEntity world = WorldsEntity.createWorld(

@@ -136,7 +136,7 @@ public class WorldRatingsServiceImpl implements WorldRatingsService {
         WorldRatingsEntity worldRatingSave = worldRatingsRepository.save(worldRating);
         log.info("평점 및 리뷰 생성 {}", worldRatingSave);
 
-        // 세계관 평균 평점 업데이트 (TODO 2자리 고정 반올림으로 지정함 필요하면 수정)
+        // 세계관 평균 평점 업데이트
         double ratingAvg = worldRatingsRepository.findAverageScoreByWorldId(world.getId());
         world.changeRating(BigDecimal.valueOf(ratingAvg).setScale(2, RoundingMode.HALF_UP));
         WorldsEntity worldSave = worldsRepository.save(world);
