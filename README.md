@@ -122,6 +122,12 @@ localhost:6379 (기본값, application.yaml에서 변경 가능)
 
 ## 기술 의사결정
 
+### Thymeleaf (SSR) vs React (SPA)
+
+>프론트 기술 스택으로 Thymeleaf (SSR)와 React (SPA) 중 선택해야 하는 시점이 있었습니다.
+>Spring AI 기반 LLM 스트리밍 응답과 실시간 상호작용이 핵심 기능이라, 반응성이나 UI 완성도 면에서는 사실 SPA + REST API 조합이 더 유리한 선택지였습니다.
+>다만 팀 구성과 일정을 고려했을 때, 익숙한 Spring MVC/Thymeleaf 구조로 백엔드에서 화면까지 직접 통제하며 확실하게 완성하는 쪽이 더 현실적이라고 판단해 Thymeleaf를 채택했습니다.
+
 ### Security (Session기반)
 
 >SPA가 아닌 Thymeleaf SSR 구조라 토큰 기반 통신이 필요 없어 세션 인증(HttpSession + SecurityContextHolder)을 선택했습니다. 
