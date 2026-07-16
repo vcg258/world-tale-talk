@@ -42,7 +42,7 @@ public class AuthController {
     // 회원가입 요청 폼 - 아이디, 닉네임, 이메일, 비밀번호, 비밀번호 확인을 레코드로 처리
     private record SignupForm(
             @NotBlank(message = "아이디를 입력해주세요.")
-            @Pattern(regexp = "^[a-zA-Z0-9]{4,30}$", message = "아이디는 영문/숫자 4~30자로 입력해주세요.")
+            @Pattern(regexp = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{4,30}$", message = "아이디는 영문/숫자 4~30자로 입력해주세요.")
             String loginId,
 
             @NotBlank(message = "닉네임을 입력해주세요.")

@@ -19,6 +19,18 @@ public class RememberMeTokenRepository implements PersistentTokenRepository {
     private static final String SERIES_KEY = "remember-me:series:%s"; // 식별자 (탈취당했을시 구분하기 위함 전체 기간 동안 바뀌지 않는 고정값임)
     private static final String USER_KEY   = "remember-me:user:%s";
     private static final Duration TOKEN_TTL = Duration.ofDays(30); // TODO 필요시 수정
+    private static final String PROVIDER_FIELD = "provider";
+
+    public void attachProvider(String series, String provider) {
+        String seriesKey = SERIES_KEY.formatted(series);
+        redisTemplate.opsForHash().put(seriesKey, PROVIDER_FIELD, provider);
+    }
+
+    public String getProvider(String series) {
+        String seriesKey = SERIES_KEY.formatted(series);
+        Object provider = redisTemplate.opsForHash().get(seriesKey, PROVIDER_FIELD);
+        return provider != null ? provider.toString() : null;
+    }
 
     @Override
     public void createNewToken(PersistentRememberMeToken token) {
