@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PlayStateCacheDTO {
     private String currentStory; // 현재 스토리
+    private String userInput; // 현재 스토리를 만든 유저 입력
     private List<String> choices; // 선택지
     private int progressPercent; // 진행도 %
 }

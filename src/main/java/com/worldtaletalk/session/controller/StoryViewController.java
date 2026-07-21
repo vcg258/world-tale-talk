@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -58,19 +61,29 @@ public class StoryViewController {
     public String play(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
         validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        var world = worldsService.getWorldById(storySession.getWorldId());
         Map<String, Integer> stats = sessionStatsService.getCurrentStats(id);
         PlayStateCacheDTO playState = storyCacheService.getPlayState(id);
+        int progressPercent = playState != null ? playState.getProgressPercent() : 0;
         if (playState != null) {
             model.addAttribute("currentStory", playState.getCurrentStory());
             model.addAttribute("choices", playState.getChoices());
-            model.addAttribute("progressPercent", playState.getProgressPercent());
         }
 
+        List<com.worldtaletalk.chat.dto.ChatMessagesDTO> messages =
+                new ArrayList<>(chatMessagesService.getChatMessages(id, null));
+        messages.removeIf(message -> message.getRole() != null
+                && "USER".equals(message.getRole().name())
+                && "이야기를 시작해주세요.".equals(message.getContent()));
+        Collections.reverse(messages);
 
         model.addAttribute("storySession", storySession);
-        model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
+        model.addAttribute("world", world);
+        model.addAttribute("targetTurn", world.getTargetTurn());
+        model.addAttribute("progressPercent", progressPercent);
+        model.addAttribute("autoStartStory", playState == null && storySession.getCurrentTurn() == 0 && messages.isEmpty());
         model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
-        model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
+        model.addAttribute("messages", messages);
         model.addAttribute("items", sessionItemsService.getInventory(id));
         model.addAttribute("currentStats", new CurrentStatsVM(
                 stats.getOrDefault("wisdom", 0),

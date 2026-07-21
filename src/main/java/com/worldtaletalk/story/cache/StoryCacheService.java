@@ -73,6 +73,16 @@ public class StoryCacheService {
     }
 
     /**
+     * 플레이어 상태 캐시 삭제
+     *
+     * @param sessionId 세션 PK
+     */
+    public void deletePlayState(Long sessionId) {
+        redisTemplate.delete(PLAY_STATE_KEY.formatted(sessionId));
+        log.info("플레이어 상태 캐시 삭제 sessionId : {}", sessionId);
+    }
+
+    /**
      * 엔딩 스토리 도달시 본문 저장
      *
      * @param sessionId 세션 PK

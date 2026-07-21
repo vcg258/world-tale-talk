@@ -1,10 +1,12 @@
 package com.worldtaletalk.story.service;
 
+import com.worldtaletalk.chat.service.ChatMessagesService;
 import com.worldtaletalk.session.service.StorySessionsService;
 import com.worldtaletalk.stat.dto.SessionStatLogsDTO;
 import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
+import com.worldtaletalk.story.dto.PlayStateCacheDTO;
 import com.worldtaletalk.story.dto.TurnProcessResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class StoryServiceImpl implements StoryService {
     private final SessionStatsService sessionStatsService;
     private final StoryCacheService storyCacheService;
     private final StorySessionsService storySessionsService;
+    private final ChatMessagesService chatMessagesService;
 
     /**
      * 메인 스토리 스트리밍 처리
@@ -39,6 +42,8 @@ public class StoryServiceImpl implements StoryService {
                                    Consumer<TurnProcessResult> completeConsumer,
                                    Consumer<Exception> errorConsumer
     ) {
+        flushCurrentStoryToHistory(sessionId);
+
         // 트랜잭션 1: 턴 시작 (선택지 스탯)
         SessionStatLogsDTO statLogsDTO = storyTurnTransactionService.beginTurn(sessionId, choiceNumber);
         StringBuilder narrativeBuilder = new StringBuilder();
@@ -93,6 +98,19 @@ public class StoryServiceImpl implements StoryService {
                             completeConsumer.accept(result);
                         })
                 );
+    }
+
+
+    private void flushCurrentStoryToHistory(Long sessionId) {
+        PlayStateCacheDTO playState = storyCacheService.getPlayState(sessionId);
+        if (playState == null || playState.getCurrentStory() == null || playState.getCurrentStory().isBlank()) {
+            return;
+        }
+
+        int turn = storySessionsService.getStorySession(sessionId).getCurrentTurn();
+        chatMessagesService.saveStoryExchange(sessionId, turn, playState.getUserInput(), playState.getCurrentStory());
+        storyCacheService.deletePlayState(sessionId);
+        log.info("현재 장면 채팅 기록 확정 저장 sessionId: {}, turn: {}", sessionId, turn);
     }
 
     /**
