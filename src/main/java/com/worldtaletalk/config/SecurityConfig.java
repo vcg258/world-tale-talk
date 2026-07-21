@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", // 메인 화면
+                                "/worlds", "/worlds/*", // 세계관 탐색 및 상세
+                                "/notices", "/notices/**", // 공지사항 목록 및 상세
                                 "/auth/login", // 로그인
                                 "/auth/nickname", "/auth/nickname/check", // 닉네임 설정 및 중복 검사
                                 "/auth/suspended", // 정지 안내
@@ -57,7 +59,7 @@ public class SecurityConfig {
                 .formLogin(auth -> auth
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/", false)
                         .failureHandler(customAuthenticationFailureHandler)
                         .usernameParameter("loginId")
                         .passwordParameter("password")

@@ -5,18 +5,15 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
     <div th:replace="~{fragments/layout :: alerts}"></div>
-    <section class="hero">
+    <section class="hero home-hero">
         <h1>이야기로 들어가는 세계관 플랫폼</h1>
         <p>마음에 드는 세계관과 페르소나를 고르고, 선택지 기반 스토리 세션을 시작해보세요.</p>
-        <div class="actions">
-            <a class="btn" th:href="@{/worlds}">세계관 탐색</a>
-            <a class="btn secondary" th:href="@{/notices}">공지 확인</a>
-        </div>
     </section>
 
     <section class="section">
-        <div class="page-title">
+        <div class="page-title home-section-title">
             <h1>추천 세계관</h1>
+            <a class="btn secondary small" th:href="@{/worlds}">세계관 탐색</a>
         </div>
         <div class="grid">
             <article class="card" th:each="world : ${featuredWorlds}">
@@ -34,16 +31,14 @@
     </section>
 
     <section class="section">
-        <div class="page-title">
+        <div class="page-title home-section-title">
             <h1>공지</h1>
             <a class="btn secondary small" th:href="@{/notices}">전체 보기</a>
         </div>
-        <div class="stack">
-            <a class="card" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
-                <div class="card-body">
-                    <h3 th:text="${notice.title}">공지 제목</h3>
-                    <p class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}">날짜</p>
-                </div>
+        <div class="notice-compact-list">
+            <a class="notice-compact-item" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
+                <span class="notice-title" th:text="${notice.title}">공지 제목</span>
+                <time class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">날짜</time>
             </a>
         </div>
     </section>

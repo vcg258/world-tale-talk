@@ -28,7 +28,7 @@
                     <button class="btn secondary small" type="button" data-demo-login data-login-id="user1" data-password="user1234">일반 계정 즉시 로그인</button>
                 </div>
             </div>
-            <form class="form" th:action="@{/auth/login}" method="post">
+            <form class="form" th:action="@{/auth/login}" method="post" data-login-form>
                 <div class="field">
                     <label for="loginId">아이디</label>
                     <input id="loginId" name="loginId" autocomplete="username" required>

@@ -4,15 +4,16 @@
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page narrow">
-    <div class="page-title"><h1>공지</h1></div>
-    <div class="stack">
-        <a class="card" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
-            <div class="card-body">
-                <h2 th:text="${notice.title}">공지 제목</h2>
-                <p class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}">작성일</p>
-            </div>
+    <div class="page-title home-section-title">
+        <h1>공지</h1>
+    </div>
+    <div class="notice-compact-list">
+        <a class="notice-compact-item" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
+            <span class="notice-title" th:text="${notice.title}">공지 제목</span>
+            <time class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">작성일</time>
         </a>
     </div>
+    <p class="muted section" th:if="${#lists.isEmpty(notices)}">등록된 공지가 없습니다.</p>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>

@@ -3,8 +3,11 @@ package com.worldtaletalk.world.controller;
 import com.worldtaletalk.persona.dto.PersonasBaseStatsDTO;
 import com.worldtaletalk.persona.dto.PersonasDTO;
 import com.worldtaletalk.persona.service.PersonasService;
+import com.worldtaletalk.rating.service.WorldRatingsService;
+import com.worldtaletalk.rating.dto.WorldRatingsDTO;
 import com.worldtaletalk.world.service.WorldsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ public class WorldViewController {
 
     private final WorldsService worldsService;
     private final PersonasService personasService;
+    private final WorldRatingsService worldRatingsService;
 
     // 세계관 상세 페르소나 목록 뷰 모델 - 페르소나 정보와 기본 스탯을 묶어 Thymeleaf에 전달하는 레코드
     private record PersonaListItemVM(PersonasDTO persona, PersonasBaseStatsDTO baseStats) {}
@@ -34,6 +38,8 @@ public class WorldViewController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("world", worldsService.getWorldByActiveId(id));
+        Page<WorldRatingsDTO> ratings = worldRatingsService.getWorldRatings(id, null, 1);
+        model.addAttribute("ratings", ratings.getContent());
         return "world/detail";
     }
 

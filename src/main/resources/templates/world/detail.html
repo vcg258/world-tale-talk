@@ -15,7 +15,6 @@
         <p th:text="${world.description}">세계관 설명</p>
         <div class="actions">
             <a class="btn" th:href="@{/worlds/{id}/personas(id=${world.id})}">페르소나 선택</a>
-            <a class="btn secondary" th:href="@{/reports/new(targetType='CHAT_MESSAGE',targetId=${world.id})}">신고</a>
         </div>
     </section>
     <section class="card">
@@ -23,6 +22,24 @@
             <h2>세계관 설정</h2>
             <p class="muted" th:text="${world.settingText}">설정 텍스트</p>
         </div>
+    </section>
+
+    <section class="section world-review-section">
+        <div class="page-title compact-title">
+            <h2>리뷰</h2>
+        </div>
+        <div class="review-list" th:if="${ratings != null and !#lists.isEmpty(ratings)}">
+            <article class="review-item" th:each="rating : ${ratings}">
+                <div class="review-summary-row">
+                    <span class="review-stars" aria-label="별점">★</span>
+                    <strong th:text="${rating.score + '점'}">5점</strong>
+                    <span class="muted" th:text="${rating.userNickname}">닉네임</span>
+                    <a class="btn secondary small" th:href="@{/reports/new(targetType='REVIEW',targetId=${rating.id})}">신고</a>
+                </div>
+                <p class="review-text" th:text="${rating.review ?: '작성된 평가가 없습니다.'}">평가 내용</p>
+            </article>
+        </div>
+        <p class="muted" th:if="${ratings == null or #lists.isEmpty(ratings)}">아직 등록된 리뷰가 없습니다.</p>
     </section>
 </main>
 <footer th:replace="~{fragments/layout :: footer}"></footer>
