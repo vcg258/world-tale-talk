@@ -42,7 +42,12 @@
         </section>
         <aside class="stack story-side-panel">
             <section class="card story-progress-card"><div class="card-body">
-                <h2>진행도</h2>
+                <div class="story-progress-header">
+                    <h2>진행도</h2>
+                    <form class="story-progress-actions" th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="세션을 포기하시겠습니까?">
+                        <button class="btn warning" type="submit">포기</button>
+                    </form>
+                </div>
                 <div class="story-progress-summary">
                     <strong th:text="${progressPercent != null ? progressPercent + '%' : '0%'}">0%</strong>
                     <span th:if="${targetTurn != null}" th:text="|${storySession.currentTurn} / ${targetTurn}턴|">0 / 0턴</span>
@@ -51,9 +56,6 @@
                 <div class="story-progress-bar" aria-hidden="true">
                     <span th:style="${'width:' + (progressPercent != null ? progressPercent : 0) + '%'}"></span>
                 </div>
-                <form class="story-progress-actions" th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="세션을 포기하시겠습니까?">
-                    <button class="btn warning" type="submit">포기</button>
-                </form>
             </div></section>
             <section class="card"><div class="card-body">
                 <h2>스탯</h2>
@@ -65,6 +67,9 @@
                             <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${currentStats.wisdom >= slot} ? ' filled'"></span>
                         </span>
                         <strong class="persona-stat-value" th:text="${currentStats.wisdom}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="지혜 설명">?
+                            <span class="help-bubble">추리, 정보 해석, 지식 활용 성공 가능성에 영향을 줍니다.</span>
+                        </span>
                     </div>
                     <div class="persona-stat-row stat-strength" title="전투, 제압, 버티기에 영향을 줍니다.">
                         <span class="persona-stat-name">힘</span>
@@ -72,6 +77,9 @@
                             <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${currentStats.strength >= slot} ? ' filled'"></span>
                         </span>
                         <strong class="persona-stat-value" th:text="${currentStats.strength}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="힘 설명">?
+                            <span class="help-bubble">전투, 제압, 버티기처럼 신체 능력이 필요한 행동에 영향을 줍니다.</span>
+                        </span>
                     </div>
                     <div class="persona-stat-row stat-agility" title="회피, 잠입, 추격, 빠른 반응에 영향을 줍니다.">
                         <span class="persona-stat-name">민첩</span>
@@ -79,6 +87,9 @@
                             <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${currentStats.agility >= slot} ? ' filled'"></span>
                         </span>
                         <strong class="persona-stat-value" th:text="${currentStats.agility}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="민첩 설명">?
+                            <span class="help-bubble">회피, 잠입, 추격, 빠른 반응에 영향을 줍니다.</span>
+                        </span>
                     </div>
                     <div class="persona-stat-row stat-charisma" title="설득, 협상, 호감 형성에 영향을 줍니다.">
                         <span class="persona-stat-name">매력</span>
@@ -86,6 +97,9 @@
                             <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${currentStats.charisma >= slot} ? ' filled'"></span>
                         </span>
                         <strong class="persona-stat-value" th:text="${currentStats.charisma}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="매력 설명">?
+                            <span class="help-bubble">설득, 협상, 호감 형성, 사회적 행동에 영향을 줍니다.</span>
+                        </span>
                     </div>
                     <div class="persona-stat-row stat-luck" title="우연한 기회, 위기 탈출, 보상 발견에 영향을 줍니다.">
                         <span class="persona-stat-name">행운</span>
@@ -93,6 +107,9 @@
                             <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${currentStats.luck >= slot} ? ' filled'"></span>
                         </span>
                         <strong class="persona-stat-value" th:text="${currentStats.luck}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="행운 설명">?
+                            <span class="help-bubble">우연한 기회, 위기 탈출, 보상 발견 같은 변칙적 전개에 영향을 줍니다.</span>
+                        </span>
                     </div>
                 </div>
             </div></section>

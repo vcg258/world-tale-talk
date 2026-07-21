@@ -1246,3 +1246,48 @@ tr:last-child td {
   cursor: wait;
   opacity: 0.65;
 }
+
+.story-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.story-progress-header h2 {
+  margin: 0;
+}
+
+.story-progress-header .story-progress-actions {
+  margin-top: 0;
+}
+
+.story-stat-bars .persona-stat-row {
+  grid-template-columns: 44px minmax(112px, 1fr) 32px 24px;
+}
+
+.story-stat-help {
+  justify-self: end;
+  width: 20px;
+  height: 20px;
+}
+
+.story-stat-help .help-bubble {
+  left: auto;
+  right: 0;
+  bottom: calc(100% + 8px);
+  transform: translate(0, 4px);
+}
+
+.story-stat-help:hover .help-bubble,
+.story-stat-help:focus .help-bubble,
+.story-stat-help:focus-within .help-bubble {
+  transform: translate(0, 0);
+}
+
+@media (max-width: 420px) {
+  .story-stat-bars .persona-stat-row {
+    grid-template-columns: 38px minmax(80px, 1fr) 28px 22px;
+  }
+}
