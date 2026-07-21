@@ -7,6 +7,7 @@
         <div th:replace="~{fragments/layout :: adminSidebar}"></div>
         <section class="admin-content">
     <div class="page-title"><h1>회원 관리</h1><a class="btn secondary" th:href="@{/admin/users/del}">탈퇴 회원</a></div><div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>회원 관리 안내</strong><p>가입 회원의 권한과 계정 상태를 확인하는 화면입니다. ACTIVE는 정상 이용, SUSPENDED는 이용 정지, DORMANT는 휴면 상태를 의미하며 상세 화면에서 정지 처리와 해제를 진행할 수 있습니다.</p></div>
     <form class="filter-bar section" th:action="@{/admin/users}" method="get">
         <div class="field"><label>검색</label><input name="q" th:value="${q}" placeholder="닉네임"></div>
         <div class="field"><label>상태</label><select name="status"><option value="">전체</option><option value="ACTIVE" th:selected="${status != null and status.name() == 'ACTIVE'}">ACTIVE</option><option value="SUSPENDED" th:selected="${status != null and status.name() == 'SUSPENDED'}">SUSPENDED</option><option value="DORMANT" th:selected="${status != null and status.name() == 'DORMANT'}">DORMANT</option></select></div>

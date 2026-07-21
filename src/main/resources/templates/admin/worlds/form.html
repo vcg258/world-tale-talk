@@ -8,6 +8,7 @@
         <section class="admin-content">
     <div class="page-title"><h1 th:text="${world == null ? '세계관 등록' : '세계관 수정'}">세계관 입력</h1></div>
     <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>세계관 입력 안내</strong><p>이름과 장르는 목록과 탐색 화면에 노출됩니다. 목표 턴은 완결까지의 기준 턴 수이며, 설정 프롬프트는 AI가 세계관 규칙과 분위기를 이해하는 핵심 자료로 사용됩니다.</p></div>
     <section class="card"><div class="card-body"><form class="form" th:action="${world == null ? '/admin/worlds' : '/admin/worlds/' + world.id}" method="post">
         <div class="field"><label>이름</label><input name="name" th:value="${world?.name}" required></div>
         <div class="field"><label>장르</label><select name="genre" required>

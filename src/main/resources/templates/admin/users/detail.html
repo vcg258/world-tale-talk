@@ -8,6 +8,7 @@
         <section class="admin-content">
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <div class="page-title"><div><h1 th:text="${user.nickname}">회원</h1><p th:text="${user.email}">email</p></div><a class="btn secondary" th:href="@{/admin/users}">목록</a></div>
+    <div class="help-panel admin-help-panel"><strong>회원 상세 안내</strong><p>회원의 계정 정보, 소셜 연동 정보, 정지 이력과 강제 처리 기능을 한 화면에서 확인합니다. 정지는 로그인과 이용을 제한하며, 강제 탈퇴는 계정 상태를 탈퇴 처리합니다.</p></div>
     <div class="grid">
         <section class="card"><div class="card-body"><h2>계정</h2><p>아이디: <strong th:text="${user.loginId}">id</strong></p><p>권한: <strong th:text="${user.role}">role</strong></p><p>상태: <strong th:text="${user.status}">status</strong></p></div></section>
         <section class="card"><div class="card-body"><h2>정지 처리</h2><form class="form" th:action="@{/admin/users/{id}/suspend(id=${user.id})}" method="post"><div class="field"><label>사유</label><textarea name="reason" required></textarea></div><button class="btn warning" type="submit">정지</button></form><form class="section" th:action="@{/admin/users/{id}/lift(id=${user.id})}" method="post"><button class="btn secondary" type="submit">정지 해제</button></form></div></section>

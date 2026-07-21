@@ -8,6 +8,7 @@
         <section class="admin-content">
     <div class="page-title"><h1 th:text="${persona == null ? '페르소나 등록' : '페르소나 수정'}">페르소나 입력</h1></div>
     <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>페르소나 입력 안내</strong><p>설명은 사용자에게 보이는 소개 문구이고, 배경 프롬프트는 AI가 캐릭터의 말투와 행동 경향을 잡는 기준입니다. 스탯은 플레이 중 성공 가능성과 이야기 전개 경향에 반영됩니다.</p></div>
     <section class="card"><div class="card-body"><form class="form" th:action="${persona == null ? '/admin/personas' : '/admin/personas/' + persona.id}" method="post">
         <div class="field"><label>세계관</label><select name="worldId" required><option th:each="world : ${worlds}" th:value="${world.id}" th:text="${world.name}" th:selected="${persona != null and persona.worldId == world.id}">세계관</option></select></div>
         <div class="field"><label>이름</label><input name="name" th:value="${persona?.name}" required></div>

@@ -14,6 +14,7 @@
                 <a class="btn secondary" th:href="@{/admin/items/probabilities}">확률 설정</a>
             </div>
             <div th:replace="~{fragments/layout :: alerts}"></div>
+            <div class="help-panel admin-help-panel"><strong>아이템 등급 설정 안내</strong><p>등급별 아이템 보너스 범위를 설정합니다. 단일 최대/최소는 한 스탯에 붙을 수 있는 수치 범위이며, 음수 허용은 패널티 아이템을 만들 수 있는지를 의미합니다.</p></div>
             <div class="table-wrap section">
                 <table class="admin-config-table">
                     <thead>

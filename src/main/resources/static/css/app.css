@@ -1291,3 +1291,18 @@ tr:last-child td {
     grid-template-columns: 38px minmax(80px, 1fr) 28px 22px;
   }
 }
+
+.admin-help-panel {
+  margin: 12px 0 16px;
+}
+
+.admin-help-panel strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.admin-help-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}

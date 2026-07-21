@@ -8,6 +8,7 @@
         <section class="admin-content">
     <div class="page-title"><h1>별점 관리</h1></div>
     <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>별점 관리 안내</strong><p>세계관별 사용자 평가와 리뷰를 확인하는 화면입니다. 점수는 세계관 평균 평점 계산에 반영되며, 부적절하거나 테스트에 방해되는 리뷰는 삭제할 수 있습니다.</p></div>
     <form class="filter-bar section" th:action="@{/admin/ratings}" method="get">
         <div class="field"><label>닉네임</label><input name="nickname" th:value="${nickname}"></div>
         <div class="field"><label>세계관 ID</label><input name="worldId" type="number" th:value="${worldId}"></div>
