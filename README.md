@@ -36,10 +36,10 @@
 
 ## 팀원 소개
 
-| 팀원 이름 | 담당                                                                              |
-|-------|---------------------------------------------------------------------------------|
-| 김준용   | Spring Boot 백엔드 전체 설계/구현 (Security, JPA, WebSocket/STOMP, Spring AI RAG, Batch) |
-| 강혜윰   | 프론트엔드 (Thymeleaf 템플릿) 전체 설계/구현                                                  |
+| 팀원 이름 | 담당                                                                                     |
+|-----------|------------------------------------------------------------------------------------------|
+| 김준용    | Spring Boot 백엔드 전체 설계/구현 (Security, JPA, WebSocket/STOMP, Spring AI RAG, Batch) |
+| 강혜윰    | 프론트엔드 (Thymeleaf 템플릿) 전체 설계/구현                                             |
 
 
 ---
@@ -74,21 +74,21 @@
 
 ### 사전 요구사항
 
-| 항목         | 버전                  | 비고                            |
-|------------|---------------------|-------------------------------|
-| JDK        | 21                  | [다운로드](https://adoptium.net/) |
-| PostgreSQL | pgvector 익스텐션 설치 필요 | RAG 벡터 스토어                    |
-| Redis      | -                   | OTP/캐시/세션/리멤버미 토큰 저장          |
+| 항목       | 버전                        | 비고                              |
+|------------|-----------------------------|-----------------------------------|
+| JDK        | 21                          | [다운로드](https://adoptium.net/) |
+| PostgreSQL | pgvector 익스텐션 설치 필요 | RAG 벡터 스토어                   |
+| Redis      | -                           | OTP/캐시/세션/리멤버미 토큰 저장  |
 
 ### API 키 발급 (필수)
 
-| 서비스           | 발급 링크                                                                | 용도                                                   |
-|---------------|----------------------------------------------------------------------|------------------------------------------------------|
-| OpenAI        | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | 스토리 생성(`gpt-4o-mini`), 임베딩(`text-embedding-3-small`) |
-| Google OAuth2 | [console.cloud.google.com](https://console.cloud.google.com/)        | 소셜 로그인                                               |
-| Naver 개발자센터   | [developers.naver.com](https://developers.naver.com/)                | 소셜 로그인                                               |
-| Kakao 개발자센터   | [developers.kakao.com](https://developers.kakao.com/)                | 소셜 로그인                                               |
-| 네이버 메일(SMTP)  | 개인 계정                                                                | OTP/아이디/비번 찾기/휴면 통보 메일 발송                            |
+| 서비스            | 발급 링크                                                            | 용도                                                         |
+|-------------------|----------------------------------------------------------------------|--------------------------------------------------------------|
+| OpenAI            | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | 스토리 생성(`gpt-4o-mini`), 임베딩(`text-embedding-3-small`) |
+| Google OAuth2     | [console.cloud.google.com](https://console.cloud.google.com/)        | 소셜 로그인                                                  |
+| Naver 개발자센터  | [developers.naver.com](https://developers.naver.com/)                | 소셜 로그인                                                  |
+| Kakao 개발자센터  | [developers.kakao.com](https://developers.kakao.com/)                | 소셜 로그인                                                  |
+| 네이버 메일(SMTP) | 개인 계정                                                            | OTP/아이디/비번 찾기/휴면 통보 메일 발송                     |
 
 ### 실행 순서
 
@@ -126,7 +126,7 @@ localhost:6379 (기본값, application.yaml에서 변경 가능)
 
 >프론트 기술 스택으로 Thymeleaf (SSR)와 React (SPA) 중 선택해야 하는 시점이 있었습니다.
 >Spring AI 기반 LLM 스트리밍 응답과 실시간 상호작용이 핵심 기능이라, 반응성이나 UI 완성도 면에서는 사실 SPA + REST API 조합이 더 유리한 선택지였습니다.
->다만 팀 구성과 일정을 고려했을 때, 익숙한 Spring MVC/Thymeleaf 구조로 백엔드에서 화면까지 직접 통제하며 확실하게 완성하는 쪽이 더 현실적이라고 판단해 Thymeleaf를 채택했습니다.
+>다만 이 프로젝트를 혼자 진행하던 시점이라, SPA까지 새로 익히며 프로젝트 전체를 끌고 가는 것은 리스크가 크다고 판단해, 익숙한 Spring MVC/Thymeleaf 구조로 백엔드에서 화면까지 직접 통제하며 확실하게 완성하는 쪽을 선택했습니다.
 
 ### Security (Session기반)
 
@@ -406,34 +406,34 @@ sequenceDiagram
 
 ### Backend
 
-| 분류        | 기술                                                          |
-|-----------|-------------------------------------------------------------|
-| Language  | Java 21                                                     |
-| Framework | Spring Boot 3.5.14                                          |
-| View      | Thymeleaf (SSR)                                             |
-| ORM       | Spring Data JPA (QueryDSL 5.0.0은 설정만 돼있고 현재 실사용처 없음)        |
-| Migration | Flyway                                                      |
-| Security  | Spring Security (세션 기반), OAuth2 Client (Google/Naver/Kakao) |
-| Real-time | Spring WebSocket (STOMP + SockJS)                           |
-| Batch     | Spring Batch                                                |
-| AI        | Spring AI 1.1.6 (OpenAI, pgvector, RAG)                     |
-| Mapping   | MapStruct 1.5.5                                             |
-| Mail      | JavaMailSender (SMTP)                                       |
-| Build     | Gradle                                                      |
+| 분류      | 기술                                                                |
+|-----------|---------------------------------------------------------------------|
+| Language  | Java 21                                                             |
+| Framework | Spring Boot 3.5.14                                                  |
+| View      | Thymeleaf (SSR)                                                     |
+| ORM       | Spring Data JPA (QueryDSL 5.0.0은 설정만 돼있고 현재 실사용처 없음) |
+| Migration | Flyway                                                              |
+| Security  | Spring Security (세션 기반), OAuth2 Client (Google/Naver/Kakao)     |
+| Real-time | Spring WebSocket (STOMP + SockJS)                                   |
+| Batch     | Spring Batch                                                        |
+| AI        | Spring AI 1.1.6 (OpenAI, pgvector, RAG)                             |
+| Mapping   | MapStruct 1.5.5                                                     |
+| Mail      | JavaMailSender (SMTP)                                               |
+| Build     | Gradle                                                              |
 
 ### Database
 
-| 분류    | 기술                                          |
-|-------|---------------------------------------------|
-| 주 DB  | PostgreSQL (+ pgvector 익스텐션, RAG 벡터 스토어 겸용) |
+| 분류  | 기술                                                   |
+|-------|--------------------------------------------------------|
+| 주 DB | PostgreSQL (+ pgvector 익스텐션, RAG 벡터 스토어 겸용) |
 | Cache | Redis (OTP/플레이 상태/리멤버미 토큰)                  |
 
 ### 외부 API
 
-| 서비스                           | 용도                                                                             |
-|-------------------------------|--------------------------------------------------------------------------------|
+| 서비스                        | 용도                                                                                         |
+|-------------------------------|----------------------------------------------------------------------------------------------|
 | OpenAI                        | `gpt-4o-mini`(스토리 생성), `text-embedding-3-small`(임베딩), Moderation API(자유 입력 검열) |
-| Google / Naver / Kakao OAuth2 | 소셜 로그인                                                                         |
+| Google / Naver / Kakao OAuth2 | 소셜 로그인                                                                                  |
 
 
 ---
@@ -444,84 +444,84 @@ sequenceDiagram
 
 #### 인증 (`/auth`)
 
-| Method    | URL                        | 설명                              |
-|-----------|----------------------------|---------------------------------|
-| GET       | `/auth/login`              | 로그인 화면                          |
+| Method    | URL                        | 설명                                                |
+|-----------|----------------------------|-----------------------------------------------------|
+| GET       | `/auth/login`              | 로그인 화면                                         |
 | GET, POST | `/auth/nickname`           | 닉네임 입력 화면 / 저장 (소셜 신규가입 강제 플로우) |
-| GET       | `/auth/suspended`          | 정지 안내 화면                        |
-| GET       | `/auth/dormant`            | 휴면 안내 화면                        |
-| POST      | `/auth/dormant/reactivate` | 휴면 계정 해제 (본인 재로그인)              |
-| GET, POST | `/auth/signup`             | 회원가입 화면 / 처리                    |
-| GET, POST | `/auth/find-password`      | 비밀번호 찾기 화면 / 메일 발송              |
-| GET, POST | `/auth/reset-password`     | 비밀번호 재설정 화면 / 처리                |
-| GET, POST | `/auth/find-id`            | 아이디 찾기 화면 / 메일 발송               |
+| GET       | `/auth/suspended`          | 정지 안내 화면                                      |
+| GET       | `/auth/dormant`            | 휴면 안내 화면                                      |
+| POST      | `/auth/dormant/reactivate` | 휴면 계정 해제 (본인 재로그인)                      |
+| GET, POST | `/auth/signup`             | 회원가입 화면 / 처리                                |
+| GET, POST | `/auth/find-password`      | 비밀번호 찾기 화면 / 메일 발송                      |
+| GET, POST | `/auth/reset-password`     | 비밀번호 재설정 화면 / 처리                         |
+| GET, POST | `/auth/find-id`            | 아이디 찾기 화면 / 메일 발송                        |
 
 #### 마이페이지 (`/mypage`)
 
-| Method    | URL                                | 설명              |
-|-----------|------------------------------------|-----------------|
-| GET       | `/mypage`                          | 마이페이지 메인        |
+| Method    | URL                                | 설명                      |
+|-----------|------------------------------------|---------------------------|
+| GET       | `/mypage`                          | 마이페이지 메인           |
 | GET, POST | `/mypage/profile`                  | 프로필 조회 / 닉네임 변경 |
-| POST      | `/mypage/password`                 | 비밀번호 변경         |
-| POST      | `/mypage/withdraw`                 | 회원 탈퇴           |
-| GET       | `/mypage/sessions`                 | 내 세션 목록         |
-| GET       | `/mypage/ratings`                  | 내 별점 목록         |
-| POST      | `/mypage/social/{socialAccountId}` | 소셜 계정 연동 해제     |
+| POST      | `/mypage/password`                 | 비밀번호 변경             |
+| POST      | `/mypage/withdraw`                 | 회원 탈퇴                 |
+| GET       | `/mypage/sessions`                 | 내 세션 목록              |
+| GET       | `/mypage/ratings`                  | 내 별점 목록              |
+| POST      | `/mypage/social/{socialAccountId}` | 소셜 계정 연동 해제       |
 
 #### 세계관 / 페르소나
 
-| Method | URL                                               | 설명                         |
-|--------|---------------------------------------------------|----------------------------|
+| Method | URL                                               | 설명                                       |
+|--------|---------------------------------------------------|--------------------------------------------|
 | GET    | `/`                                               | 메인 화면 (활성 세계관, 인기 세계관, 공지) |
-| GET    | `/worlds`                                         | 세계관 목록                     |
-| GET    | `/worlds/{id}`                                    | 세계관 상세                     |
-| GET    | `/worlds/{id}/personas`                           | 세계관별 페르소나 목록               |
-| POST   | `/worlds/{worldId}/personas/{personaId}/sessions` | 세션 생성(새 게임 시작)             |
+| GET    | `/worlds`                                         | 세계관 목록                                |
+| GET    | `/worlds/{id}`                                    | 세계관 상세                                |
+| GET    | `/worlds/{id}/personas`                           | 세계관별 페르소나 목록                     |
+| POST   | `/worlds/{worldId}/personas/{personaId}/sessions` | 세션 생성(새 게임 시작)                    |
 
 #### 스토리 세션 (`/sessions`)
 
-| Method    | URL                                         | 설명              |
-|-----------|---------------------------------------------|-----------------|
-| GET       | `/sessions/{id}/play`                       | 플레이 화면          |
-| POST      | `/sessions/{id}/abandon`                    | 세션 포기           |
-| POST      | `/sessions/{id}/hide`                       | 세션 삭제(숨김)       |
-| GET       | `/sessions/{id}/ending`                     | 엔딩 화면           |
+| Method    | URL                                         | 설명                      |
+|-----------|---------------------------------------------|---------------------------|
+| GET       | `/sessions/{id}/play`                       | 플레이 화면               |
+| POST      | `/sessions/{id}/abandon`                    | 세션 포기                 |
+| POST      | `/sessions/{id}/hide`                       | 세션 삭제(숨김)           |
+| GET       | `/sessions/{id}/ending`                     | 엔딩 화면                 |
 | POST, GET | `/sessions/{id}/epilogue`                   | 에필로그 시작 / 화면 조회 |
-| POST      | `/sessions/{id}/complete`                   | 세션 완료           |
-| POST      | `/sessions/{sessionId}/items/{itemId}/drop` | 아이템 버리기         |
+| POST      | `/sessions/{id}/complete`                   | 세션 완료                 |
+| POST      | `/sessions/{sessionId}/items/{itemId}/drop` | 아이템 버리기             |
 
 #### 별점 / 신고 / 공지
 
-| Method    | URL                              | 설명              |
-|-----------|----------------------------------|-----------------|
+| Method    | URL                              | 설명                     |
+|-----------|----------------------------------|--------------------------|
 | GET, POST | `/worlds/{worldId}/ratings`      | 별점 등록 폼 / 등록/수정 |
-| GET       | `/worlds/{worldId}/ratings/edit` | 별점 수정 폼         |
-| GET, POST | `/reports/new`, `/reports`       | 신고 폼 / 등록       |
-| GET       | `/notices`, `/notices/{id}`      | 공지 목록 / 상세      |
+| GET       | `/worlds/{worldId}/ratings/edit` | 별점 수정 폼             |
+| GET, POST | `/reports/new`, `/reports`       | 신고 폼 / 등록           |
+| GET       | `/notices`, `/notices/{id}`      | 공지 목록 / 상세         |
 
 #### 관리자 (`/admin/**`) — `ROLE_ADMIN` 필요
 
-| Method    | URL                                             | 설명                         |
-|-----------|-------------------------------------------------|----------------------------|
+| Method    | URL                                             | 설명                                     |
+|-----------|-------------------------------------------------|------------------------------------------|
 | GET       | `/admin`, `/admin/stats`                        | 대시보드 요약 통계 / 세계관별 통계       |
-| GET, POST | `/admin/users`, `/admin/users/del`              | 회원 목록(활성/탈퇴)               |
-| GET       | `/admin/users/{id}`                             | 회원 상세                      |
-| POST      | `/admin/users/{id}/suspend`, `/lift`, `/delete` | 정지 / 정지 해제 / 강제 탈퇴         |
+| GET, POST | `/admin/users`, `/admin/users/del`              | 회원 목록(활성/탈퇴)                     |
+| GET       | `/admin/users/{id}`                             | 회원 상세                                |
+| POST      | `/admin/users/{id}/suspend`, `/lift`, `/delete` | 정지 / 정지 해제 / 강제 탈퇴             |
 | GET, POST | `/admin/worlds/**`                              | 세계관 CRUD, 활성화 토글, 삭제 대기/취소 |
-| GET, POST | `/admin/personas/**`                            | 페르소나 CRUD, 삭제 대기/취소        |
-| GET, POST | `/admin/notices/**`                             | 공지 CRUD                    |
-| GET, POST | `/admin/ratings`                                | 별점 목록/삭제                   |
-| GET, POST | `/admin/items/grades/**`                        | 아이템 등급 보정치 설정              |
-| GET, POST | `/admin/items/probabilities/**`                 | 아이템 등급 확률 설정               |
-| GET, POST | `/admin/sessions/**`                            | 세션 목록, 강제 포기, 숨김/복구        |
-| GET, POST | `/admin/report`                                 | 신고 목록 조회(상태 필터) / 처리       |
+| GET, POST | `/admin/personas/**`                            | 페르소나 CRUD, 삭제 대기/취소            |
+| GET, POST | `/admin/notices/**`                             | 공지 CRUD                                |
+| GET, POST | `/admin/ratings`                                | 별점 목록/삭제                           |
+| GET, POST | `/admin/items/grades/**`                        | 아이템 등급 보정치 설정                  |
+| GET, POST | `/admin/items/probabilities/**`                 | 아이템 등급 확률 설정                    |
+| GET, POST | `/admin/sessions/**`                            | 세션 목록, 강제 포기, 숨김/복구          |
+| GET, POST | `/admin/report`                                 | 신고 목록 조회(상태 필터) / 처리         |
 
 ### AJAX / WebSocket 엔드포인트 (실제 JSON 계약이 존재하는 부분)
 
 #### AJAX (JSON request/response)
 
-| Method | URL                        | 설명              |
-|--------|----------------------------|-----------------|
+| Method | URL                        | 설명                   |
+|--------|----------------------------|------------------------|
 | GET    | `/auth/nickname/check`     | 닉네임 중복 검사       |
 | GET    | `/auth/signup/check-id`    | 아이디 중복 검사       |
 | GET    | `/auth/signup/check-email` | 이메일 중복 검사       |
@@ -530,11 +530,11 @@ sequenceDiagram
 
 #### WebSocket (STOMP)
 
-| Destination                                               | 설명                                        |
-|-----------------------------------------------------------|-------------------------------------------|
-| `/app/story/{sessionId}/start`                            | 스토리 시작 (첫 서사 생성)                          |
-| `/app/story/{sessionId}`                                  | 메인 스토리 턴 처리                               |
-| `/app/epilogue/{sessionId}`                               | 에필로그 턴 처리                                 |
+| Destination                                               | 설명                                                   |
+|-----------------------------------------------------------|--------------------------------------------------------|
+| `/app/story/{sessionId}/start`                            | 스토리 시작 (첫 서사 생성)                             |
+| `/app/story/{sessionId}`                                  | 메인 스토리 턴 처리                                    |
+| `/app/epilogue/{sessionId}`                               | 에필로그 턴 처리                                       |
 | `/topic/story/{sessionId}`, `/topic/epilogue/{sessionId}` | 서버 -> 클라이언트 브로드캐스팅 (DELTA/COMPLETE/ERROR) |
 
 ---
@@ -627,11 +627,11 @@ com.worldtaletalk
 
 ## 팀 문서
 
-| 문서       | 링크                                                                                                           |
-|----------|--------------------------------------------------------------------------------------------------------------|
-| 기획/설계 문서 | [링크](https://docs.google.com/spreadsheets/d/1G_nXWRewH5Utb7UlUwSQaGAKFmiC5GSwaM3PoUCJEHc/edit?usp=sharing)   |
-| 팀원별 소감   | 김준용 : [링크](https://docs.google.com/document/d/1tCKMNSHSzw_FwGeCAH7Vco8m-6PpcoEJXYo0E4zRRl8/edit?usp=sharing) |
-|          | 강혜윰 : [링크]()                                                                                                 |
+| 문서           | 링크                                                                                                              |
+|----------------|-------------------------------------------------------------------------------------------------------------------|
+| 기획/설계 문서 | [링크](https://docs.google.com/spreadsheets/d/1G_nXWRewH5Utb7UlUwSQaGAKFmiC5GSwaM3PoUCJEHc/edit?usp=sharing)      |
+| 팀원별 소감    | 김준용 : [링크](https://docs.google.com/document/d/1tCKMNSHSzw_FwGeCAH7Vco8m-6PpcoEJXYo0E4zRRl8/edit?usp=sharing) |
+|                | 강혜윰 : [링크]()                                                                                                 |
 
 ---
 
@@ -641,4 +641,4 @@ MIT License
 
 ---
 
-<p align="center">world-tale-talk — Built with Spring Boot & Thymeleaf</p>
+<p style="text-align: center">world-tale-talk — Built with Spring Boot & Thymeleaf</p>
