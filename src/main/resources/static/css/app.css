@@ -103,7 +103,6 @@ textarea {
   box-shadow: var(--shadow);
 }
 
-.admin-home,
 .admin-menu-group a {
   display: flex;
   align-items: center;
@@ -114,7 +113,6 @@ textarea {
   font-weight: 800;
 }
 
-.admin-home:hover,
 .admin-menu-group a:hover {
   background: var(--surface-soft);
   color: var(--primary);
@@ -979,7 +977,6 @@ tr:last-child td {
   box-shadow: var(--shadow);
 }
 
-.mypage-home,
 .mypage-menu-link,
 .mypage-menu-group a {
   display: flex;
@@ -991,11 +988,9 @@ tr:last-child td {
   font-weight: 800;
 }
 
-.mypage-home:hover,
 .mypage-menu-link:hover,
 .mypage-menu-group a:hover,
 .mypage-menu-group a.active,
-.mypage-home.active,
 .mypage-menu-link.active {
   background: var(--surface-soft);
   color: var(--primary);
