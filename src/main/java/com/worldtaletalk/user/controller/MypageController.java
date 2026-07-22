@@ -70,6 +70,7 @@ public class MypageController {
     // 마이페이지 스토리 목록 뷰 모델 - 세션 ID, 세계관명, 페르소나명, 상태, 턴수, 생성일을 묶어 타임리프에 전달함
     private record StorySessionListItemVM(
             Long id,
+            Long worldId,
             String worldName,
             String personaName,
             SessionStatus status,
@@ -335,12 +336,12 @@ public class MypageController {
         Page<StorySessionsDTO> recentSessionPage = storySessionsService.getMySessions(user.getUser().getId(), null, 1);
         List<StorySessionListItemVM> sessions = mySessions.stream()
                 .map(r -> new StorySessionListItemVM(
-                        r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
+                        r.getId(), r.getWorldId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
                         r.getCurrentTurn(), r.getCreatedAt()
                 )).toList();
         List<StorySessionListItemVM> recentSessions = recentSessionPage.stream()
                 .map(r -> new StorySessionListItemVM(
-                        r.getId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
+                        r.getId(), r.getWorldId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
                         r.getCurrentTurn(), r.getCreatedAt()
                 )).toList();
         model.addAttribute("sessions", sessions);
@@ -365,8 +366,16 @@ public class MypageController {
             Model model
     ) {
         Page<WorldRatingsDTO> myRatings = worldRatingsService.getMyRatings(user.getUser().getId(), page);
+        Page<StorySessionsDTO> completedSessionPage = storySessionsService.getMySessions(
+                user.getUser().getId(), SessionStatus.COMPLETED, 1);
+        List<StorySessionListItemVM> completedSessions = completedSessionPage.stream()
+                .map(r -> new StorySessionListItemVM(
+                        r.getId(), r.getWorldId(), r.getWorldName(), r.getPersonaName(), r.getStatus(),
+                        r.getCurrentTurn(), r.getCreatedAt()
+                )).toList();
         model.addAttribute("ratings", myRatings.getContent());
         model.addAttribute("ratingsPage", myRatings);
+        model.addAttribute("completedSessions", completedSessions);
         return "mypage/ratings";
 
     }

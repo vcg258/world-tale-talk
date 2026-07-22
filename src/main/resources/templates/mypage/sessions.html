@@ -8,6 +8,7 @@
     <div class="mypage-layout">
         <aside class="mypage-sidebar">
             <a class="mypage-menu-link active" th:href="@{/mypage/sessions}">내 세션</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/ratings}">내 별점</a>
             <div class="mypage-menu-group">
                 <h2>프로필 관리</h2>
                 <a th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>
@@ -29,7 +30,11 @@
                             <p class="muted" th:text="${storySession.personaName}">페르소나</p>
                             <p class="muted" th:text="|턴 ${storySession.currentTurn}|">턴</p>
                             <div class="actions">
-                                <a class="btn small" th:href="@{/sessions/{id}/play(id=${storySession.id})}">이어하기</a>
+                                <a class="btn small" th:if="${storySession.status.name() == 'IN_PROGRESS'}" th:href="@{/sessions/{id}/play(id=${storySession.id})}">이어하기</a>
+                                <a class="btn small" th:if="${storySession.status.name() == 'ENDING'}" th:href="@{/sessions/{id}/ending(id=${storySession.id})}">엔딩 확인</a>
+                                <a class="btn small" th:if="${storySession.status.name() == 'EPILOGUE'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그 이어가기</a>
+                                <a class="btn small" th:if="${storySession.status.name() == 'COMPLETED'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그 이어가기</a>
+                                <span class="badge warn" th:if="${storySession.status.name() == 'ABANDONED'}">포기됨</span>
                             </div>
                         </div>
                     </article>
@@ -59,7 +64,11 @@
                         <td><span class="badge" th:text="${storySession.status}">상태</span></td>
                         <td th:text="${storySession.currentTurn}">0</td>
                         <td class="actions">
-                            <a class="btn small" th:href="@{/sessions/{id}/play(id=${storySession.id})}">열기</a>
+                            <a class="btn small" th:if="${storySession.status.name() == 'IN_PROGRESS'}" th:href="@{/sessions/{id}/play(id=${storySession.id})}">열기</a>
+                            <a class="btn small" th:if="${storySession.status.name() == 'ENDING'}" th:href="@{/sessions/{id}/ending(id=${storySession.id})}">엔딩</a>
+                            <a class="btn small" th:if="${storySession.status.name() == 'EPILOGUE'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그</a>
+                            <a class="btn small" th:if="${storySession.status.name() == 'COMPLETED'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그 이어가기</a>
+                            <span class="badge warn" th:if="${storySession.status.name() == 'ABANDONED'}">포기됨</span>
                             <form th:action="@{/sessions/{id}/hide(id=${storySession.id})}" method="post"><button class="btn secondary small" type="submit">숨김</button></form>
                         </td>
                     </tr>

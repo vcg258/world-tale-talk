@@ -155,6 +155,8 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
         TurnProcessResult turnProcessResult = applyStoryResult(storySessionsDTO, llmTurnResult, worlds.getTargetTurn());
         SessionStatSnapshotsDTO sessionStatSnapshotsDTO = null;
 
+        Map<String, Map<String, Integer>> clampedChoiceStats = clampStatChanges(llmTurnResult.getStatChangesByChoice());
+
         if (turnProcessResult.getEndingType() != null) {
             state.changeInformationByStorySession(SessionStatus.ENDING);
             state.changeInformationByEndingType(turnProcessResult.getEndingType());
@@ -162,7 +164,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
             log.info("엔딩 도달 sessionId : {}, endingType : {}", sessionId, turnProcessResult.getEndingType());
             storyCacheService.deleteSessionCache(sessionId);
         } else { // 이번 응답으로 선택지별 다음 턴용으로 레디스에 스텟 저장
-            storyCacheService.saveChoiceStats(sessionId, clampStatChanges(llmTurnResult.getStatChangesByChoice()));
+            storyCacheService.saveChoiceStats(sessionId, clampedChoiceStats);
         }
 
         StorySessionsEntity save = storySessionsRepository.save(state);
@@ -176,6 +178,7 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                 .session(latestSession)
                 .story(llmTurnResult.getStory())
                 .choices(turnProcessResult.getEndingType() != null ? null : llmTurnResult.getChoices()) // 엔딩일경우 선택지 없음 항상 null
+                .statChangesByChoice(turnProcessResult.getEndingType() != null ? null : clampedChoiceStats)
                 .createdItem(turnProcessResult.getCreatedItem())
                 .removedItemId(turnProcessResult.getRemovedItemId())
                 .removedItemName(turnProcessResult.getRemovedItemName())

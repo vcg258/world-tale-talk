@@ -1,6 +1,7 @@
 package com.worldtaletalk.chat.repository;
 
 import com.worldtaletalk.chat.domain.ChatMessagesEntity;
+import com.worldtaletalk.chat.domain.ChatRole;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,6 +35,19 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
 
     // 세션의 메시지 전체 삭제
     void deleteAllByStorySession_Id(Long sessionId);
+
+    @Query("""
+    SELECT COUNT(c) > 0 FROM ChatMessagesEntity c
+        WHERE c.storySession.id = :sessionId
+            AND c.turn = :turn
+            AND c.role = :role
+            AND c.epilogue = FALSE
+    """)
+    boolean existsMainMessageBySessionTurnAndRole(
+            @Param("sessionId") Long sessionId,
+            @Param("turn") int turn,
+            @Param("role") ChatRole role
+    );
 
     // 해당 세션 메시지 전체 최초 조회 (스크롤 형식 페이징)
     List<ChatMessagesEntity> findByStorySession_Id(Pageable pageable, Long id);

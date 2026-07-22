@@ -17,6 +17,15 @@ public interface ChatMessagesService {
     List<ChatMessagesDTO> getChatMessages(Long sessionId, LocalDateTime lastCreatedAt);
 
     /**
+     * 유저 입력을 채팅 기록에 먼저 저장한다.
+     *
+     * @param sessionId 세션 PK
+     * @param turn      기록할 턴
+     * @param userInput 저장할 유저 입력
+     */
+    void saveUserInput(Long sessionId, int turn, String userInput);
+
+    /**
      * 현재 장면을 채팅 기록으로 확정 저장한다.
      *
      * @param sessionId 세션 PK

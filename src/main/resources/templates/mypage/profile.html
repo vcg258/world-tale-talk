@@ -8,6 +8,7 @@
     <div class="mypage-layout">
         <aside class="mypage-sidebar">
             <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 세션</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/ratings}">내 별점</a>
             <div class="mypage-menu-group">
                 <h2>프로필 관리</h2>
                 <a th:classappend="${activeSection == 'nickname'} ? 'active'" th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>

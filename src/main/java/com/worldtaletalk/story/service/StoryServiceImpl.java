@@ -46,6 +46,8 @@ public class StoryServiceImpl implements StoryService {
 
         // 트랜잭션 1: 턴 시작 (선택지 스탯)
         SessionStatLogsDTO statLogsDTO = storyTurnTransactionService.beginTurn(sessionId, choiceNumber);
+        int turn = storySessionsService.getStorySession(sessionId).getCurrentTurn();
+        chatMessagesService.saveUserInput(sessionId, turn, userInput);
         StringBuilder narrativeBuilder = new StringBuilder();
 
         storyAiService.streamNarrative(sessionId, userInput)

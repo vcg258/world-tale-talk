@@ -45,6 +45,25 @@ public class ChatMessagesServiceImpl implements ChatMessagesService {
 
     @Transactional
     @Override
+    public void saveUserInput(Long sessionId, int turn, String userInput) {
+        if (userInput == null || userInput.isBlank() || "이야기를 시작해주세요.".equals(userInput.trim())) {
+            return;
+        }
+
+        StorySessionsEntity storySession = storySessionsRepository.findById(sessionId).orElseThrow(() ->
+                new java.util.NoSuchElementException("해당 세션을 찾을 수 없습니다."));
+
+        chatMessagesRepository.save(ChatMessagesEntity.builder()
+                .storySession(storySession)
+                .turn(turn)
+                .role(ChatRole.USER)
+                .content(userInput)
+                .epilogue(false)
+                .build());
+    }
+
+    @Transactional
+    @Override
     public void saveStoryExchange(Long sessionId, int turn, String userInput, String story) {
         if (story == null || story.isBlank()) {
             return;
@@ -55,7 +74,8 @@ public class ChatMessagesServiceImpl implements ChatMessagesService {
 
         boolean shouldSaveUserInput = userInput != null
                 && !userInput.isBlank()
-                && !"이야기를 시작해주세요.".equals(userInput.trim());
+                && !"이야기를 시작해주세요.".equals(userInput.trim())
+                && !chatMessagesRepository.existsMainMessageBySessionTurnAndRole(sessionId, turn, ChatRole.USER);
 
         if (shouldSaveUserInput) {
             chatMessagesRepository.save(ChatMessagesEntity.builder()
