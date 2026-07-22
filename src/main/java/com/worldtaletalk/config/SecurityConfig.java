@@ -94,6 +94,8 @@ public class SecurityConfig {
                 .addFilterAfter(dormantAccountRedirectFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/ws/**") // 웹소켓 제외
+                        .ignoringRequestMatchers("/auth/signup/send-code") // 회원가입 이메일 OTP 메일 발송 REST 제외
+                        .ignoringRequestMatchers("/auth/signup/verify-code") // 회원가입 OTP 검증 REST 제외
                 );
         return http.build();
     }

@@ -8,7 +8,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 
 @Slf4j
 @Service
@@ -34,7 +33,7 @@ public class EmailOtpService {
             throw new IllegalStateException("잠시후 다시시도 해주세요");
         }
 
-        String code = generateCode();
+        String code = OtpCodeGenerator.generate();
 
         // 레디스 캐시 저장
         emailOtpRedisRepository.saveOtp(userId, newEmail, code);
@@ -66,18 +65,5 @@ public class EmailOtpService {
         if (storedOtp == null || !storedOtp.equals(inputOtp)) return false;
         emailOtpRedisRepository.deleteOtp(userId);
         return true;
-    }
-
-
-    /* Helper Methode */
-
-    /**
-     * OTP 랜덤 생성 (6자리)
-     *
-     * @return OTP
-     */
-    private String generateCode() {
-        SecureRandom secureRandom = new SecureRandom();
-        return String.format("%06d", secureRandom.nextInt(1_000_000));
     }
 }

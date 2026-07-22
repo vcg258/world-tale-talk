@@ -63,7 +63,7 @@ public class EmailOtpRedisRepository {
      * @param userId 회원 PK
      */
     public void markCooldown(Long userId) {
-        redisTemplate.opsForValue().set(COOLDOWN_KEY.formatted(userId), "1", RESEND_COOLDOWN);
+        redisTemplate.opsForValue().set(COOLDOWN_KEY.formatted(userId), "ACCESS", RESEND_COOLDOWN);
     }
 
     /**

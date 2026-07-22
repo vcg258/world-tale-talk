@@ -2,6 +2,7 @@ package com.worldtaletalk.user.controller;
 
 import com.worldtaletalk.global.mail.FindIdService;
 import com.worldtaletalk.global.mail.PasswordResetService;
+import com.worldtaletalk.global.mail.SignupEmailOtpService;
 import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.global.security.CustomUserDetails;
 import com.worldtaletalk.global.security.SecurityContextUtil;
@@ -35,6 +36,7 @@ public class AuthController {
     private final UserSuspensionsService userSuspensionsService;
     private final PasswordResetService passwordResetService;
     private final FindIdService findIdService;
+    private final SignupEmailOtpService signupEmailOtpService;
 
     // 닉네임 설정 요청 폼 - 닉네임 단일 필드를 레코드로 처리함
     private record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
@@ -244,6 +246,11 @@ public class AuthController {
             return "auth/signup";
         }
 
+        if (!signupEmailOtpService.isVerified(form.email())) {
+            model.addAttribute("error", "이메일 인증을 먼저 완료 해주세요.");
+            return "auth/signup";
+        }
+
         UserDTO createdUser;
         try {
             createdUser = userService.signUp(UserDTO.builder()
@@ -284,6 +291,39 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok().body(Map.of("available", !userService.existsByEmail(email)));
+    }
+
+    /**
+     * A-09-1: 회원가입 이메일 본인확인 인증번호 발송 (REST)
+     *
+     * @param email 이메일
+     * @return 이메일 발송 결과
+     */
+    @PostMapping("/signup/send-code")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> sendSignupOtp(@RequestParam("email") String email) {
+        try {
+            signupEmailOtpService.signupSendOtp(email);
+            return ResponseEntity.ok().body(Map.of("success", true, "message", "인증코드를 발송했습니다."));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.ok().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    /**
+     * A-09-2: 회원가입 이메일 인증번호 검증 (REST)
+     *
+     * @param email 이메일
+     * @return 이메일 검증 결과
+     */
+    @PostMapping("/signup/verify-code")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> verifySignupOtp(
+            @RequestParam("email") String email,
+            @RequestParam("otp") String otp
+    ) {
+        boolean verifyOtp = signupEmailOtpService.verifyOtp(email, otp);
+        return ResponseEntity.ok().body(Map.of("verifyOtp", verifyOtp));
     }
 
     /**
