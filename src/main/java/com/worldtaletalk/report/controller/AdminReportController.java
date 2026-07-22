@@ -64,8 +64,10 @@ public class AdminReportController {
                     .build());
         } catch (IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/report";
         }
 
+        redirectAttributes.addFlashAttribute("message", "신고 처리 상태 변경이 완료되었습니다.");
         return "redirect:/admin/report";
     }
 

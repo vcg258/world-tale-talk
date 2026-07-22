@@ -152,7 +152,7 @@ public class MypageController {
         UserDTO updateUser = userService.getUser(user.getUser().getId());
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
 
-        redirectAttributes.addFlashAttribute("message", "닉네임이 변경되었습니다");
+        redirectAttributes.addFlashAttribute("message", "닉네임 변경이 완료되었습니다.");
         return "redirect:/mypage/profile?section=nickname";
     }
 
@@ -191,7 +191,7 @@ public class MypageController {
         UserDTO updateUser = userService.getUser(user.getUser().getId());
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
 
-        redirectAttributes.addFlashAttribute("message", "비밀번호가 변경되었습니다");
+        redirectAttributes.addFlashAttribute("message", "비밀번호 변경이 완료되었습니다.");
         return "redirect:/mypage/profile?section=password";
     }
 
@@ -287,7 +287,7 @@ public class MypageController {
         }
         UserDTO updateUser = userService.getUser(user.getUser().getId());
         SecurityContextUtil.refresh(user, updateUser, request.getSession());
-        redirectAttributes.addFlashAttribute("message", "이메일이 변경되었습니다");
+        redirectAttributes.addFlashAttribute("message", "이메일 변경이 완료되었습니다.");
         return "redirect:/mypage/profile?section=email";
     }
 
@@ -391,7 +391,7 @@ public class MypageController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/profile?section=social";
         }
-        redirectAttributes.addFlashAttribute("message", "소셜 계정 연동이 해제되었습니다.");
+        redirectAttributes.addFlashAttribute("message", "소셜 계정 연동 해제가 완료되었습니다.");
         return "redirect:/mypage/profile?section=social";
     }
 }

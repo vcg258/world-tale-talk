@@ -96,7 +96,9 @@ public class AdminItemController {
                     .build());
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/items/grades";
         }
+        redirectAttributes.addFlashAttribute("message", "아이템 등급 설정값 변경이 완료되었습니다.");
         return "redirect:/admin/items/grades";
     }
 
@@ -142,7 +144,9 @@ public class AdminItemController {
             itemGradeProbabilitiesService.modifyProbability(id, form.probability());
         } catch (IllegalArgumentException | NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/items/probabilities";
         }
+        redirectAttributes.addFlashAttribute("message", "아이템 확률 설정값 변경이 완료되었습니다.");
         return "redirect:/admin/items/probabilities";
     }
 }

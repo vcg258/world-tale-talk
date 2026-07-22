@@ -68,7 +68,9 @@ public class AdminSessionController {
             storyCacheService.deleteSessionCache(id);
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/sessions";
         }
+        redirectAttributes.addFlashAttribute("message", "세션 포기 처리가 완료되었습니다.");
         return "redirect:/admin/sessions";
     }
 
@@ -84,7 +86,9 @@ public class AdminSessionController {
             storySessionsService.modifyHiddenByUserWithAdmin(id);
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/sessions";
         }
+        redirectAttributes.addFlashAttribute("message", "세션 숨김 상태 변경이 완료되었습니다.");
         return "redirect:/admin/sessions";
     }
 }

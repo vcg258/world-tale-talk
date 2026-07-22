@@ -127,7 +127,9 @@ public class AdminUserController {
                     .build());
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/users/" + id;
         }
+        redirectAttributes.addFlashAttribute("message", "회원 정지 처리가 완료되었습니다.");
         return "redirect:/admin/users/" + id;
     }
 
@@ -144,7 +146,9 @@ public class AdminUserController {
             userSuspensionsService.liftUserSuspension(userSuspension.getId());
         } catch (IllegalArgumentException | NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/users/" + id;
         }
+        redirectAttributes.addFlashAttribute("message", "회원 정지 해제가 완료되었습니다.");
         return "redirect:/admin/users/" + id;
     }
 
@@ -160,7 +164,9 @@ public class AdminUserController {
             userService.deleteUser(id);
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/users";
         }
+        redirectAttributes.addFlashAttribute("message", "회원 탈퇴 처리가 완료되었습니다.");
         return "redirect:/admin/users";
     }
 }

@@ -140,7 +140,9 @@ public class AdminPersonaController {
                     .build());
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
         }
+        redirectAttributes.addFlashAttribute("message", "페르소나 등록이 완료되었습니다.");
         return "redirect:/admin/personas";
     }
 
@@ -188,13 +190,38 @@ public class AdminPersonaController {
                     .build());
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
         }
 
+        redirectAttributes.addFlashAttribute("message", "페르소나 수정이 완료되었습니다.");
         return "redirect:/admin/personas";
     }
 
     /**
-     * AP-06: 페르소나 삭제
+     * AP-06: 페르소나 활성화 토글
+     *
+     * @param id                 페르소나 PK
+     * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
+     * @return redirect:/admin/personas (페르소나 목록 페이지)
+     */
+    @PostMapping("/{id}/toggle")
+    public String toggle(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            PersonasDTO persona = personasService.getPersona(id);
+            personasService.modifyPersona(PersonasDTO.builder()
+                    .id(persona.getId())
+                    .active(!persona.getActive())
+                    .build());
+        } catch (NoSuchElementException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/personas";
+        }
+        redirectAttributes.addFlashAttribute("message", "페르소나 공개 설정이 변경되었습니다.");
+        return "redirect:/admin/personas";
+    }
+
+    /**
+     * AP-07: 페르소나 삭제
      *
      * @param id                 페르소나 PK
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
@@ -213,7 +240,7 @@ public class AdminPersonaController {
     }
 
     /**
-     * AP-07: 페르소나 삭제 대기
+     * AP-08: 페르소나 삭제 대기
      *
      * @param id                 페르소나 PK
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지
@@ -232,7 +259,7 @@ public class AdminPersonaController {
     }
 
     /**
-     * AP-08: 페르소나 삭제 대기 취소
+     * AP-09: 페르소나 삭제 대기 취소
      *
      * @param id                 페르소나 PK
      * @param redirectAttributes 리다이렉트 시 전달할 플래시 메시지

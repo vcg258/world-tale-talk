@@ -10,8 +10,9 @@
     <div class="help-panel admin-help-panel"><strong>페르소나 관리 안내</strong><p>세계관별로 사용자가 선택할 캐릭터 원형을 관리합니다. 페르소나는 기본 배경과 스탯을 가지고 있으며, 삭제대기 상태는 사용자 선택 목록에서 제외하기 위한 준비 단계입니다.</p></div>
     <form class="filter-bar section" th:action="@{/admin/personas}" method="get"><div class="field"><label>세계관</label><select name="worldId"><option value="">전체</option><option th:each="world : ${worlds}" th:value="${world.id}" th:text="${world.name}" th:selected="${worldId != null and worldId == world.id}">세계관</option></select></div><button class="btn" type="submit">검색</button></form>
     <div class="table-wrap"><table><thead><tr><th>ID</th><th>세계관</th><th>이름</th><th>상태</th><th>작업</th></tr></thead><tbody>
-    <tr th:each="persona : ${personas}"><td th:text="${persona.id}">1</td><td th:text="${persona.worldId}">1</td><td th:text="${persona.name}">이름</td><td><span class="badge" th:text="${persona.active} ? '활성' : '비활성'">상태</span></td><td class="actions">
+    <tr th:each="persona : ${personas}"><td th:text="${persona.id}">1</td><td th:text="${persona.worldId}">1</td><td th:text="${persona.name}">이름</td><td><span class="badge" th:classappend="${persona.active} ? ' ok' : ' warn'" th:text="${persona.active} ? '활성' : '비활성'">상태</span></td><td class="actions">
         <a class="btn secondary small" th:href="@{/admin/personas/{id}/edit(id=${persona.id})}">수정</a>
+        <form th:action="@{/admin/personas/{id}/toggle(id=${persona.id})}" method="post"><button class="btn secondary small" type="submit">토글</button></form>
         <form th:action="@{/admin/personas/{id}/schedule-deletion(id=${persona.id})}" method="post"><button class="btn warning small" type="submit">삭제대기</button></form>
         <form th:action="@{/admin/personas/{id}/cancel-deletion(id=${persona.id})}" method="post"><button class="btn secondary small" type="submit">취소</button></form>
         <form th:action="@{/admin/personas/{id}/delete(id=${persona.id})}" method="post" data-confirm="페르소나를 삭제하시겠습니까?"><button class="btn danger small" type="submit">삭제</button></form>
