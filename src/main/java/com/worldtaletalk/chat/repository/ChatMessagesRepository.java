@@ -2,6 +2,7 @@ package com.worldtaletalk.chat.repository;
 
 import com.worldtaletalk.chat.domain.ChatMessagesEntity;
 import com.worldtaletalk.chat.domain.ChatRole;
+import com.worldtaletalk.statistics.projection.SessionLastChatProjection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -48,6 +49,17 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
             @Param("turn") int turn,
             @Param("role") ChatRole role
     );
+
+
+    @Query("""
+    SELECT c.storySession.id AS sessionId, MAX(c.createdAt) AS lastChatAt
+        FROM ChatMessagesEntity c
+            WHERE c.role = :role
+                AND c.storySession.id IN :sessionIds
+            GROUP BY c.storySession.id
+    """)
+    List<SessionLastChatProjection> findLastUserChatsBySessionIds(@Param("sessionIds") List<Long> sessionIds,
+                                                            @Param("role") ChatRole role);
 
     // 해당 세션 메시지 전체 최초 조회 (스크롤 형식 페이징)
     List<ChatMessagesEntity> findByStorySession_Id(Pageable pageable, Long id);

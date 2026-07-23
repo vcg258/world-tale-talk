@@ -66,6 +66,21 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             Pageable pageable
     );
 
+
+    // 관리자 통계용 기간별 이야기 조회
+    @Query("""
+            SELECT s FROM StorySessionsEntity s
+                JOIN FETCH s.worlds
+                JOIN FETCH s.personas p
+                JOIN FETCH p.world
+                    WHERE s.createdAt >= :startAt
+                        AND s.createdAt < :endAt
+            """)
+    List<StorySessionsEntity> findAllForStatsBetween(
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt
+    );
+
     // 해당 세션의 상태와 갱신일시가 지정날짜보다 적은 애들만 조회 (중도이탈 처리를 위함)
     @Query("SELECT s FROM StorySessionsEntity s WHERE s.status = :status AND s.updatedAt <= :cutoff")
     List<StorySessionsEntity> findAllByStatusAndUpdatedAtBefore(
