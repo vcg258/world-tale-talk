@@ -24,7 +24,7 @@
                         <th>단일 최대치</th>
                         <th>단일 최소치</th>
                         <th>음수 허용</th>
-                        <th>작업</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -43,7 +43,7 @@
                                 <option value="false" th:selected="${!config.canNegative}">불가</option>
                             </select>
                         </td>
-                        <td><button class="btn small" type="submit" th:attr="form=${'grade-config-' + config.id}">저장</button></td>
+                        <td class="actions"><button class="btn small" type="submit" th:attr="form=${'grade-config-' + config.id}">저장하기</button></td>
                     </tr>
                     </tbody>
                 </table>

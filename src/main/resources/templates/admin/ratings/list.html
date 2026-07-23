@@ -14,12 +14,25 @@
         <div class="field"><label>세계관 ID</label><input name="worldId" type="number" th:value="${worldId}"></div>
         <button class="btn" type="submit">검색</button>
     </form>
-    <div class="table-wrap"><table><thead><tr><th>ID</th><th>회원</th><th>세계관</th><th>점수</th><th>리뷰</th><th>작업</th></tr></thead><tbody>
-    <tr th:each="rating : ${ratings}">
-        <td th:text="${rating.id}">1</td><td th:text="${rating.userNickname}">회원</td><td th:text="${rating.worldName}">세계관</td><td><span class="badge" th:text="${rating.score + '점'}">5점</span></td><td th:text="${rating.review}">리뷰</td>
-        <td><form th:action="@{/admin/ratings/{id}(id=${rating.id})}" method="post" data-confirm="별점을 삭제하시겠습니까?"><button class="btn danger small" type="submit">삭제</button></form></td>
-    </tr>
-    </tbody></table></div>
+    <div class="table-wrap"><table>
+        <thead>
+        <tr><th>ID</th><th>회원</th><th>세계관</th><th>점수</th><th>리뷰</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="rating : ${ratings}">
+            <td th:text="${rating.id}">1</td>
+            <td th:text="${rating.userNickname}">회원</td>
+            <td th:text="${rating.worldName}">세계관</td>
+            <td><span class="badge" th:text="${rating.score + '점'}">5점</span></td>
+            <td class="text-cell" th:text="${rating.review}">리뷰</td>
+            <td class="actions">
+                <form th:action="@{/admin/ratings/{id}(id=${rating.id})}" method="post" data-confirm="별점을 삭제하시겠습니까?">
+                    <button class="btn danger small" type="submit">리뷰삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table></div>
         </section>
     </div>
 </main></body></html>

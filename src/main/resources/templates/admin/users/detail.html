@@ -15,7 +15,7 @@
         <section class="card"><div class="card-body"><h2>소셜 계정</h2><p th:each="account : ${socialAccounts}"><span class="badge" th:text="${account.provider}">provider</span> <span class="muted" th:text="${account.providerId}">id</span></p></div></section>
         <section class="card"><div class="card-body"><h2>강제 탈퇴</h2><form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" data-confirm="회원을 탈퇴 처리하시겠습니까?"><button class="btn danger" type="submit">탈퇴 처리</button></form></div></section>
     </div>
-    <section class="section"><h2>정지 이력</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>사유</th><th>정지일</th><th>해제일</th></tr></thead><tbody><tr th:each="suspension : ${suspensions}"><td th:text="${suspension.id}">1</td><td th:text="${suspension.reason}">사유</td><td th:text="${suspension.suspendedAt}">일시</td><td th:text="${suspension.liftedAt}">일시</td></tr></tbody></table></div></section>
+    <section class="section"><h2>정지 이력</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>사유</th><th>정지일</th><th>해제일</th></tr></thead><tbody><tr th:each="suspension : ${suspensions}"><td th:text="${suspension.id}">1</td><td class="text-cell" th:text="${suspension.reason}">사유</td><td th:text="${suspension.suspendedAt}">일시</td><td th:text="${suspension.liftedAt}">일시</td></tr></tbody></table></div></section>
         </section>
     </div>
 </main></body></html>

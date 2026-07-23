@@ -461,14 +461,60 @@ th,
 td {
   border-bottom: 1px solid var(--line);
   padding: 12px;
-  text-align: left;
-  vertical-align: top;
+  text-align: center;
+  vertical-align: middle;
 }
 
 th {
   background: var(--surface-soft);
   font-size: 0.86rem;
   color: var(--muted);
+}
+
+td.text-cell {
+  text-align: left;
+  line-height: 1.55;
+}
+
+td.actions {
+  display: table-cell;
+  text-align: center;
+  white-space: nowrap;
+}
+
+td.actions > a,
+td.actions > form,
+td.actions > button {
+  display: inline-flex;
+  margin: 4px;
+  vertical-align: middle;
+}
+
+td.actions form {
+  margin: 4px;
+}
+
+td.actions .btn {
+  min-width: 82px;
+  justify-content: center;
+}
+
+.table-action-stack {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.table-action-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.table-action-row > a,
+.table-action-row > form {
+  margin: 0;
 }
 
 .admin-config-table th,

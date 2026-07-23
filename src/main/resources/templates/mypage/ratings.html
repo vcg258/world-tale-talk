@@ -24,14 +24,14 @@
                 <h2>별점 작성 가능 이야기</h2>
                 <p class="field-guide">에필로그까지 마친 이야기는 세계관 별점과 리뷰를 작성할 수 있습니다. 이미 같은 세계관에 남긴 별점이 있으면 기존 내용을 수정합니다.</p>
                 <div class="table-wrap"><table>
-                    <thead><tr><th>이야기</th><th>세계관</th><th>페르소나</th><th>턴</th><th>작업</th></tr></thead>
+                    <thead><tr><th>이야기</th><th>세계관</th><th>페르소나</th><th>턴</th><th></th></tr></thead>
                     <tbody>
                     <tr th:each="storySession : ${completedSessions}">
                         <td th:text="${storySession.id}">1</td>
                         <td th:text="${storySession.worldName}">세계관</td>
                         <td th:text="${storySession.personaName}">페르소나</td>
                         <td th:text="${storySession.currentTurn}">0</td>
-                        <td><a class="btn small" th:href="@{/worlds/{worldId}/ratings(worldId=${storySession.worldId},sessionId=${storySession.id})}">별점 작성</a></td>
+                        <td class="actions"><a class="btn small" th:href="@{/worlds/{worldId}/ratings(worldId=${storySession.worldId},sessionId=${storySession.id})}">별점 작성</a></td>
                     </tr>
                     </tbody>
                 </table></div>
@@ -44,7 +44,7 @@
                         <div class="card-body">
                             <span class="badge" th:text="${rating.score + '점'}">5점</span>
                             <h2 th:text="${rating.worldName}">세계관</h2>
-                            <p class="muted" th:text="${rating.review}">리뷰</p>
+                            <p class="muted text-cell" th:text="${rating.review}">리뷰</p>
                             <a class="btn secondary small" th:href="@{/worlds/{id}/ratings/edit(id=${rating.worldId})}">수정</a>
                         </div>
                     </article>

@@ -23,7 +23,7 @@
                         <th>등급</th>
                         <th>확률</th>
                         <th>최근 수정</th>
-                        <th>작업</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody th:each="phase : ${phases}">
@@ -38,7 +38,7 @@
                             </form>
                         </td>
                         <td class="muted" th:text="${probability.updatedAt}">일시</td>
-                        <td><button class="btn small" type="submit" th:attr="form=${'grade-probability-' + probability.id}">저장</button></td>
+                        <td class="actions"><button class="btn small" type="submit" th:attr="form=${'grade-probability-' + probability.id}">저장하기</button></td>
                     </tr>
                     </tbody>
                 </table>
