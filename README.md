@@ -641,4 +641,4 @@ MIT License
 
 ---
 
-<p style="text-align: center">world-tale-talk — Built with Spring Boot & Thymeleaf</p>
+<p align="center">world-tale-talk — Built with Spring Boot & Thymeleaf</p>
