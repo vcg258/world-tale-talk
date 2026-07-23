@@ -607,6 +607,37 @@ tr:last-child td {
   font-weight: 900;
 }
 
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star-rating-button {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #d1d5db;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.star-rating-button:hover,
+.star-rating-button:focus-visible {
+  color: #facc15;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.star-rating-button.filled {
+  color: #facc15;
+}
+
 .field-hint {
   margin: 0;
   color: var(--muted);
