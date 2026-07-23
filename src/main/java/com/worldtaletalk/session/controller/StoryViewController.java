@@ -161,7 +161,7 @@ public class StoryViewController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/sessions";
         }
-        redirectAttributes.addFlashAttribute("message", "세션이 삭제되었습니다.");
+        redirectAttributes.addFlashAttribute("message", "이야기에서 나갔습니다.");
         return "redirect:/mypage/sessions";
     }
 

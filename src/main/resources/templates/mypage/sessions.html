@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('내 세션')}"></head>
+<head th:replace="~{fragments/layout :: head('내 이야기')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <div class="mypage-layout">
         <aside class="mypage-sidebar">
-            <a class="mypage-menu-link active" th:href="@{/mypage/sessions}">내 세션</a>
+            <a class="mypage-menu-link active" th:href="@{/mypage/sessions}">내 이야기</a>
             <a class="mypage-menu-link" th:href="@{/mypage/ratings}">내 별점</a>
             <div class="mypage-menu-group">
                 <h2>프로필 관리</h2>
@@ -19,9 +19,9 @@
             </div>
         </aside>
         <section class="mypage-content">
-            <div class="page-title"><h1>내 세션</h1></div>
+            <div class="page-title"><h1>내 이야기</h1></div>
             <section class="section mypage-section-first">
-                <h2>최근 세션</h2>
+                <h2>최근 이야기</h2>
                 <div class="grid">
                     <article class="card" th:each="storySession : ${recentSessions}">
                         <div class="card-body">
@@ -39,10 +39,10 @@
                         </div>
                     </article>
                 </div>
-                <p class="muted" th:if="${#lists.isEmpty(recentSessions)}">최근 세션이 없습니다.</p>
+                <p class="muted" th:if="${#lists.isEmpty(recentSessions)}">최근 이야기가 없습니다.</p>
             </section>
             <section class="section">
-                <div class="page-title compact-title"><h2>전체 세션</h2></div>
+                <div class="page-title compact-title"><h2>전체 이야기</h2></div>
                 <form class="filter-bar" th:action="@{/mypage/sessions}" method="get">
                     <div class="field"><label>상태</label><select name="status">
                         <option value="">전체</option>
@@ -55,7 +55,7 @@
                     <button class="btn" type="submit">검색</button>
                 </form>
                 <div class="table-wrap"><table>
-                    <thead><tr><th>ID</th><th>세계관</th><th>페르소나</th><th>상태</th><th>턴</th><th>작업</th></tr></thead>
+                    <thead><tr><th>이야기</th><th>세계관</th><th>페르소나</th><th>상태</th><th>턴</th><th>작업</th></tr></thead>
                     <tbody>
                     <tr th:each="storySession : ${sessions}">
                         <td th:text="${storySession.id}">1</td>
@@ -69,7 +69,7 @@
                             <a class="btn small" th:if="${storySession.status.name() == 'EPILOGUE'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그</a>
                             <a class="btn small" th:if="${storySession.status.name() == 'COMPLETED'}" th:href="@{/sessions/{id}/epilogue(id=${storySession.id})}">에필로그 이어가기</a>
                             <span class="badge warn" th:if="${storySession.status.name() == 'ABANDONED'}">포기됨</span>
-                            <form th:action="@{/sessions/{id}/hide(id=${storySession.id})}" method="post"><button class="btn secondary small" type="submit">숨김</button></form>
+                            <form th:action="@{/sessions/{id}/hide(id=${storySession.id})}" method="post" data-confirm="이야기에서 나가면 내 이야기 목록에서 보이지 않습니다. 나가시겠습니까?"><button class="btn secondary small" type="submit">나가기</button></form>
                         </td>
                     </tr>
                     </tbody>

@@ -7,7 +7,7 @@
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <div class="mypage-layout">
         <aside class="mypage-sidebar">
-            <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 세션</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 이야기</a>
             <a class="mypage-menu-link active" th:href="@{/mypage/ratings}">내 별점</a>
             <div class="mypage-menu-group">
                 <h2>프로필 관리</h2>
@@ -21,10 +21,10 @@
         <section class="mypage-content">
             <div class="page-title"><h1>내 별점</h1></div>
             <section class="section mypage-section-first">
-                <h2>별점 작성 가능 세션</h2>
-                <p class="field-guide">에필로그까지 마친 세션은 세계관 별점과 리뷰를 작성할 수 있습니다. 이미 같은 세계관에 남긴 별점이 있으면 기존 내용을 수정합니다.</p>
+                <h2>별점 작성 가능 이야기</h2>
+                <p class="field-guide">에필로그까지 마친 이야기는 세계관 별점과 리뷰를 작성할 수 있습니다. 이미 같은 세계관에 남긴 별점이 있으면 기존 내용을 수정합니다.</p>
                 <div class="table-wrap"><table>
-                    <thead><tr><th>세션</th><th>세계관</th><th>페르소나</th><th>턴</th><th>작업</th></tr></thead>
+                    <thead><tr><th>이야기</th><th>세계관</th><th>페르소나</th><th>턴</th><th>작업</th></tr></thead>
                     <tbody>
                     <tr th:each="storySession : ${completedSessions}">
                         <td th:text="${storySession.id}">1</td>
@@ -35,7 +35,7 @@
                     </tr>
                     </tbody>
                 </table></div>
-                <p class="muted" th:if="${#lists.isEmpty(completedSessions)}">별점을 작성할 수 있는 완료 세션이 없습니다.</p>
+                <p class="muted" th:if="${#lists.isEmpty(completedSessions)}">별점을 작성할 수 있는 완료 이야기가 없습니다.</p>
             </section>
             <section class="section">
                 <div class="page-title compact-title"><h2>작성한 별점</h2></div>

@@ -46,7 +46,7 @@
             <section class="card story-progress-card"><div class="card-body">
                 <div class="story-progress-header">
                     <h2>진행도</h2>
-                    <form class="story-progress-actions" th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="세션을 포기하시겠습니까?">
+                    <form class="story-progress-actions" th:action="@{/sessions/{id}/abandon(id=${storySession.id})}" method="post" data-confirm="이야기를 포기하시겠습니까?">
                         <button class="btn warning" type="submit">포기</button>
                     </form>
                 </div>

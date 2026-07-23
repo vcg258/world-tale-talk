@@ -175,10 +175,10 @@ public class StorySessionsServiceImpl implements StorySessionsService {
         StorySessionsEntity storySession = storySessionsRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("해당 세션은 존재하지 않습니다."));
         if (!storySession.getUsers().getId().equals(userId)) {
-            throw new IllegalStateException("본인의 세션만 삭제할 수 있습니다.");
+            throw new IllegalStateException("본인의 이야기만 나갈 수 있습니다.");
         }
         if (storySession.isHiddenByUser()) {
-            throw new IllegalStateException("이미 삭제된 채팅방입니다.");
+            throw new IllegalStateException("이미 나간 이야기입니다.");
         }
         storySession.changeHiddenByUser();
         StorySessionsEntity save = storySessionsRepository.save(storySession);

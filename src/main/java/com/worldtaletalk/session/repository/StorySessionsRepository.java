@@ -30,9 +30,11 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             SELECT s FROM StorySessionsEntity s
                         JOIN FETCH s.worlds
                                 JOIN FETCH s.personas
-                                    WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)
+                                    WHERE s.users.id = :userId
+                                        AND s.hiddenByUser = FALSE
+                                        AND (:status IS NULL OR s.status = :status)
             """,
-            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)")
+            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND s.hiddenByUser = FALSE AND (:status IS NULL OR s.status = :status)")
     Page<StorySessionsEntity> findAllByUserId(@Param("userId") Long userId, @Param("status") SessionStatus status, Pageable pageable);
 
     // 관리자용 전체 세션 조회
