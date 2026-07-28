@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('신고 관리')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+            <div class="page-title"><h1>신고 관리</h1></div>
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+            <div class="help-panel admin-help-panel">
+                <strong>신고 관리 안내</strong>
+                <p>목록에서는 신고 대상을 빠르게 비교하고, 행을 클릭하면 상세 신고 내역과 처리 버튼을 확인할 수 있습니다.</p>
+            </div>
+
+            <form class="filter-bar section" th:action="@{/admin/report}" method="get" data-auto-submit-form>
+                <div class="field">
+                    <label>처리상태 필터</label>
+                    <select name="status" data-auto-submit>
+                        <option value="" th:selected="${selectedStatus == ''}">전체</option>
+                        <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">처리 대기</option>
+                        <option value="RESOLVED" th:selected="${selectedStatus == 'RESOLVED'}">처리 완료</option>
+                        <option value="DISMISSED" th:selected="${selectedStatus == 'DISMISSED'}">기각</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="table-wrap section report-table-wrap">
+                <table class="report-table report-summary-table">
+                    <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>대상</th>
+                        <th>대상 문구</th>
+                        <th>상태</th>
+                        <th>누적 신고수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="clickable-row" th:each="report, stat : ${reports}" th:attr="data-modal-target=${'report-modal-' + report.id}" tabindex="0">
+                        <td th:text="${reportPage.totalElements - (reportPage.number * reportPage.size + stat.index)}">1</td>
+                        <td>
+                            <span class="badge" th:if="${report.targetType != null and report.targetType.name() == 'REVIEW'}">리뷰</span>
+                            <span class="badge" th:if="${report.targetType != null and report.targetType.name() == 'CHAT_MESSAGE'}">채팅</span>
+                        </td>
+                        <td class="text-cell report-target-text" th:text="${report.targetText}">대상 문구</td>
+                        <td>
+                            <span class="badge warn" th:if="${report.status != null and report.status.name() == 'PENDING'}">처리 대기</span>
+                            <span class="badge ok" th:if="${report.status != null and report.status.name() == 'RESOLVED'}">처리 완료</span>
+                            <span class="badge" th:if="${report.status != null and report.status.name() == 'DISMISSED'}">기각</span>
+                        </td>
+                        <td><span class="badge" th:text="|${report.cumulativeReportCount}건|">1건</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="muted" th:if="${#lists.isEmpty(reports)}">접수된 신고가 없습니다.</p>
+
+            <div class="pagination section" th:if="${reportPage != null and reportPage.totalPages > 1}">
+                <a class="btn secondary small" th:classappend="${reportPage.first} ? ' disabled'" th:href="@{/admin/report(page=${reportPage.number},status=${status})}">이전</a>
+                <span class="muted" th:text="|${reportPage.number + 1} / ${reportPage.totalPages}|">1 / 1</span>
+                <a class="btn secondary small" th:classappend="${reportPage.last} ? ' disabled'" th:href="@{/admin/report(page=${reportPage.number + 2},status=${status})}">다음</a>
+            </div>
+
+            <div class="modal-backdrop" th:each="report, reportStat : ${reports}" th:id="${'report-modal-' + report.id}" hidden data-modal>
+                <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+                    <div class="modal-header">
+                        <h2 id="report-modal-title">신고 상세</h2>
+                        <button class="icon-button" type="button" aria-label="닫기" data-modal-close>&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-wrap">
+                            <table class="report-detail-table report-summary-table">
+                                <thead>
+                                <tr><th>순번</th><th>대상</th><th>대상 문구</th><th>상태</th><th>누적 신고수</th></tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td th:text="${reportPage.totalElements - (reportPage.number * reportPage.size + reportStat.index)}">1</td>
+                                    <td>
+                                        <span class="badge" th:if="${report.targetType != null and report.targetType.name() == 'REVIEW'}">리뷰</span>
+                                        <span class="badge" th:if="${report.targetType != null and report.targetType.name() == 'CHAT_MESSAGE'}">채팅</span>
+                                    </td>
+                                    <td class="text-cell report-target-text">
+                                        <a th:if="${report.targetLink != null}" th:href="${report.targetLink}" th:text="${report.targetText}">대상 문구</a>
+                                        <span th:unless="${report.targetLink != null}" th:text="${report.targetText}">대상 문구</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge warn" th:if="${report.status != null and report.status.name() == 'PENDING'}">처리 대기</span>
+                                        <span class="badge ok" th:if="${report.status != null and report.status.name() == 'RESOLVED'}">처리 완료</span>
+                                        <span class="badge" th:if="${report.status != null and report.status.name() == 'DISMISSED'}">기각</span>
+                                    </td>
+                                    <td th:text="|${report.cumulativeReportCount}건|">1건</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-wrap report-processing-table">
+                            <table>
+                                <thead><tr><th>상태</th><th>처리자</th><th>처리일</th></tr></thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="badge warn" th:if="${report.status != null and report.status.name() == 'PENDING'}">처리 대기</span>
+                                        <span class="badge ok" th:if="${report.status != null and report.status.name() == 'RESOLVED'}">처리 완료</span>
+                                        <span class="badge" th:if="${report.status != null and report.status.name() == 'DISMISSED'}">기각</span>
+                                    </td>
+                                    <td th:text="${report.adminNickname != null ? report.adminNickname : '-'}">-</td>
+                                    <td th:text="${report.handledAt != null ? #temporals.format(report.handledAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-actions" th:if="${report.status != null and report.status.name() == 'PENDING'}">
+                            <form th:if="${report.targetType != null and report.targetType.name() == 'REVIEW'}" th:action="@{/admin/report/{id}/review/delete(id=${report.id})}" method="post" data-confirm="진짜로 해당 리뷰를 삭제하시겠습니까?">
+                                <button class="btn danger" type="submit">리뷰삭제</button>
+                            </form>
+                            <form th:if="${report.targetType != null and report.targetType.name() == 'CHAT_MESSAGE'}" th:action="@{/admin/report/{id}/handle(id=${report.id})}" method="post" data-confirm="진짜로 채팅 신고를 조치 완료하시겠습니까?">
+                                <input type="hidden" name="status" value="RESOLVED">
+                                <button class="btn" type="submit">조치완료</button>
+                            </form>
+                            <form th:action="@{/admin/report/{id}/handle(id=${report.id})}" method="post" data-confirm="진짜로 신고를 기각하시겠습니까?">
+                                <input type="hidden" name="status" value="DISMISSED">
+                                <button class="btn secondary" type="submit">신고기각</button>
+                            </form>
+                        </div>
+                        <p class="alert message" th:unless="${report.status != null and report.status.name() == 'PENDING'}">이미 처리 완료된 신고입니다.</p>
+
+                        <section class="report-history-section">
+                            <h3 th:text="|신고 내역 총 ${report.cumulativeReportCount}건|">신고 내역 총 1건</h3>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>신고자</th><th>신고 사유</th><th>신고일</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="history : ${report.histories}">
+                                        <td th:text="${history.reporterNickname}">닉네임</td>
+                                        <td class="text-cell" th:text="${history.reason}">신고 사유</td>
+                                        <td th:text="${history.createdAt != null ? #temporals.format(history.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+</main></body></html>

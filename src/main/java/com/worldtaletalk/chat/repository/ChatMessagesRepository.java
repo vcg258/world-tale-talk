@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity, Long> {
     // 세션의 모든 메시지 조회 (메인 에필로그 모두 포함) createdAt 기준 오름차순 정렬 TODO 일단 보류 없앨지 고민 해봐야할듯
@@ -60,6 +61,16 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessagesEntity
     """)
     List<SessionLastChatProjection> findLastUserChatsBySessionIds(@Param("sessionIds") List<Long> sessionIds,
                                                             @Param("role") ChatRole role);
+
+    @Query("""
+    SELECT c FROM ChatMessagesEntity c
+        JOIN FETCH c.storySession s
+        JOIN FETCH s.users
+        JOIN FETCH s.worlds
+        JOIN FETCH s.personas
+            WHERE c.id = :id
+    """)
+    Optional<ChatMessagesEntity> findByIdWithStorySessionDetails(@Param("id") Long id);
 
     // 해당 세션 메시지 전체 최초 조회 (스크롤 형식 페이징)
     List<ChatMessagesEntity> findByStorySession_Id(Pageable pageable, Long id);

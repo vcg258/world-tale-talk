@@ -6,6 +6,13 @@ document.addEventListener("submit", (event) => {
   }
 });
 
+
+document.addEventListener("change", (event) => {
+  const field = event.target.closest("[data-auto-submit]");
+  if (!field || !field.form) return;
+  field.form.requestSubmit();
+});
+
 document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-demo-login]");
   if (!button) return;
@@ -18,4 +25,44 @@ document.addEventListener("click", (event) => {
   loginId.value = button.dataset.loginId || "";
   password.value = button.dataset.password || "";
   form.requestSubmit();
+});
+
+
+document.addEventListener("click", (event) => {
+  const opener = event.target.closest("[data-modal-target]");
+  if (opener) {
+    const modal = document.getElementById(opener.dataset.modalTarget);
+    if (modal) {
+      modal.hidden = false;
+      document.body.classList.add("modal-open");
+      const closeButton = modal.querySelector("[data-modal-close]");
+      if (closeButton) closeButton.focus();
+    }
+    return;
+  }
+
+  const closeButton = event.target.closest("[data-modal-close]");
+  const backdrop = event.target.matches("[data-modal]") ? event.target : null;
+  const modal = closeButton ? closeButton.closest("[data-modal]") : backdrop;
+  if (modal) {
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    document.querySelectorAll("[data-modal]:not([hidden])").forEach((modal) => {
+      modal.hidden = true;
+    });
+    document.body.classList.remove("modal-open");
+    return;
+  }
+
+  if (event.key === "Enter") {
+    const opener = event.target.closest("[data-modal-target]");
+    if (opener) {
+      opener.click();
+    }
+  }
 });

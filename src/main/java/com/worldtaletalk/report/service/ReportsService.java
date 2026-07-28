@@ -29,6 +29,14 @@ public interface ReportsService {
     void handleReport(ReportsDTO reportsDTO);
 
     /**
+     * 신고된 리뷰 삭제 후 신고 처리 완료
+     *
+     * @param reportId 신고 PK
+     * @param adminId 관리자 PK
+     */
+    void deleteReportedReview(Long reportId, Long adminId);
+
+    /**
      * 신고 내역 삭제
      *
      * @param id PK
