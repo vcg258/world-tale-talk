@@ -35,8 +35,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", // 메인 화면
+                                "/worlds", "/worlds/*", // 세계관 탐색 및 상세
+                                "/notices", "/notices/**", // 공지사항 목록 및 상세
                                 "/auth/login", // 로그인
-                                "/auth/nickname", // 닉네임 설정
+                                "/auth/nickname", "/auth/nickname/check", // 닉네임 설정 및 중복 검사
                                 "/auth/suspended", // 정지 안내
                                 "/auth/signup", "/auth/signup/**", // 회원가입
                                 "/auth/find-id", // 아이디 찾기
@@ -57,7 +59,7 @@ public class SecurityConfig {
                 .formLogin(auth -> auth
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/", false)
                         .failureHandler(customAuthenticationFailureHandler)
                         .usernameParameter("loginId")
                         .passwordParameter("password")
@@ -92,6 +94,8 @@ public class SecurityConfig {
                 .addFilterAfter(dormantAccountRedirectFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/ws/**") // 웹소켓 제외
+                        .ignoringRequestMatchers("/auth/signup/send-code") // 회원가입 이메일 OTP 메일 발송 REST 제외
+                        .ignoringRequestMatchers("/auth/signup/verify-code") // 회원가입 OTP 검증 REST 제외
                 );
         return http.build();
     }

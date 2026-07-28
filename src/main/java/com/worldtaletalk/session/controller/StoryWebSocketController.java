@@ -88,7 +88,9 @@ public class StoryWebSocketController {
                                 sessionId,
                                 PlayStateCacheDTO.builder()
                                         .currentStory(result.getStory())
+                                        .userInput(null)
                                         .choices(result.getChoices())
+                                        .statChangesByChoice(result.getStatChangesByChoice())
                                         .progressPercent(result.getProgressPercent())
                                         .build()
                         );
@@ -154,7 +156,9 @@ public class StoryWebSocketController {
                                 sessionId,
                                 PlayStateCacheDTO.builder()
                                         .currentStory(result.getStory())
+                                        .userInput(message.content())
                                         .choices(result.getChoices())
+                                        .statChangesByChoice(result.getStatChangesByChoice())
                                         .progressPercent(result.getProgressPercent())
                                         .build()
                         );

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('탈퇴 회원')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1>탈퇴 회원</h1><a class="btn secondary" th:href="@{/admin/users}">회원 관리</a></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>탈퇴 회원 안내</strong><p>탈퇴 처리된 회원을 확인하는 화면입니다. 서비스 이용 대상에서는 제외되지만 포트폴리오 시연과 운영 확인을 위해 기본 식별 정보와 상태를 조회할 수 있습니다.</p></div>
+    <form class="filter-bar section" th:action="@{/admin/users/del}" method="get"><div class="field"><label>검색</label><input name="q" th:value="${q}" placeholder="닉네임"></div><button class="btn" type="submit">검색</button></form>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>아이디</th><th>닉네임</th><th>이메일</th><th>상태</th></tr></thead><tbody><tr th:each="user : ${users}"><td th:text="${user.id}">1</td><td th:text="${user.loginId}">id</td><td th:text="${user.nickname}">닉</td><td class="text-cell" th:text="${user.email}">email</td><td th:text="${user.status}">status</td></tr></tbody></table></div>
+        </section>
+    </div>
+</main></body></html>

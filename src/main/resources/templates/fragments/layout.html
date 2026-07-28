@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
+    <title th:text="${title} + ' | World Tale Talk'">World Tale Talk</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
+</head>
+<body>
+<header class="site-header" th:fragment="header">
+    <nav class="nav">
+        <a class="brand" th:href="@{/}">World Tale Talk</a>
+        <div class="nav-links">
+            <a th:href="@{/worlds}">세계관</a>
+            <a th:href="@{/notices}">공지</a>
+            <a th:if="${isLoggedIn}" th:href="@{/mypage}">마이페이지</a>
+            <a th:if="${isAdmin}" th:href="@{/admin}">관리자</a>
+        </div>
+        <div class="actions">
+            <span class="muted" th:if="${isLoggedIn}" th:text="${currentUser.nickname}">닉네임</span>
+            <a class="btn secondary small" th:unless="${isLoggedIn}" th:href="@{/auth/login}">로그인</a>
+            <a class="btn small" th:unless="${isLoggedIn}" th:href="@{/auth/signup}">회원가입</a>
+            <form th:if="${isLoggedIn}" th:action="@{/auth/logout}" method="post">
+                <button class="btn secondary small" type="submit">로그아웃</button>
+            </form>
+        </div>
+    </nav>
+</header>
+
+<div th:fragment="alerts">
+    <div class="alert error" th:if="${error}" th:text="${error}">오류</div>
+    <div class="alert message" th:if="${message}" th:text="${message}">메시지</div>
+</div>
+
+<nav class="admin-tabs" th:fragment="adminTabs">
+    <a th:href="@{/admin}">대시보드</a>
+    <a th:href="@{/admin/worlds}">세계관</a>
+    <a th:href="@{/admin/personas}">페르소나</a>
+    <a th:href="@{/admin/users}">회원</a>
+    <a th:href="@{/admin/sessions}">세션</a>
+    <a th:href="@{/admin/ratings}">별점</a>
+    <a th:href="@{/admin/notices}">공지</a>
+    <a th:href="@{/admin/items/grades}">아이템 설정</a>
+    <a th:href="@{/admin/stats}">통계</a>
+</nav>
+
+<aside class="admin-sidebar" th:fragment="adminSidebar">
+    <div class="admin-menu-group">
+        <h2>운영 현황</h2>
+        <a th:href="@{/admin}">대시보드</a>
+        <a th:href="@{/admin/stats}">통계</a>
+    </div>
+    <div class="admin-menu-group">
+        <h2>콘텐츠 관리</h2>
+        <a th:href="@{/admin/worlds}">세계관</a>
+        <a th:href="@{/admin/personas}">페르소나</a>
+        <a th:href="@{/admin/items/grades}">아이템 등급</a>
+        <a th:href="@{/admin/items/probabilities}">아이템 확률</a>
+        <a th:href="@{/admin/notices}">공지</a>
+    </div>
+    <div class="admin-menu-group">
+        <h2>사용자 활동</h2>
+        <a th:href="@{/admin/users}">회원</a>
+        <a th:href="@{/admin/users/del}">탈퇴 회원</a>
+        <a th:href="@{/admin/sessions}">세션</a>
+        <a th:href="@{/admin/ratings}">별점</a>
+    </div>
+</aside>
+
+<footer class="footer" th:fragment="footer">World Tale Talk</footer>
+</body>
+</html>

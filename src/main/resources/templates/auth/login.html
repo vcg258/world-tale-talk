@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('로그인')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card">
+        <div class="card-body">
+            <h1>로그인</h1>
+            <p class="alert error" th:if="${param.error}">로그인 정보를 확인해주세요.</p>
+            <p class="alert message" th:if="${param.expired}">세션이 만료되었습니다. 다시 로그인해주세요.</p>
+            <div class="demo-login-grid">
+                <div class="demo-login-box">
+                    <strong>관리자 데모 계정</strong>
+                    <dl>
+                        <div><dt>아이디</dt><dd>admin</dd></div>
+                        <div><dt>비밀번호</dt><dd>admin1234</dd></div>
+                    </dl>
+                    <button class="btn secondary small" type="button" data-demo-login data-login-id="admin" data-password="admin1234">관리자로 즉시 로그인</button>
+                </div>
+                <div class="demo-login-box">
+                    <strong>일반 데모 계정</strong>
+                    <dl>
+                        <div><dt>아이디</dt><dd>user1</dd></div>
+                        <div><dt>비밀번호</dt><dd>user1234</dd></div>
+                    </dl>
+                    <button class="btn secondary small" type="button" data-demo-login data-login-id="user1" data-password="user1234">일반 계정 즉시 로그인</button>
+                </div>
+            </div>
+            <form class="form" th:action="@{/auth/login}" method="post" data-login-form>
+                <div class="field">
+                    <label for="loginId">아이디</label>
+                    <input id="loginId" name="loginId" autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="password">비밀번호</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+                <label class="inline-form"><input type="checkbox" name="rememberMe"> 로그인 유지</label>
+                <button class="btn" type="submit">로그인</button>
+            </form>
+            <div class="actions section auth-link-actions">
+                <a class="btn secondary" th:href="@{/auth/signup}">회원가입</a>
+                <a class="btn secondary" th:href="@{/auth/find-id}">아이디 찾기</a>
+                <a class="btn secondary" th:href="@{/auth/find-password}">비밀번호 찾기</a>
+            </div>
+            <div class="social-login-stack section">
+                <a class="social-login-btn google" th:href="@{/oauth2/authorization/google}"><span class="social-mark">G</span><span>Sign in with Google</span></a>
+                <a class="social-login-btn kakao" th:href="@{/oauth2/authorization/kakao}"><span class="social-mark">●</span><span>카카오 로그인</span></a>
+                <a class="social-login-btn naver" th:href="@{/oauth2/authorization/naver}"><span class="social-mark">N</span><span>네이버 로그인</span></a>
+            </div>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

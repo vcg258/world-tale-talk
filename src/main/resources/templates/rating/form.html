@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('별점 작성')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body">
+        <h1 th:text="${world.name}">세계관</h1>
+        <form class="form" th:action="@{/worlds/{id}/ratings(id=${world.id})}" method="post">
+            <input type="hidden" name="sessionId" th:value="${sessionId}">
+            <div class="field">
+                <label>별점</label>
+                <input type="hidden" name="score" required data-rating-score th:value="${existingRating != null ? existingRating.score : ''}">
+                <div class="star-rating" data-star-rating role="radiogroup" aria-label="별점 선택">
+                    <button th:each="score : ${#numbers.sequence(1,5)}"
+                            class="star-rating-button"
+                            type="button"
+                            role="radio"
+                            th:attr="data-score=${score},aria-checked=${existingRating != null and existingRating.score >= score}"
+                            th:classappend="${existingRating != null and existingRating.score >= score} ? ' filled'"
+                            th:aria-label="${score + '점'}">★</button>
+                </div>
+                <p class="field-hint" data-rating-label th:text="${existingRating != null ? existingRating.score + '점을 선택했습니다.' : '별을 클릭해서 점수를 선택해주세요.'}">별점 안내</p>
+            </div>
+            <div class="field"><label>리뷰</label><textarea name="review" maxlength="200" th:text="${existingRating != null ? existingRating.review : ''}"></textarea></div>
+            <button class="btn" type="submit">저장</button>
+        </form>
+    </div></section>
+</main>
+<script th:src="@{/js/rating.js}"></script>
+</body>
+</html>

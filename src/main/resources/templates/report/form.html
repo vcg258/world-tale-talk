@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('신고하기')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body">
+        <h1>신고하기</h1>
+        <form class="form" th:action="@{/reports}" method="post">
+            <input type="hidden" name="targetType" th:value="${targetType}">
+            <input type="hidden" name="targetId" th:value="${targetId}">
+            <div class="field"><label>신고 사유</label><textarea name="reason" required></textarea></div>
+            <button class="btn danger" type="submit">신고 접수</button>
+        </form>
+    </div></section>
+</main>
+</body>
+</html>

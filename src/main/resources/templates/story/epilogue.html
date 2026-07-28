@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('에필로그')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page" th:attr="data-story-session=${storySession.id},data-story-mode='epilogue'">
+    <div class="page-title"><h1>에필로그</h1></div>
+    <div class="story-shell">
+        <section class="chat-log chronological epilogue-log">
+            <article class="card"><div class="card-body">
+                <span class="badge" data-socket-status>대기</span>
+                <p class="muted" data-live-story></p>
+                <form class="form" data-story-form>
+                    <div class="field story-text-field"><label>에필로그 입력</label><textarea data-story-input maxlength="500" required></textarea></div>
+                    <button class="btn" type="submit">전송</button>
+                </form>
+            </div></article>
+            <div class="message" th:each="message : ${messages}">
+                <div class="meta"><span th:text="${message.role}">ROLE</span><span th:text="'턴 ' + ${message.turn}">턴</span></div>
+                <p th:text="${message.content}">메시지</p>
+            </div>
+        </section>
+        <aside class="card"><div class="card-body">
+            <h2>완료</h2>
+            <form th:action="@{/sessions/{id}/complete(id=${storySession.id})}" method="post"><button class="btn" type="submit">별점 작성</button></form>
+        </div></aside>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/story.js}"></script>
+</body>
+</html>

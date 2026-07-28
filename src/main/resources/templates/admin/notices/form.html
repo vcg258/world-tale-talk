@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('공지 입력')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1 th:text="${notice.id == null ? '공지 등록' : '공지 수정'}">공지 입력</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>공지 입력 안내</strong><p>제목은 공지 목록의 첫 줄에 표시되고, 내용은 상세 안내 본문으로 사용됩니다. 활성화 여부를 비공개로 두면 저장되어도 사용자 공지 목록에는 노출되지 않습니다.</p></div>
+    <section class="card"><div class="card-body"><form class="form" th:action="${notice.id == null ? '/admin/notices' : '/admin/notices/' + notice.id + '/edit'}" method="post">
+        <div class="field"><label>제목</label><input name="title" th:value="${notice.title}" required></div>
+        <div class="field"><label>내용</label><textarea name="content" required th:text="${notice.content}"></textarea></div>
+        <div class="field"><label>공개</label><select name="isActive"><option value="true" th:selected="${notice.active}">공개</option><option value="false" th:selected="${!notice.active}">비공개</option></select></div>
+        <button class="btn" type="submit">저장</button>
+    </form></div></section>
+        </section>
+    </div>
+</main></body></html>

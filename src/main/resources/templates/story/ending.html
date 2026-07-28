@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('엔딩')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <section class="card"><div class="card-body">
+        <span class="badge" th:text="${storySession.endingType}">ENDING</span>
+        <h1 th:text="${world.name}">세계관</h1>
+        <p class="muted" th:text="${persona.name}">페르소나</p>
+        <p th:text="${endingStory}">엔딩 이야기</p>
+        <form th:action="@{/sessions/{id}/epilogue(id=${storySession.id})}" method="post"><button class="btn" type="submit">에필로그 시작</button></form>
+    </div></section>
+</main>
+</body>
+</html>

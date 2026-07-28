@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('세계관')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="page-title">
+        <div>
+            <h1>세계관</h1>
+            <p>플레이할 배경을 선택하세요.</p>
+        </div>
+    </div>
+    <div class="grid">
+        <article class="card" th:each="world : ${worlds}">
+            <div class="card-body">
+                <div class="meta">
+                    <span class="badge" th:text="${world.genre}">장르</span>
+                    <span th:text="'목표 ' + ${world.targetTurn} + '턴'">목표 턴</span>
+                    <span th:text="'플레이 ' + (${world.playCount} ?: 0)">플레이</span>
+                </div>
+                <h2 th:text="${world.name}">세계관 이름</h2>
+                <p class="muted" th:text="${world.description}">세계관 설명</p>
+                <a class="btn small" th:href="@{/worlds/{id}(id=${world.id})}">상세 보기</a>
+            </div>
+        </article>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

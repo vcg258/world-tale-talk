@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('페르소나 입력')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1 th:text="${persona == null ? '페르소나 등록' : '페르소나 수정'}">페르소나 입력</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>페르소나 입력 안내</strong><p>설명은 사용자에게 보이는 소개 문구이고, 배경 프롬프트는 AI가 캐릭터의 말투와 행동 경향을 잡는 기준입니다. 스탯은 플레이 중 성공 가능성과 이야기 전개 경향에 반영됩니다.</p></div>
+    <section class="card"><div class="card-body"><form class="form" th:action="${persona == null ? '/admin/personas' : '/admin/personas/' + persona.id}" method="post">
+        <div class="field"><label>세계관</label><select name="worldId" required><option th:each="world : ${worlds}" th:value="${world.id}" th:text="${world.name}" th:selected="${persona != null and persona.worldId == world.id}">세계관</option></select></div>
+        <div class="field"><label>이름</label><input name="name" th:value="${persona?.name}" required></div>
+        <div class="field"><label>설명</label><textarea name="description" required th:text="${persona?.description}"></textarea></div>
+        <div class="field"><label>배경 프롬프트</label><textarea name="background" required th:text="${persona?.background}"></textarea></div>
+        <div class="field"><label>활성화</label><select name="isActive"><option value="true" th:selected="${persona == null or persona.active}">활성</option><option value="false" th:selected="${persona != null and !persona.active}">비활성</option></select></div>
+        <div class="help-panel">
+            <strong>스탯 입력 안내</strong>
+            <p>숫자를 직접 입력하거나 막대 칸을 클릭해 값을 조정할 수 있습니다. 막대는 10칸 기준으로 표시되며, 10을 넘는 값은 숫자는 유지되고 막대만 가득 찬 상태로 보입니다.</p>
+        </div>
+        <div class="persona-stat-editor" data-stat-editor>
+            <div class="persona-stat-row stat-wisdom" title="추리, 정보 해석, 지식 활용 성공 가능성에 영향을 줍니다.">
+                <label class="persona-stat-name" for="stat-wisdom">지혜</label>
+                <span class="persona-stat-bar interactive" data-stat-bar="wisdom" aria-label="지혜 그래프">
+                    <button type="button" data-stat-slot="1" aria-label="지혜 1"></button>
+                    <button type="button" data-stat-slot="2" aria-label="지혜 2"></button>
+                    <button type="button" data-stat-slot="3" aria-label="지혜 3"></button>
+                    <button type="button" data-stat-slot="4" aria-label="지혜 4"></button>
+                    <button type="button" data-stat-slot="5" aria-label="지혜 5"></button>
+                    <button type="button" data-stat-slot="6" aria-label="지혜 6"></button>
+                    <button type="button" data-stat-slot="7" aria-label="지혜 7"></button>
+                    <button type="button" data-stat-slot="8" aria-label="지혜 8"></button>
+                    <button type="button" data-stat-slot="9" aria-label="지혜 9"></button>
+                    <button type="button" data-stat-slot="10" aria-label="지혜 10"></button>
+                </span>
+                <input id="stat-wisdom" class="persona-stat-input" name="wisdom" type="number" min="0" th:value="${baseStats?.wisdom ?: 5}" required data-stat-input="wisdom">
+            </div>
+            <div class="persona-stat-row stat-strength" title="전투, 제압, 버티기처럼 신체 능력이 필요한 행동에 영향을 줍니다.">
+                <label class="persona-stat-name" for="stat-strength">힘</label>
+                <span class="persona-stat-bar interactive" data-stat-bar="strength" aria-label="힘 그래프">
+                    <button type="button" data-stat-slot="1" aria-label="힘 1"></button>
+                    <button type="button" data-stat-slot="2" aria-label="힘 2"></button>
+                    <button type="button" data-stat-slot="3" aria-label="힘 3"></button>
+                    <button type="button" data-stat-slot="4" aria-label="힘 4"></button>
+                    <button type="button" data-stat-slot="5" aria-label="힘 5"></button>
+                    <button type="button" data-stat-slot="6" aria-label="힘 6"></button>
+                    <button type="button" data-stat-slot="7" aria-label="힘 7"></button>
+                    <button type="button" data-stat-slot="8" aria-label="힘 8"></button>
+                    <button type="button" data-stat-slot="9" aria-label="힘 9"></button>
+                    <button type="button" data-stat-slot="10" aria-label="힘 10"></button>
+                </span>
+                <input id="stat-strength" class="persona-stat-input" name="strength" type="number" min="0" th:value="${baseStats?.strength ?: 5}" required data-stat-input="strength">
+            </div>
+            <div class="persona-stat-row stat-agility" title="회피, 잠입, 추격, 빠른 반응에 영향을 줍니다.">
+                <label class="persona-stat-name" for="stat-agility">민첩</label>
+                <span class="persona-stat-bar interactive" data-stat-bar="agility" aria-label="민첩 그래프">
+                    <button type="button" data-stat-slot="1" aria-label="민첩 1"></button>
+                    <button type="button" data-stat-slot="2" aria-label="민첩 2"></button>
+                    <button type="button" data-stat-slot="3" aria-label="민첩 3"></button>
+                    <button type="button" data-stat-slot="4" aria-label="민첩 4"></button>
+                    <button type="button" data-stat-slot="5" aria-label="민첩 5"></button>
+                    <button type="button" data-stat-slot="6" aria-label="민첩 6"></button>
+                    <button type="button" data-stat-slot="7" aria-label="민첩 7"></button>
+                    <button type="button" data-stat-slot="8" aria-label="민첩 8"></button>
+                    <button type="button" data-stat-slot="9" aria-label="민첩 9"></button>
+                    <button type="button" data-stat-slot="10" aria-label="민첩 10"></button>
+                </span>
+                <input id="stat-agility" class="persona-stat-input" name="agility" type="number" min="0" th:value="${baseStats?.agility ?: 5}" required data-stat-input="agility">
+            </div>
+            <div class="persona-stat-row stat-charisma" title="설득, 협상, 호감 형성, 사회적 행동에 영향을 줍니다.">
+                <label class="persona-stat-name" for="stat-charisma">매력</label>
+                <span class="persona-stat-bar interactive" data-stat-bar="charisma" aria-label="매력 그래프">
+                    <button type="button" data-stat-slot="1" aria-label="매력 1"></button>
+                    <button type="button" data-stat-slot="2" aria-label="매력 2"></button>
+                    <button type="button" data-stat-slot="3" aria-label="매력 3"></button>
+                    <button type="button" data-stat-slot="4" aria-label="매력 4"></button>
+                    <button type="button" data-stat-slot="5" aria-label="매력 5"></button>
+                    <button type="button" data-stat-slot="6" aria-label="매력 6"></button>
+                    <button type="button" data-stat-slot="7" aria-label="매력 7"></button>
+                    <button type="button" data-stat-slot="8" aria-label="매력 8"></button>
+                    <button type="button" data-stat-slot="9" aria-label="매력 9"></button>
+                    <button type="button" data-stat-slot="10" aria-label="매력 10"></button>
+                </span>
+                <input id="stat-charisma" class="persona-stat-input" name="charisma" type="number" min="0" th:value="${baseStats?.charisma ?: 5}" required data-stat-input="charisma">
+            </div>
+            <div class="persona-stat-row stat-luck" title="우연한 기회, 위기 탈출, 보상 발견 같은 변칙적 전개에 영향을 줍니다.">
+                <label class="persona-stat-name" for="stat-luck">행운</label>
+                <span class="persona-stat-bar interactive" data-stat-bar="luck" aria-label="행운 그래프">
+                    <button type="button" data-stat-slot="1" aria-label="행운 1"></button>
+                    <button type="button" data-stat-slot="2" aria-label="행운 2"></button>
+                    <button type="button" data-stat-slot="3" aria-label="행운 3"></button>
+                    <button type="button" data-stat-slot="4" aria-label="행운 4"></button>
+                    <button type="button" data-stat-slot="5" aria-label="행운 5"></button>
+                    <button type="button" data-stat-slot="6" aria-label="행운 6"></button>
+                    <button type="button" data-stat-slot="7" aria-label="행운 7"></button>
+                    <button type="button" data-stat-slot="8" aria-label="행운 8"></button>
+                    <button type="button" data-stat-slot="9" aria-label="행운 9"></button>
+                    <button type="button" data-stat-slot="10" aria-label="행운 10"></button>
+                </span>
+                <input id="stat-luck" class="persona-stat-input" name="luck" type="number" min="0" th:value="${baseStats?.luck ?: 5}" required data-stat-input="luck">
+            </div>
+        </div>
+        <button class="btn" type="submit">저장</button>
+    </form></div></section>
+        </section>
+    </div>
+</main><script th:src="@{/js/admin-persona-form.js}"></script></body></html>

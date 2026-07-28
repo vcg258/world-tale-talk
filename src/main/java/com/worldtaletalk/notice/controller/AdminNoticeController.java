@@ -109,6 +109,7 @@ public class AdminNoticeController {
                 .content(form.content())
                 .active(form.isActive())
                 .build());
+        redirectAttributes.addFlashAttribute("message", "공지 등록이 완료되었습니다.");
         return "redirect:/admin/notices";
     }
 
@@ -145,7 +146,9 @@ public class AdminNoticeController {
                     .build());
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/notices";
         }
+        redirectAttributes.addFlashAttribute("message", "공지 수정이 완료되었습니다.");
         return "redirect:/admin/notices";
     }
 
@@ -156,8 +159,9 @@ public class AdminNoticeController {
      * @return redirect:/admin/notices (공지 목록 페이지)
      */
     @PostMapping("/{id}")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         noticesService.deleteNotice(id);
+        redirectAttributes.addFlashAttribute("message", "공지 삭제가 완료되었습니다.");
         return "redirect:/admin/notices";
     }
 }

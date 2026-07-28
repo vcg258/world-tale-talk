@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('회원 상세')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="page-title"><div><h1 th:text="${user.nickname}">회원</h1><p th:text="${user.email}">email</p></div><a class="btn secondary" th:href="@{/admin/users}">목록</a></div>
+    <div class="help-panel admin-help-panel"><strong>회원 상세 안내</strong><p>회원의 계정 정보, 소셜 연동 정보, 정지 이력과 강제 처리 기능을 한 화면에서 확인합니다. 정지는 로그인과 이용을 제한하며, 강제 탈퇴는 계정 상태를 탈퇴 처리합니다.</p></div>
+    <div class="grid">
+        <section class="card"><div class="card-body"><h2>계정</h2><p>아이디: <strong th:text="${user.loginId}">id</strong></p><p>권한: <strong th:text="${user.role}">role</strong></p><p>상태: <strong th:text="${user.status}">status</strong></p></div></section>
+        <section class="card"><div class="card-body"><h2>정지 처리</h2><form class="form" th:action="@{/admin/users/{id}/suspend(id=${user.id})}" method="post"><div class="field"><label>사유</label><textarea name="reason" required></textarea></div><button class="btn warning" type="submit">정지</button></form><form class="section" th:action="@{/admin/users/{id}/lift(id=${user.id})}" method="post"><button class="btn secondary" type="submit">정지 해제</button></form></div></section>
+        <section class="card"><div class="card-body"><h2>소셜 계정</h2><p th:each="account : ${socialAccounts}"><span class="badge" th:text="${account.provider}">provider</span> <span class="muted" th:text="${account.providerId}">id</span></p></div></section>
+        <section class="card"><div class="card-body"><h2>강제 탈퇴</h2><form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" data-confirm="회원을 탈퇴 처리하시겠습니까?"><button class="btn danger" type="submit">탈퇴 처리</button></form></div></section>
+    </div>
+    <section class="section"><h2>정지 이력</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>사유</th><th>정지일</th><th>해제일</th></tr></thead><tbody><tr th:each="suspension : ${suspensions}"><td th:text="${suspension.id}">1</td><td class="text-cell" th:text="${suspension.reason}">사유</td><td th:text="${suspension.suspendedAt}">일시</td><td th:text="${suspension.liftedAt}">일시</td></tr></tbody></table></div></section>
+        </section>
+    </div>
+</main></body></html>

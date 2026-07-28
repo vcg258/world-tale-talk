@@ -1,8 +1,10 @@
 package com.worldtaletalk.statistics.service;
 
 import com.worldtaletalk.statistics.dto.AdminDashboardStatsDTO;
+import com.worldtaletalk.statistics.dto.AdminDetailedStatsDTO;
 import com.worldtaletalk.statistics.dto.WorldStatsDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminStatsService {
@@ -20,4 +22,13 @@ public interface AdminStatsService {
      * @return 세계관별 플레이 수, 완결/포기 수, 평균 별점
      */
     List<WorldStatsDTO> getWorldStats();
+
+    /**
+     * 기간별 상세 통계 조회
+     *
+     * @param startDate 조회 시작일
+     * @param endDate 조회 종료일
+     * @return 기간별 이야기/세계관/페르소나 통계
+     */
+    AdminDetailedStatsDTO getDetailedStats(LocalDate startDate, LocalDate endDate);
 }

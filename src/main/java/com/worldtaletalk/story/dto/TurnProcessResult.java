@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 // 서버 턴 처리 결과 (서버 내부 전용 - 클라이언트 직접 노출 없음)
 @Getter
@@ -27,5 +28,6 @@ public class TurnProcessResult {
     private SessionStatSnapshotsDTO snapshot; // 엔딩 시점 스탯 스냅샷 (null = 없음)
     private String story; // LLM 생성 소설 본문
     private List<String> choices; // 선택지 3가지 (null = 엔딩 도달)
+    private Map<String, Map<String, Integer>> statChangesByChoice; // 선택지별 예상 스탯 변화량
     private int progressPercent; // 진행도 %
 }

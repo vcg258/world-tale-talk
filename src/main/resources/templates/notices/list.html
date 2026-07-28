@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('공지')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div class="page-title home-section-title">
+        <h1>공지</h1>
+    </div>
+    <div class="notice-compact-list">
+        <a class="notice-compact-item" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
+            <span class="notice-title" th:text="${notice.title}">공지 제목</span>
+            <time class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">작성일</time>
+        </a>
+    </div>
+    <p class="muted section" th:if="${#lists.isEmpty(notices)}">등록된 공지가 없습니다.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

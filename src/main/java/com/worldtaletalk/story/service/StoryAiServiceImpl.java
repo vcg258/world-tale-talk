@@ -240,14 +240,15 @@ public class StoryAiServiceImpl implements StoryAiService {
                             inventoryContext
                     );
                 }).subscribeOn(Schedulers.boundedElastic())
-                .flatMapMany(systemPrompt ->
-                        chatClient.prompt()
-                                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, sessionId.toString()))
-                                .system(systemPrompt)
-                                .user(userInput)
-                                .stream()
-                                .content()
-                );
+                .flatMapMany(systemPrompt -> {
+                    List<Message> history = chatMemory.get(sessionId.toString());
+                    return summaryChatClient.prompt()
+                            .system(systemPrompt)
+                            .messages(history)
+                            .user(userInput)
+                            .stream()
+                            .content();
+                });
     }
 
     /**

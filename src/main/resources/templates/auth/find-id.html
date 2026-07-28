@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('아이디 찾기')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card"><div class="card-body">
+        <h1>아이디 찾기</h1>
+        <p class="alert message">소셜 로그인으로 가입한 경우 해당 기능을 이용하실 수 없습니다.</p>
+        <form class="form" th:action="@{/auth/find-id}" method="post">
+            <div class="field"><label>이메일</label><input name="email" type="email" required></div>
+            <button class="btn" type="submit">아이디 메일 받기</button>
+        </form>
+        <div class="actions section auth-link-actions two-column">
+            <a class="btn secondary" th:href="@{/auth/find-password}">비밀번호 찾기</a>
+            <a class="btn secondary" th:href="@{/auth/login}">로그인 창으로</a>
+        </div>
+    </div></section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

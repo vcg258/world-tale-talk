@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('이용 제한')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <section class="card"><div class="card-body">
+        <h1>이용이 제한된 계정입니다</h1>
+        <p class="muted" th:if="${suspended != null}" th:text="${suspended.reason}">정지 사유</p>
+        <a class="btn secondary" th:href="@{/auth/login}">로그인으로</a>
+    </div></section>
+</main>
+</body>
+</html>

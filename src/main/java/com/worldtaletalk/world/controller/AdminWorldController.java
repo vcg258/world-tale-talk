@@ -113,6 +113,7 @@ public class AdminWorldController {
                 .targetTurn(form.targetTurn())
                 .active(form.isActive())
                 .build());
+        redirectAttributes.addFlashAttribute("message", "세계관 등록이 완료되었습니다.");
         return "redirect:/admin/worlds";
     }
 
@@ -150,7 +151,9 @@ public class AdminWorldController {
                     .build());
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/worlds";
         }
+        redirectAttributes.addFlashAttribute("message", "세계관 수정이 완료되었습니다.");
         return "redirect:/admin/worlds";
     }
 
@@ -170,7 +173,9 @@ public class AdminWorldController {
                     .build());
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/worlds";
         }
+        redirectAttributes.addFlashAttribute("message", "세계관 공개 설정이 변경되었습니다.");
         return "redirect:/admin/worlds";
     }
 
@@ -227,7 +232,7 @@ public class AdminWorldController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/worlds";
         }
-        redirectAttributes.addFlashAttribute("message", "세계관 삭제 대기 지정이 해제되었습니다");
+        redirectAttributes.addFlashAttribute("message", "세계관 삭제 대기 지정이 해제되었습니다.");
         return "redirect:/admin/worlds";
     }
 }

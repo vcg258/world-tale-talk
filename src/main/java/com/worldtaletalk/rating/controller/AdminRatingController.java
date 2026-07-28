@@ -55,7 +55,9 @@ public class AdminRatingController {
             worldRatingsService.deleteWorldRating(id);
         } catch (NoSuchElementException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/ratings";
         }
+        redirectAttributes.addFlashAttribute("message", "별점 삭제가 완료되었습니다.");
         return "redirect:/admin/ratings";
     }
 }

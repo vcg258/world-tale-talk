@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('홈')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="hero home-hero">
+        <h1>이야기로 들어가는 세계관 플랫폼</h1>
+        <p>마음에 드는 세계관과 페르소나를 고르고, 선택지 기반 이야기를 시작해보세요.</p>
+    </section>
+
+    <section class="section">
+        <div class="page-title home-section-title">
+            <h1>추천 세계관</h1>
+            <a class="btn secondary small" th:href="@{/worlds}">세계관 탐색</a>
+        </div>
+        <div class="grid">
+            <article class="card" th:each="world : ${featuredWorlds}">
+                <div class="card-body">
+                    <div class="meta">
+                        <span class="badge" th:text="${world.genre}">FANTASY</span>
+                        <span th:text="'평점 ' + (${world.ratingAvg} ?: '0')">평점 0</span>
+                    </div>
+                    <h2 th:text="${world.name}">세계관</h2>
+                    <p class="muted" th:text="${world.description}">설명</p>
+                    <a class="btn small" th:href="@{/worlds/{id}(id=${world.id})}">상세 보기</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="page-title home-section-title">
+            <h1>공지</h1>
+            <a class="btn secondary small" th:href="@{/notices}">전체 보기</a>
+        </div>
+        <div class="notice-compact-list">
+            <a class="notice-compact-item" th:each="notice : ${notices}" th:href="@{/notices/{id}(id=${notice.id})}">
+                <span class="notice-title" th:text="${notice.title}">공지 제목</span>
+                <time class="muted" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">날짜</time>
+            </a>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

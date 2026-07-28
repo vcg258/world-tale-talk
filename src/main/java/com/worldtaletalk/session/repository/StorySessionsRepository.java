@@ -30,9 +30,11 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             SELECT s FROM StorySessionsEntity s
                         JOIN FETCH s.worlds
                                 JOIN FETCH s.personas
-                                    WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)
+                                    WHERE s.users.id = :userId
+                                        AND s.hiddenByUser = FALSE
+                                        AND (:status IS NULL OR s.status = :status)
             """,
-            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND (:status IS NULL OR s.status = :status)")
+            countQuery = "SELECT COUNT(s) FROM StorySessionsEntity s WHERE s.users.id = :userId AND s.hiddenByUser = FALSE AND (:status IS NULL OR s.status = :status)")
     Page<StorySessionsEntity> findAllByUserId(@Param("userId") Long userId, @Param("status") SessionStatus status, Pageable pageable);
 
     // 관리자용 전체 세션 조회
@@ -62,6 +64,21 @@ public interface StorySessionsRepository extends JpaRepository<StorySessionsEnti
             @Param("worldId") Long worldId,
             @Param("status") SessionStatus status,
             Pageable pageable
+    );
+
+
+    // 관리자 통계용 기간별 이야기 조회
+    @Query("""
+            SELECT s FROM StorySessionsEntity s
+                JOIN FETCH s.worlds
+                JOIN FETCH s.personas p
+                JOIN FETCH p.world
+                    WHERE s.createdAt >= :startAt
+                        AND s.createdAt < :endAt
+            """)
+    List<StorySessionsEntity> findAllForStatsBetween(
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt
     );
 
     // 해당 세션의 상태와 갱신일시가 지정날짜보다 적은 애들만 조회 (중도이탈 처리를 위함)

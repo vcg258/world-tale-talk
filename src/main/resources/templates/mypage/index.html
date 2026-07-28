@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('마이페이지')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="mypage-layout">
+        <aside class="mypage-sidebar">
+            <a class="mypage-menu-link active" th:href="@{/mypage/sessions}">내 이야기</a>
+            <a class="mypage-menu-link" th:href="@{/mypage/ratings}">내 별점</a>
+            <div class="mypage-menu-group">
+                <h2>프로필 관리</h2>
+                <a th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>
+                <a th:href="@{/mypage/profile(section='password')}">비밀번호 변경</a>
+                <a th:href="@{/mypage/profile(section='email')}">이메일 변경</a>
+                <a th:href="@{/mypage/profile(section='social')}">소셜 계정</a>
+                <a class="danger-link" th:href="@{/mypage/profile(section='withdraw')}">회원 탈퇴</a>
+            </div>
+        </aside>
+        <section class="mypage-content">
+            <div class="page-title mypage-title">
+                <div>
+                    <h1 th:text="${user.nickname}">닉네임</h1>
+                    <p th:text="${user.email}">email@example.com</p>
+                </div>
+                <div class="actions">
+                    <a class="btn secondary" th:href="@{/mypage/profile}">프로필 관리</a>
+                    <a class="btn" th:href="@{/mypage/sessions}">내 이야기</a>
+                </div>
+            </div>
+            <div class="grid">
+                <article class="card"><div class="card-body">
+                    <h2>계정 정보</h2>
+                    <p>닉네임: <strong th:text="${user.nickname}">닉네임</strong></p>
+                    <p>이메일: <strong th:text="${user.email}">email@example.com</strong></p>
+                    <p>상태: <span class="badge" th:text="${user.status}">ACTIVE</span></p>
+                </div></article>
+                <article class="card"><div class="card-body">
+                    <h2>빠른 이동</h2>
+                    <div class="stack">
+                        <a class="btn secondary" th:href="@{/mypage/profile}">프로필 관리</a>
+                        <a class="btn" th:href="@{/mypage/sessions}">내 이야기 보기</a>
+                    </div>
+                </div></article>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>

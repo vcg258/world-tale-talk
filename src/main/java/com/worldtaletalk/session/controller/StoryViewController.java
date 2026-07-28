@@ -21,7 +21,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -46,6 +50,31 @@ public class StoryViewController {
             int luck
     ) {}
 
+    // 추천 선택지 화면 표시 모델 - 문구와 선택 시 예상되는 스탯 변화량을 함께 전달함
+    private static class ChoiceVM {
+        private final int index;
+        private final String text;
+        private final String statPreview;
+
+        private ChoiceVM(int index, String text, String statPreview) {
+            this.index = index;
+            this.text = text;
+            this.statPreview = statPreview;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public String getStatPreview() {
+            return statPreview;
+        }
+    }
+
     /**
      * S-01: 플레이 화면 조회
      *
@@ -58,19 +87,35 @@ public class StoryViewController {
     public String play(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
         validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        if (storySession.getStatus() == SessionStatus.ENDING) {
+            return "redirect:/sessions/" + id + "/ending";
+        }
+        if (storySession.getStatus() == SessionStatus.EPILOGUE) {
+            return "redirect:/sessions/" + id + "/epilogue";
+        }
+        var world = worldsService.getWorldById(storySession.getWorldId());
         Map<String, Integer> stats = sessionStatsService.getCurrentStats(id);
         PlayStateCacheDTO playState = storyCacheService.getPlayState(id);
+        int progressPercent = playState != null ? playState.getProgressPercent() : 0;
         if (playState != null) {
             model.addAttribute("currentStory", playState.getCurrentStory());
-            model.addAttribute("choices", playState.getChoices());
-            model.addAttribute("progressPercent", playState.getProgressPercent());
+            model.addAttribute("choices", toChoiceViews(playState.getChoices(), playState.getStatChangesByChoice()));
         }
 
+        List<com.worldtaletalk.chat.dto.ChatMessagesDTO> messages =
+                new ArrayList<>(chatMessagesService.getChatMessages(id, null));
+        messages.removeIf(message -> message.getRole() != null
+                && "USER".equals(message.getRole().name())
+                && "이야기를 시작해주세요.".equals(message.getContent()));
+        Collections.reverse(messages);
 
         model.addAttribute("storySession", storySession);
-        model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
+        model.addAttribute("world", world);
+        model.addAttribute("targetTurn", world.getTargetTurn());
+        model.addAttribute("progressPercent", progressPercent);
+        model.addAttribute("autoStartStory", playState == null && storySession.getCurrentTurn() == 0 && messages.isEmpty());
         model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
-        model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
+        model.addAttribute("messages", messages);
         model.addAttribute("items", sessionItemsService.getInventory(id));
         model.addAttribute("currentStats", new CurrentStatsVM(
                 stats.getOrDefault("wisdom", 0),
@@ -116,7 +161,7 @@ public class StoryViewController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/mypage/sessions";
         }
-        redirectAttributes.addFlashAttribute("message", "세션이 삭제되었습니다.");
+        redirectAttributes.addFlashAttribute("message", "이야기에서 나갔습니다.");
         return "redirect:/mypage/sessions";
     }
 
@@ -209,6 +254,48 @@ public class StoryViewController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/sessions/" + sessionId + "/play";
+    }
+
+    /**
+     * 추천 선택지와 예상 스탯 변화량을 화면 표시용으로 변환
+     */
+    private List<ChoiceVM> toChoiceViews(List<String> choices, Map<String, Map<String, Integer>> statChangesByChoice) {
+        if (choices == null || choices.isEmpty()) {
+            return List.of();
+        }
+        return IntStream.range(0, choices.size())
+                .mapToObj(index -> new ChoiceVM(
+                        index + 1,
+                        choices.get(index),
+                        formatStatPreview(statChangesByChoice != null
+                                ? statChangesByChoice.get("choice" + (index + 1))
+                                : null)
+                ))
+                .toList();
+    }
+
+    /**
+     * 선택지별 스탯 변화량을 짧은 예고 문구로 변환
+     */
+    private String formatStatPreview(Map<String, Integer> statChanges) {
+        if (statChanges == null || statChanges.isEmpty()) {
+            return "스탯 변화 없음";
+        }
+
+        List<String> previews = new ArrayList<>();
+        addStatPreview(previews, "지혜", statChanges.get("wisdom"));
+        addStatPreview(previews, "힘", statChanges.get("strength"));
+        addStatPreview(previews, "민첩", statChanges.get("agility"));
+        addStatPreview(previews, "매력", statChanges.get("charisma"));
+        addStatPreview(previews, "행운", statChanges.get("luck"));
+        return previews.isEmpty() ? "스탯 변화 없음" : String.join(" / ", previews);
+    }
+
+    private void addStatPreview(List<String> previews, String label, Integer delta) {
+        if (delta == null || delta == 0) {
+            return;
+        }
+        previews.add(label + (delta > 0 ? " +" : " ") + delta);
     }
 
 

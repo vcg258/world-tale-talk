@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('세션 관리')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1>세션 관리</h1></div>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>세션 관리 안내</strong><p>회원별 이야기 진행 상태를 조회하고 필요한 경우 강제로 포기 처리하거나 숨김 상태를 복구할 수 있습니다. 상태는 진행, 엔딩, 에필로그, 완료, 포기로 구분됩니다.</p></div>
+    <form class="filter-bar section" th:action="@{/admin/sessions}" method="get"><div class="field"><label>회원 ID</label><input name="userId" type="number" th:value="${userId}"></div><div class="field"><label>세계관</label><select name="worldId"><option value="">전체</option><option th:each="world : ${worlds}" th:value="${world.id}" th:text="${world.name}" th:selected="${worldId != null and worldId == world.id}">세계관</option></select></div><div class="field"><label>상태</label><select name="status"><option value="">전체</option><option value="IN_PROGRESS" th:selected="${status != null and status.name() == 'IN_PROGRESS'}">진행</option><option value="ENDING" th:selected="${status != null and status.name() == 'ENDING'}">엔딩</option><option value="EPILOGUE" th:selected="${status != null and status.name() == 'EPILOGUE'}">에필로그</option><option value="COMPLETED" th:selected="${status != null and status.name() == 'COMPLETED'}">완료</option><option value="ABANDONED" th:selected="${status != null and status.name() == 'ABANDONED'}">포기</option></select></div><button class="btn" type="submit">검색</button></form>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>회원</th><th>세계관</th><th>페르소나</th><th>상태</th><th>턴</th><th></th></tr></thead><tbody><tr th:each="storySession : ${sessions}"><td th:text="${storySession.id}">1</td><td th:text="${storySession.userId}">1</td><td th:text="${storySession.worldName}">세계관</td><td th:text="${storySession.personaName}">페르소나</td><td><span class="badge" th:text="${storySession.status}">상태</span></td><td th:text="${storySession.currentTurn}">0</td><td class="actions"><form th:action="@{/admin/sessions/{id}/abandon(id=${storySession.id})}" method="post"><button class="btn warning small" type="submit">포기</button></form><form th:action="@{/admin/sessions/{id}/hidden(id=${storySession.id})}" method="post"><button class="btn secondary small" type="submit">숨김/복구</button></form></td></tr></tbody></table></div>
+        </section>
+    </div>
+</main></body></html>

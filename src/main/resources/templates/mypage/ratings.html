@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('내 별점')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="mypage-layout">
+        <aside class="mypage-sidebar">
+            <a class="mypage-menu-link" th:href="@{/mypage/sessions}">내 이야기</a>
+            <a class="mypage-menu-link active" th:href="@{/mypage/ratings}">내 별점</a>
+            <div class="mypage-menu-group">
+                <h2>프로필 관리</h2>
+                <a th:href="@{/mypage/profile(section='nickname')}">닉네임 변경</a>
+                <a th:href="@{/mypage/profile(section='password')}">비밀번호 변경</a>
+                <a th:href="@{/mypage/profile(section='email')}">이메일 변경</a>
+                <a th:href="@{/mypage/profile(section='social')}">소셜 계정</a>
+                <a class="danger-link" th:href="@{/mypage/profile(section='withdraw')}">회원 탈퇴</a>
+            </div>
+        </aside>
+        <section class="mypage-content">
+            <div class="page-title"><h1>내 별점</h1></div>
+            <section class="section mypage-section-first">
+                <h2>별점 작성 가능 이야기</h2>
+                <p class="field-guide">에필로그까지 마친 이야기는 세계관 별점과 리뷰를 작성할 수 있습니다. 이미 같은 세계관에 남긴 별점이 있으면 기존 내용을 수정합니다.</p>
+                <div class="table-wrap"><table>
+                    <thead><tr><th>이야기</th><th>세계관</th><th>페르소나</th><th>턴</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="storySession : ${completedSessions}">
+                        <td th:text="${storySession.id}">1</td>
+                        <td th:text="${storySession.worldName}">세계관</td>
+                        <td th:text="${storySession.personaName}">페르소나</td>
+                        <td th:text="${storySession.currentTurn}">0</td>
+                        <td class="actions"><a class="btn small" th:href="@{/worlds/{worldId}/ratings(worldId=${storySession.worldId},sessionId=${storySession.id})}">별점 작성</a></td>
+                    </tr>
+                    </tbody>
+                </table></div>
+                <p class="muted" th:if="${#lists.isEmpty(completedSessions)}">별점을 작성할 수 있는 완료 이야기가 없습니다.</p>
+            </section>
+            <section class="section">
+                <div class="page-title compact-title"><h2>작성한 별점</h2></div>
+                <div class="grid">
+                    <article class="card" th:each="rating : ${ratings}">
+                        <div class="card-body">
+                            <span class="badge" th:text="${rating.score + '점'}">5점</span>
+                            <h2 th:text="${rating.worldName}">세계관</h2>
+                            <p class="muted text-cell" th:text="${rating.review}">리뷰</p>
+                            <a class="btn secondary small" th:href="@{/worlds/{id}/ratings/edit(id=${rating.worldId})}">수정</a>
+                        </div>
+                    </article>
+                </div>
+                <p class="muted" th:if="${#lists.isEmpty(ratings)}">아직 작성한 별점이 없습니다.</p>
+            </section>
+        </section>
+    </div>
+</main>
+</body>
+</html>

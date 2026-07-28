@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('회원가입')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="card">
+        <div class="card-body">
+            <h1>회원가입</h1>
+            <form class="form" th:action="@{/auth/signup}" method="post" data-signup-form novalidate>
+                <div class="field">
+                    <label for="signup-login-id">아이디</label>
+                    <input id="signup-login-id" name="loginId" autocomplete="username" minlength="4" maxlength="30" pattern="[A-Za-z0-9]{4,30}" placeholder="예: worldtalk123" required data-check-url="/auth/signup/check-id" data-check-param="loginId" data-check-kind="아이디">
+                    <p class="field-guide">영문 대소문자와 숫자만 사용할 수 있으며 4~30자로 입력해주세요.</p>
+                    <p class="field-hint" data-feedback-for="loginId">입력 후 사용 가능한 아이디인지 자동으로 확인합니다.</p>
+                </div>
+                <div class="field">
+                    <label for="signup-nickname">닉네임</label>
+                    <input id="signup-nickname" name="nickname" maxlength="50" placeholder="예: 이야기여행자" required data-check-url="/auth/nickname/check" data-check-param="nickname" data-check-kind="닉네임">
+                    <p class="field-guide">서비스에서 표시될 이름입니다. 최대 50자까지 입력할 수 있습니다.</p>
+                    <p class="field-hint" data-feedback-for="nickname">입력 후 중복 여부를 자동으로 확인합니다.</p>
+                </div>
+                <div class="field">
+                    <label for="signup-email">이메일</label>
+                    <input id="signup-email" name="email" type="email" maxlength="70" autocomplete="email" placeholder="예: user@example.com" required data-check-url="/auth/signup/check-email" data-check-param="email" data-check-kind="이메일">
+                    <p class="field-guide">아이디 찾기와 비밀번호 재설정에 사용할 수 있는 이메일을 입력해주세요.</p>
+                    <p class="field-hint" data-feedback-for="email">입력 후 중복 여부를 자동으로 확인합니다.</p>
+                </div>
+                <div class="field">
+                    <label class="label-with-help" for="signup-password">
+                        <span>비밀번호</span>
+                        <span class="help-tip" tabindex="0" aria-label="비밀번호 조건">?
+                            <span class="help-bubble" role="tooltip">8~50자로 입력해야 합니다.<br>한글은 사용할 수 없습니다.<br>영문, 숫자, 특수문자 조합을 권장합니다.</span>
+                        </span>
+                    </label>
+                    <input id="signup-password" name="password" type="password" minlength="8" maxlength="50" autocomplete="new-password" placeholder="예: TaleTalk123!" required data-password>
+                    <p class="field-guide">8~50자 범위에서 입력해주세요. 한글은 사용할 수 없습니다.</p>
+                    <p class="field-hint" data-feedback-for="password">비밀번호 조건을 만족하는지 자동으로 확인합니다.</p>
+                </div>
+                <div class="field">
+                    <label for="signup-confirm-password">비밀번호 확인</label>
+                    <input id="signup-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="비밀번호를 한 번 더 입력" required data-confirm-password>
+                    <p class="field-guide">위에 입력한 비밀번호와 같은 값을 입력해주세요.</p>
+                    <p class="field-hint" data-feedback-for="confirmPassword">비밀번호와 같은 값을 입력하면 통과됩니다.</p>
+                </div>
+                <button class="btn" type="submit" data-submit>가입하기</button>
+            </form>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/signup.js}"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('세계관 관리')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div class="admin-layout">
+        <div th:replace="~{fragments/layout :: adminSidebar}"></div>
+        <section class="admin-content">
+    <div class="page-title"><h1>세계관 관리</h1><a class="btn" th:href="@{/admin/worlds/new}">등록</a></div><div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="help-panel admin-help-panel"><strong>세계관 관리 안내</strong><p>플레이 가능한 세계관을 등록하고 노출 상태를 관리합니다. 토글은 공개/비공개 전환, 삭제대기는 사용자 노출을 막고 삭제 예정 상태로 전환, 취소는 삭제대기를 되돌리는 기능입니다.</p></div>
+    <div class="table-wrap section"><table><thead><tr><th>ID</th><th>이름</th><th>장르</th><th>턴</th><th>상태</th><th></th></tr></thead><tbody>
+    <tr th:each="world : ${worlds}">
+        <td th:text="${world.id}">1</td><td th:text="${world.name}">이름</td><td th:text="${world.genre}">장르</td><td th:text="${world.targetTurn}">0</td>
+        <td><span class="badge" th:classappend="${world.active} ? ' ok' : ' warn'" th:text="${world.active} ? '활성' : '비활성'">상태</span></td>
+        <td class="actions">
+            <div class="table-action-stack">
+                <div class="table-action-row">
+                    <a class="btn secondary small" th:href="@{/admin/worlds/{id}/edit(id=${world.id})}">수정</a>
+                    <form th:action="@{/admin/worlds/{id}/toggle(id=${world.id})}" method="post"><button class="btn secondary small" type="submit">공개전환</button></form>
+                </div>
+                <div class="table-action-row">
+                    <form th:action="@{/admin/worlds/{id}/schedule-deletion(id=${world.id})}" method="post"><button class="btn warning small" type="submit">삭제대기</button></form>
+                    <form th:action="@{/admin/worlds/{id}/cancel-deletion(id=${world.id})}" method="post"><button class="btn secondary small" type="submit">대기취소</button></form>
+                    <form th:action="@{/admin/worlds/{id}/delete(id=${world.id})}" method="post" data-confirm="세계관을 삭제하시겠습니까?"><button class="btn danger small" type="submit">즉시삭제</button></form>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody></table></div>
+        </section>
+    </div>
+</main></body></html>

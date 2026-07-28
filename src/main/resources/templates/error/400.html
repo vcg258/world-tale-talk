@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('잘못된 요청')}"></head>
+<body><header th:replace="~{fragments/layout :: header}"></header><main class="page narrow"><section class="card"><div class="card-body"><h1>잘못된 요청입니다</h1><p class="muted" th:text="${message} ?: '입력값이나 요청 경로를 확인해주세요.'">메시지</p><a class="btn" th:href="@{/}">홈으로</a></div></section></main></body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('휴면 계정')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page narrow">
+    <section class="card"><div class="card-body">
+        <h1>휴면 계정 안내</h1>
+        <p class="muted">계정을 다시 활성화하면 서비스를 계속 이용할 수 있습니다.</p>
+        <form th:action="@{/auth/dormant/reactivate}" method="post">
+            <button class="btn" type="submit">계정 활성화</button>
+        </form>
+    </div></section>
+</main>
+</body>
+</html>
