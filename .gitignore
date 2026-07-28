@@ -11,6 +11,7 @@ CLAUDE.md
 
 # User-specific stuff
 /.idea/*
+/.vscode/*
 !/.idea/codeStyles
 !/.idea/runConfigurations/
 

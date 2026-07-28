@@ -84,20 +84,13 @@ public class MypageController {
     // 마이페이지 OTP 검증 폼 - 변경할 이메일, OTP, 현재 비밀번호를 하나의 레코드로 처리함
     private record EmailVerifyForm(@NotBlank String newEmail, @NotBlank String code, @NotBlank String currentPassword) {}
 
-    /**
-     * M-01: 마이페이지 메인
-     *
-     * @param user  현재 로그인 유저
-     * @param model 뷰에 전달할 모델
-     * @return mypage/index (마이페이지 메인 페이지)
-     */
-    @GetMapping // TODO 제거?
-    public String index(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
+    @GetMapping
+    public String index () {
         return "redirect:/mypage/sessions";
     }
 
     /**
-     * M-02: 프로필 조회
+     * M-01: 프로필 조회
      *
      * @param user  현재 로그인 유저
      * @param model 뷰에 전달할 모델
@@ -119,7 +112,7 @@ public class MypageController {
     }
 
     /**
-     * M-03: 닉네임 변경
+     * M-02: 닉네임 변경
      *
      * @param user               현재 로그인 유저
      * @param form               닉네임 변경 폼
@@ -158,7 +151,7 @@ public class MypageController {
     }
 
     /**
-     * M-03-1: 비밀번호 변경 (일반 회원 전용, 소셜 전용 계정은 대상 아님 어차피 일반 회원에서 소셜 연동할 경우 일반 회원이 되기때문임)
+     * M-02-1: 비밀번호 변경 (일반 회원 전용, 소셜 전용 계정은 대상 아님 어차피 일반 회원에서 소셜 연동할 경우 일반 회원이 되기때문임)
      *
      * @param user               현재 로그인 유저
      * @param form               비밀번호 변경 폼 (현재 비밀번호, 새 비밀번호, 새 비밀번호 확인)
@@ -197,7 +190,7 @@ public class MypageController {
     }
 
     /**
-     * M-03-2: 이메일 변경 - 1단계 새 이메일로 인증코드 발송
+     * M-02-2: 이메일 변경 - 1단계 새 이메일로 인증코드 발송
      *
      * @param user               현재 로그인 유저
      * @param form               이메일 변경 폼
@@ -237,7 +230,7 @@ public class MypageController {
     }
 
     /**
-     * M-03-3: 이메일 변경 - 2단계 인증코드 검증 + 현재 비밀번호 재확인 후 실제 변경
+     * M-02-3: 이메일 변경 - 2단계 인증코드 검증 + 현재 비밀번호 재확인 후 실제 변경
      *
      * @param user               현재 로그인 유저
      * @param form               이메일 변경 폼
@@ -293,7 +286,7 @@ public class MypageController {
     }
 
     /**
-     * M-04: 회원 탈퇴
+     * M-03: 회원 탈퇴
      *
      * @param user 현재 로그인 유저
      * @return redirect:/logout (로그아웃)
@@ -318,7 +311,7 @@ public class MypageController {
     }
 
     /**
-     * M-05: 내 세션 목록
+     * M-04: 내 세션 목록
      *
      * @param user   현재 로그인 유저
      * @param status 세션 상태 필터 (null이면 전체 조회)
@@ -353,7 +346,7 @@ public class MypageController {
     }
 
     /**
-     * M-06: 내 별점 목록
+     * M-05: 내 별점 목록
      *
      * @param user  현재 로그인 유저
      * @param page  페이지 번호
@@ -383,7 +376,7 @@ public class MypageController {
     }
 
     /**
-     * M-07: 소셜 계정 연동 해제
+     * M-06: 소셜 계정 연동 해제
      *
      * @param user               현재 로그인 유저
      * @param socialAccountId    해제할 소셜 계정 PK

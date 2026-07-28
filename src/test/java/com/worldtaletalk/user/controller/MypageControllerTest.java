@@ -56,21 +56,6 @@ class MypageControllerTest {
     }
 
     @Test
-    void index() throws Exception {
-        given(storySessionsService.getMySessions(eq(1L), isNull(), eq(1)))
-                .willReturn(new PageImpl<>(List.of()));
-
-        mockMvc.perform(get(INDEX).with(user(loginUser)))
-                .andExpect(status().isOk())
-                .andExpect(view().name("mypage/index"))
-                .andExpect(model().attributeExists("user"))
-                .andExpect(model().attributeExists("recentSessions"))
-                .andDo(print());
-
-        then(storySessionsService).should().getMySessions(eq(1L), isNull(), eq(1));
-    }
-
-    @Test
     void profile() throws Exception {
         mockMvc.perform(get(PROFILE).with(user(loginUser)))
                 .andExpect(status().isOk())
