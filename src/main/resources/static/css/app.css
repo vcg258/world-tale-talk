@@ -429,6 +429,26 @@ textarea {
   resize: vertical;
 }
 
+.field-action-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.field-action-row .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .field-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .field-action-row .btn {
+    width: 100%;
+  }
+}
+
 .inline-form {
   display: inline-flex;
   align-items: center;

@@ -13,12 +13,12 @@ public class SignupEmailOtpRedisRepository {
 
     private static final String OTP_KEY = "signup:email:otp:%s";
     private static final String VERIFIED_KEY = "signup:email:verified:%s"; // 인증 완료 플래그
-    private static final Duration OTP_TTL = Duration.ofMinutes(4); // 만료시간
+    public static final Duration OTP_TTL = Duration.ofMinutes(4); // 만료시간
     private static final Duration VERIFIED_TTL = Duration.ofMinutes(10); // 인증 후 가입 폼 제출까지 인증 여부 캐시값 만료시간
 
     // OTP 재발송 남발 방지 1분 제한
     private static final String COOLDOWN_KEY = "signup:email:otp:cooldown:%s";
-    private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(60);
+    public static final Duration RESEND_COOLDOWN = Duration.ofSeconds(60);
 
     /**
      * OTP 캐시값 저장

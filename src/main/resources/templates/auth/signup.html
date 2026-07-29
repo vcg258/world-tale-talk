@@ -23,9 +23,21 @@
                 </div>
                 <div class="field">
                     <label for="signup-email">이메일</label>
-                    <input id="signup-email" name="email" type="email" maxlength="70" autocomplete="email" placeholder="예: user@example.com" required data-check-url="/auth/signup/check-email" data-check-param="email" data-check-kind="이메일">
+                    <div class="field-action-row">
+                        <input id="signup-email" name="email" type="email" maxlength="70" autocomplete="email" placeholder="예: user@example.com" required data-email data-check-url="/auth/signup/check-email" data-check-param="email" data-check-kind="이메일">
+                        <button class="btn secondary" type="button" data-send-otp disabled>인증번호 받기</button>
+                    </div>
                     <p class="field-guide">아이디 찾기와 비밀번호 재설정에 사용할 수 있는 이메일을 입력해주세요.</p>
-                    <p class="field-hint" data-feedback-for="email">입력 후 중복 여부를 자동으로 확인합니다.</p>
+                    <p class="field-hint" data-feedback-for="email">중복 확인 후 이메일 인증을 진행해주세요.</p>
+                </div>
+                <div class="field" data-otp-field hidden>
+                    <label for="signup-email-otp">이메일 인증번호</label>
+                    <div class="field-action-row">
+                        <input id="signup-email-otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6자리 인증번호" data-otp>
+                        <button class="btn secondary" type="button" data-verify-otp>인증 확인</button>
+                    </div>
+                    <p class="field-guide">인증번호 유효기간: <strong data-otp-expiry>04:00</strong></p>
+                    <p class="field-hint" data-feedback-for="emailOtp">인증번호를 입력해주세요.</p>
                 </div>
                 <div class="field">
                     <label class="label-with-help" for="signup-password">

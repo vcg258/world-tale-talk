@@ -3,6 +3,7 @@ package com.worldtaletalk.user.controller;
 import com.worldtaletalk.global.mail.FindIdService;
 import com.worldtaletalk.global.mail.PasswordResetService;
 import com.worldtaletalk.global.mail.SignupEmailOtpService;
+import com.worldtaletalk.global.mail.SignupEmailOtpRedisRepository;
 import com.worldtaletalk.global.security.AuthenticatedUser;
 import com.worldtaletalk.global.security.CustomUserDetails;
 import com.worldtaletalk.global.security.SecurityContextUtil;
@@ -304,7 +305,12 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> sendSignupOtp(@RequestParam("email") String email) {
         try {
             signupEmailOtpService.signupSendOtp(email);
-            return ResponseEntity.ok().body(Map.of("success", true, "message", "인증코드를 발송했습니다."));
+            return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "message", "인증코드를 발송했습니다.",
+                    "resendAfterSeconds", SignupEmailOtpRedisRepository.RESEND_COOLDOWN.toSeconds(),
+                    "expiresInSeconds", SignupEmailOtpRedisRepository.OTP_TTL.toSeconds()
+            ));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.ok().body(Map.of("success", false, "message", e.getMessage()));
         }
