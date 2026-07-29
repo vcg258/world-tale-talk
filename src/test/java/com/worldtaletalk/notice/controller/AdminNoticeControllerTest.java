@@ -39,6 +39,7 @@ class AdminNoticeControllerTest {
     private static final String NEW = "/admin/notices/new";
     private static final String UPDATE = "/admin/notices/{id}/edit";
     private static final String DELETE = "/admin/notices/{id}";
+    private static final String TOGGLE = "/admin/notices/{id}/toggle";
 
     @Autowired private MockMvc mockMvc;
     @MockitoBean private NoticesService noticesService;
@@ -178,4 +179,16 @@ class AdminNoticeControllerTest {
                 .andDo(print());
         then(noticesService).should().deleteNotice(eq(1L));
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void toggleActive() throws Exception {
+        mockMvc.perform(post(TOGGLE, 1L).with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(LIST))
+                .andDo(print());
+
+        then(noticesService).should().toggleNoticeActive(1L);
+    }
+
 }

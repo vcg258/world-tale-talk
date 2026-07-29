@@ -28,7 +28,7 @@ public class NoticesEntity extends BaseTimeEntity {
 
     @Builder.Default
     @Column(name = "is_active", nullable = false)
-    private boolean active = false; // 공지 공개 / 비공개 여부 (false = 비공개)
+    private boolean active = true; // 공지 공개 / 비공개 여부 (false = 비공개)
 
     /* FK (자식) */
     @ToString.Exclude
@@ -81,5 +81,8 @@ public class NoticesEntity extends BaseTimeEntity {
         this.active = active;
     }
 
+    public void toggleActive() {
+        this.active = !this.active;
+    }
 
 }

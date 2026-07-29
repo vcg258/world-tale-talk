@@ -211,9 +211,16 @@ public class StoryViewController {
     public String epilogue(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser user, Model model) {
         validateOwner(id, user);
         StorySessionsDTO storySession = storySessionsService.getStorySession(id);
+        List<com.worldtaletalk.chat.dto.ChatMessagesDTO> messages =
+                new ArrayList<>(chatMessagesService.getChatMessages(id, null));
+        Collections.reverse(messages);
+
         model.addAttribute("storySession", storySession);
+        model.addAttribute("world", worldsService.getWorldById(storySession.getWorldId()));
+        model.addAttribute("persona", personasService.getPersona(storySession.getPersonaId()));
         model.addAttribute("snapshotStats", sessionStatsService.getSnapshot(id));
-        model.addAttribute("messages", chatMessagesService.getChatMessages(id, null));
+        model.addAttribute("messages", messages);
+        model.addAttribute("items", sessionItemsService.getInventory(id));
         return "story/epilogue";
     }
 

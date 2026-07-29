@@ -2,7 +2,6 @@ package com.worldtaletalk.item.controller;
 
 import com.worldtaletalk.item.dto.ItemGradeConfigsDTO;
 import com.worldtaletalk.item.service.ItemGradeConfigsService;
-import com.worldtaletalk.item.service.ItemGradeProbabilitiesService;
 import com.worldtaletalk.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,12 +29,9 @@ class AdminItemControllerTest {
 
     private static final String GRADES = "/admin/items/grades";
     private static final String GRADES_ID = "/admin/items/grades/{id}";
-    private static final String PROBABILITIES = "/admin/items/probabilities";
-    private static final String PROBABILITIES_ID = "/admin/items/probabilities/{id}";
 
     @Autowired private MockMvc mockMvc;
     @MockitoBean private ItemGradeConfigsService itemGradeConfigsService;
-    @MockitoBean private ItemGradeProbabilitiesService itemGradeProbabilitiesService;
     @MockitoBean private UserService userService;
 
     @Test
@@ -85,43 +80,4 @@ class AdminItemControllerTest {
         then(itemGradeConfigsService).should(never()).modifyGradeConfig(any(), any());
     }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void probabilities() throws Exception {
-        given(itemGradeProbabilitiesService.getProbabilitiesByPhase(any())).willReturn(List.of());
-        mockMvc.perform(get(PROBABILITIES))
-                .andExpect(status().isOk())
-                .andExpect(view().name("admin/items/probabilities"))
-                .andExpect(model().attributeExists("phases"))
-                .andExpect(model().attributeExists("probabilitiesByPhase"))
-                .andDo(print());
-
-        then(itemGradeProbabilitiesService).should(times(3)).getProbabilitiesByPhase(any());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateProbability() throws Exception {
-        mockMvc.perform(post(PROBABILITIES_ID, 1L)
-                .param("probability", "30")
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/items/probabilities"))
-                .andDo(print());
-
-        then(itemGradeProbabilitiesService).should().modifyProbability(eq(1L), any());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateProbability_invalid() throws Exception {
-        mockMvc.perform(post(PROBABILITIES_ID, 1L)
-                        .param("probability", "")
-                        .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/items/probabilities"))
-                .andDo(print());
-
-        then(itemGradeProbabilitiesService).should(never()).modifyProbability(any(), any());
-    }
 }

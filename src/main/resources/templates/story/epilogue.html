@@ -3,27 +3,115 @@
 <head th:replace="~{fragments/layout :: head('에필로그')}"></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
-<main class="page" th:attr="data-story-session=${storySession.id},data-story-mode='epilogue'">
-    <div class="page-title"><h1>에필로그</h1></div>
+<main class="page story-page" th:attr="data-story-session=${storySession.id},data-story-mode='epilogue',data-current-turn=${storySession.currentTurn}">
+    <div class="page-title story-title">
+        <div>
+            <h1 th:text="${world.name}">세계관</h1>
+            <p th:text="${persona.name}">페르소나</p>
+        </div>
+    </div>
     <div class="story-shell">
-        <section class="chat-log chronological epilogue-log">
-            <article class="card"><div class="card-body">
-                <span class="badge" data-socket-status>대기</span>
-                <p class="muted" data-live-story></p>
+        <section class="stack story-main">
+            <div class="chat-log chronological" data-chat-log>
+                <div class="message" th:each="message : ${messages}" th:classappend="${message.role != null and message.role.name() == 'USER'} ? ' user'">
+                    <div class="meta"><span th:text="${message.role}">ROLE</span><span th:text="'턴 ' + ${message.turn}">턴</span></div>
+                    <p th:text="${message.content}">메시지</p>
+                    <a class="btn secondary small" th:href="@{/reports/new(targetType='CHAT_MESSAGE',targetId=${message.id})}">신고</a>
+                </div>
+            </div>
+            <article class="card story-current"><div class="card-body">
+                <h2>현재 에필로그</h2>
+                <p class="live-story" data-live-story>현재 이야기</p>
+            </div></article>
+            <article class="card story-input-card"><div class="card-body">
+                <h2>에필로그 입력</h2>
                 <form class="form" data-story-form>
-                    <div class="field story-text-field"><label>에필로그 입력</label><textarea data-story-input maxlength="500" required></textarea></div>
-                    <button class="btn" type="submit">전송</button>
+                    <div class="field story-text-field"><label for="story-free-input">에필로그 내용</label><textarea id="story-free-input" data-story-input maxlength="500" rows="4"></textarea></div>
+                    <div class="actions input-actions">
+                        <button class="btn" type="submit">전송</button>
+                    </div>
                 </form>
             </div></article>
-            <div class="message" th:each="message : ${messages}">
-                <div class="meta"><span th:text="${message.role}">ROLE</span><span th:text="'턴 ' + ${message.turn}">턴</span></div>
-                <p th:text="${message.content}">메시지</p>
-            </div>
         </section>
-        <aside class="card"><div class="card-body">
-            <h2>완료</h2>
-            <form th:action="@{/sessions/{id}/complete(id=${storySession.id})}" method="post"><button class="btn" type="submit">별점 작성</button></form>
-        </div></aside>
+        <aside class="stack story-side-panel">
+            <section class="card story-progress-card"><div class="card-body">
+                <div class="story-progress-header">
+                    <div>
+                        <h2>완료</h2>
+                        <p class="field-guide">에필로그를 마치고 별점과 리뷰를 남겨보세요.</p>
+                    </div>
+                    <form class="story-progress-actions" th:action="@{/sessions/{id}/complete(id=${storySession.id})}" method="post">
+                        <button class="btn" type="submit">별점 작성</button>
+                    </form>
+                </div>
+            </div></section>
+            <section class="card"><div class="card-body">
+                <h2>스탯</h2>
+                <p class="field-guide">메인 스토리를 마쳤을 때 달성한 최종 스탯입니다. 에필로그에서는 더 이상 변동되지 않습니다.</p>
+                <div class="persona-stat-bars story-stat-bars">
+                    <div class="persona-stat-row stat-wisdom" title="추리, 정보 해석, 지식 활용에 영향을 줍니다.">
+                        <span class="persona-stat-name">지혜</span>
+                        <span class="persona-stat-bar" aria-hidden="true">
+                            <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${snapshotStats.wisdom >= slot} ? ' filled'"></span>
+                        </span>
+                        <strong class="persona-stat-value" data-stat-value="wisdom" th:text="${snapshotStats.wisdom}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="지혜 설명">?
+                            <span class="help-bubble">추리, 정보 해석, 지식 활용 성공 가능성에 영향을 줍니다.</span>
+                        </span>
+                    </div>
+                    <div class="persona-stat-row stat-strength" title="전투, 제압, 버티기에 영향을 줍니다.">
+                        <span class="persona-stat-name">힘</span>
+                        <span class="persona-stat-bar" aria-hidden="true">
+                            <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${snapshotStats.strength >= slot} ? ' filled'"></span>
+                        </span>
+                        <strong class="persona-stat-value" data-stat-value="strength" th:text="${snapshotStats.strength}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="힘 설명">?
+                            <span class="help-bubble">전투, 제압, 버티기처럼 신체 능력이 필요한 행동에 영향을 줍니다.</span>
+                        </span>
+                    </div>
+                    <div class="persona-stat-row stat-agility" title="회피, 잠입, 추격, 빠른 반응에 영향을 줍니다.">
+                        <span class="persona-stat-name">민첩</span>
+                        <span class="persona-stat-bar" aria-hidden="true">
+                            <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${snapshotStats.agility >= slot} ? ' filled'"></span>
+                        </span>
+                        <strong class="persona-stat-value" data-stat-value="agility" th:text="${snapshotStats.agility}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="민첩 설명">?
+                            <span class="help-bubble">회피, 잠입, 추격, 빠른 반응에 영향을 줍니다.</span>
+                        </span>
+                    </div>
+                    <div class="persona-stat-row stat-charisma" title="설득, 협상, 호감 형성에 영향을 줍니다.">
+                        <span class="persona-stat-name">매력</span>
+                        <span class="persona-stat-bar" aria-hidden="true">
+                            <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${snapshotStats.charisma >= slot} ? ' filled'"></span>
+                        </span>
+                        <strong class="persona-stat-value" data-stat-value="charisma" th:text="${snapshotStats.charisma}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="매력 설명">?
+                            <span class="help-bubble">설득, 협상, 호감 형성, 사회적 행동에 영향을 줍니다.</span>
+                        </span>
+                    </div>
+                    <div class="persona-stat-row stat-luck" title="우연한 기회, 위기 탈출, 보상 발견에 영향을 줍니다.">
+                        <span class="persona-stat-name">행운</span>
+                        <span class="persona-stat-bar" aria-hidden="true">
+                            <span th:each="slot : ${#numbers.sequence(1, 10)}" th:classappend="${snapshotStats.luck >= slot} ? ' filled'"></span>
+                        </span>
+                        <strong class="persona-stat-value" data-stat-value="luck" th:text="${snapshotStats.luck}">0</strong>
+                        <span class="help-tip story-stat-help" tabindex="0" aria-label="행운 설명">?
+                            <span class="help-bubble">우연한 기회, 위기 탈출, 보상 발견 같은 변칙적 전개에 영향을 줍니다.</span>
+                        </span>
+                    </div>
+                </div>
+            </div></section>
+            <section class="card"><div class="card-body">
+                <h2>아이템</h2>
+                <div class="stack">
+                    <div th:each="item : ${items}">
+                        <strong th:text="${item.itemName}">아이템</strong>
+                        <p class="muted" th:text="${item.itemDescription}">설명</p>
+                    </div>
+                    <p class="muted" th:if="${#lists.isEmpty(items)}">획득한 아이템이 없습니다.</p>
+                </div>
+            </div></section>
+        </aside>
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>

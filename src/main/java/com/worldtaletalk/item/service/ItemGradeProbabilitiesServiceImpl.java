@@ -9,10 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+
 
 @Slf4j
 @Service
@@ -46,36 +44,4 @@ public class ItemGradeProbabilitiesServiceImpl implements ItemGradeProbabilities
         return itemGradeProbabilitiesMapper.toDTOList(entities);
     }
 
-    /**
-     * 단건 확률 수정 (관리자)
-     *
-     * @param id          확률 설정 PK
-     * @param probability 수정할 확률 값 (0~100)
-     * @return 수정된 확률 설정
-     */
-    @Transactional
-    @Override
-    public ItemGradeProbabilitiesDTO modifyProbability(Long id, Integer probability) {
-        ItemGradeProbabilitiesEntity entity = itemGradeProbabilitiesRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("해당 확률 설정이 존재하지 않습니다."));
-
-        int newValue = probability != null ? probability : entity.getProbability();
-
-        int othersSum = itemGradeProbabilitiesRepository.findAllByPhase(entity.getPhase()).stream()
-                .filter(f -> !Objects.equals(f.getId(), id))
-                .mapToInt(ItemGradeProbabilitiesEntity::getProbability)
-                .sum();
-
-        if (newValue + othersSum != 100) {
-            throw new IllegalArgumentException(
-                    "아이템 전체 등급 총합은 항상 100이여야 합니다. 현재 확률 합 : " + (newValue + othersSum));
-        }
-
-        entity.updateProbability(newValue);
-
-        ItemGradeProbabilitiesEntity saved = itemGradeProbabilitiesRepository.save(entity);
-        log.info("확률 수정 완료 phase: {}, grade: {}, probability: {}",
-                saved.getPhase(), saved.getGrade(), saved.getProbability());
-        return itemGradeProbabilitiesMapper.toDTO(saved);
-    }
 }

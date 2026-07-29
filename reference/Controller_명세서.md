@@ -239,8 +239,6 @@
 |---|--------|-----|------|------|-------|----------------|----------|
 | AI-01 | GET | `/admin/items/grades` | `admin/items/grades` | ADMIN | — | `gradeConfigs`: `List<ItemGradeConfigsDTO>` | |
 | AI-02 | POST | `/admin/items/grades/{id}` | — | ADMIN | Form: `statSumMax`, `singleMax`, `singleMin`, `canNegative` | — | `redirect:/admin/items/grades` |
-| AI-03 | GET | `/admin/items/probabilities` | `admin/items/probabilities` | ADMIN | — | `phases`, `probabilitiesByPhase` | |
-| AI-04 | POST | `/admin/items/probabilities/{id}` | — | ADMIN | Form: `probability` (0~100) | — | `redirect:/admin/items/probabilities` |
 
 ### 10.6 `AdminSessionController`
 

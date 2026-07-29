@@ -64,7 +64,7 @@ public class AdminNoticeController {
         model.addAttribute("notice", NoticesDTO.builder()
                 .title("")
                 .content("")
-                .active(false)
+                .active(true)
                 .build());
         return "admin/notices/form";
     }
@@ -149,6 +149,14 @@ public class AdminNoticeController {
             return "redirect:/admin/notices";
         }
         redirectAttributes.addFlashAttribute("message", "공지 수정이 완료되었습니다.");
+        return "redirect:/admin/notices";
+    }
+
+    /** 공지 공개/비공개 상태 전환 */
+    @PostMapping("/{id}/toggle")
+    public String toggleActive(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        noticesService.toggleNoticeActive(id);
+        redirectAttributes.addFlashAttribute("message", "공지 공개 상태가 변경되었습니다.");
         return "redirect:/admin/notices";
     }
 

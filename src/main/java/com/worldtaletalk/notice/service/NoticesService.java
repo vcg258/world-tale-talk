@@ -3,8 +3,12 @@ package com.worldtaletalk.notice.service;
 import com.worldtaletalk.notice.dto.NoticesDTO;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 
 public interface NoticesService {
+
+    /** 최신 공개 공지를 지정한 개수만큼 조회합니다. */
+    List<NoticesDTO> getLatestActiveNotices(int limit);
 
     /**
      * 공개 공지 목록 조회 (is_active = true 만 조회) (페이징)
@@ -29,6 +33,9 @@ public interface NoticesService {
      * @return 공지 정보
      */
     NoticesDTO getNotice(Long id);
+    /** 공지의 공개/비공개 상태를 전환합니다. */
+    void toggleNoticeActive(Long id);
+
 
     /**
      * 공지 작성 (관리자용)

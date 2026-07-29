@@ -12,7 +12,4 @@ public interface ItemGradeProbabilitiesService {
 
     // 구간별 확률 조회
     List<ItemGradeProbabilitiesDTO> getProbabilitiesByPhase(PhaseType phase);
-
-    // 단건 확률 수정
-    ItemGradeProbabilitiesDTO modifyProbability(Long id, Integer probability);
 }

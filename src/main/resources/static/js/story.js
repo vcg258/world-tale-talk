@@ -26,10 +26,10 @@
   let isAwaitingResponse = shouldAutoStart;
   let reconnectTimer = null;
   let reconnectAttempts = 0;
-  let currentTurn = 0;
+  let currentTurn = Number(root.dataset.currentTurn || 0);
 
   const readCurrentTurn = () => {
-    if (!progressTurn) return 0;
+    if (!progressTurn) return currentTurn;
     const match = (progressTurn.textContent || '').match(/\d+/);
     return match ? Number(match[0]) : 0;
   };
@@ -81,7 +81,7 @@
   };
 
   const moveCurrentStoryToHistory = () => {
-    if (mode !== 'story' || !output) return;
+    if (!output) return;
     const currentStory = output.textContent || '';
     if (!currentStory.trim() || currentStory === '이야기를 준비하고 있습니다...') return;
     appendChatMessage('ASSISTANT', currentTurn, currentStory);
@@ -129,7 +129,7 @@
     fillInput(text, false);
     moveCurrentStoryToHistory();
     const nextTurn = mode === 'story' ? currentTurn + 1 : currentTurn;
-    if (mode === 'story') appendChatMessage('USER', nextTurn, text);
+    appendChatMessage('USER', nextTurn, text);
     isAwaitingResponse = true;
     setInputLocked(true);
     setOutput('');

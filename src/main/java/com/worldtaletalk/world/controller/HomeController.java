@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/")
@@ -19,17 +18,14 @@ public class HomeController {
 
     /**
      * H-01: 메인 화면 조회
-     *
      * @param model 뷰에 전달할 모델
-     * @param page  페이지 번호 (1부터 시작)
      * @return home/index (메인 페이지)
      */
     @GetMapping
-    public String home(Model model, @RequestParam(defaultValue = "1") int page) {
-        page = Math.max(page, 1);
+    public String home(Model model) {
         model.addAttribute("worlds", worldsService.getActiveWorlds());
         model.addAttribute("featuredWorlds", worldsService.getFeaturedWorlds(3));
-        model.addAttribute("notices", noticesService.getActiveNotices(page));
+        model.addAttribute("notices", noticesService.getLatestActiveNotices(5));
         return "home/index";
     }
 

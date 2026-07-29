@@ -8,14 +8,12 @@ import com.worldtaletalk.world.service.WorldsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,8 +37,7 @@ class HomeControllerTest {
         List<WorldsDTO> worlds = List.of(WorldsDTO.builder().id(1L).build());
         List<WorldsDTO> featured = List.of(WorldsDTO.builder().id(2L).build());
         given(worldsService.getActiveWorlds()).willReturn(worlds);
-        given(worldsService.getFeaturedWorlds(3)).willReturn(featured);
-        given(noticesService.getActiveNotices(anyInt())).willReturn(new PageImpl<>(List.of(NoticesDTO.builder().id(1L).build())));
+        given(noticesService.getLatestActiveNotices(5)).willReturn(List.of(NoticesDTO.builder().id(1L).build()));
 
         mockMvc.perform(get(INDEX))
                 .andExpect(status().isOk())
@@ -52,7 +49,7 @@ class HomeControllerTest {
 
         then(worldsService).should().getActiveWorlds();
         then(worldsService).should().getFeaturedWorlds(3);
-        then(noticesService).should().getActiveNotices(1);
+        then(noticesService).should().getLatestActiveNotices(5);
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -23,8 +24,19 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class NoticesServiceImpl implements NoticesService {
     private final NoticesRepository noticesRepository;
+
     private final NoticesMapper noticesMapper;
     private final UserRepository userRepository;
+    @Transactional(readOnly = true)
+    @Override
+    public List<NoticesDTO> getLatestActiveNotices(int limit) {
+        if (limit < 1) {
+            throw new IllegalArgumentException("조회 개수는 1 이상이어야 합니다.");
+        }
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return noticesRepository.findAllByActiveTrue(pageable).map(noticesMapper::toDTO).getContent();
+    }
+
 
     /**
      * 공개 공지 목록 조회 (is_active = true 만 조회) (페이징)
@@ -51,6 +63,15 @@ public class NoticesServiceImpl implements NoticesService {
         Page<NoticesEntity> notices = noticesRepository.findAll(pageable);
         return notices.map(noticesMapper::toDTO);
     }
+    @Transactional
+    @Override
+    public void toggleNoticeActive(Long id) {
+        NoticesEntity notice = noticesRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("해당 공지사항은 존재 하지 않습니다."));
+        notice.toggleActive();
+        log.info("공지 공개 상태 변경 id: {}, active: {}", id, notice.isActive());
+    }
+
 
     /**
      * 공지 단건 조회
