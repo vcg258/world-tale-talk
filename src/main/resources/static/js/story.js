@@ -19,6 +19,9 @@
   const progressValue = document.querySelector('[data-progress-value]');
   const progressTurn = document.querySelector('[data-progress-turn]');
   const progressFill = document.querySelector('[data-progress-fill]');
+  const inventoryList = document.querySelector('[data-inventory-list]');
+  const inventoryEmpty = document.querySelector('[data-inventory-empty]');
+  const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
   const targetTurn = Number(root.dataset.targetTurn || 0) || null;
   let stomp = null;
   let hasStartedAutomatically = false;
@@ -220,6 +223,66 @@
     });
   };
 
+  const refreshInventoryEmptyState = () => {
+    if (!inventoryList || !inventoryEmpty) return;
+    const hasItems = Boolean(inventoryList.querySelector('[data-inventory-item]'));
+    inventoryEmpty.style.display = hasItems ? 'none' : '';
+  };
+
+  const createCsrfInput = () => {
+    if (!csrfToken) return null;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = '_csrf';
+    input.value = csrfToken;
+    return input;
+  };
+
+  const renderInventoryItem = (item) => {
+    if (!inventoryList || !item || !item.id) return;
+    const existing = inventoryList.querySelector(`[data-inventory-item][data-item-id="${item.id}"]`);
+    if (existing) existing.remove();
+
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = `/sessions/${sessionId}/items/${item.id}/drop`;
+    form.setAttribute('data-inventory-item', '');
+    form.dataset.itemId = String(item.id);
+
+    const csrfInput = createCsrfInput();
+    if (csrfInput) form.appendChild(csrfInput);
+
+    const name = document.createElement('strong');
+    name.textContent = item.itemName || '아이템';
+
+    const description = document.createElement('p');
+    description.className = 'muted';
+    description.textContent = item.itemDescription || '설명 없음';
+
+    const button = document.createElement('button');
+    button.className = 'btn secondary small';
+    button.type = 'submit';
+    button.textContent = '버리기';
+
+    form.append(name, description, button);
+    inventoryList.insertBefore(form, inventoryEmpty || null);
+  };
+
+  const updateInventory = (result) => {
+    if (!result || !inventoryList) return;
+
+    if (result.removedItemId) {
+      const itemNode = inventoryList.querySelector(`[data-inventory-item][data-item-id="${result.removedItemId}"]`);
+      if (itemNode) itemNode.remove();
+    }
+
+    if (result.createdItem) {
+      renderInventoryItem(result.createdItem);
+    }
+
+    refreshInventoryEmptyState();
+  };
+
   const handleComplete = (result) => {
     isAwaitingResponse = false;
     if (result && result.endingType) {
@@ -232,6 +295,7 @@
       setOutput(result.story || '');
       updateProgress(result);
       updateStats(result.appliedStatLog);
+      updateInventory(result);
       renderChoices(result.choices || [], result.statChangesByChoice || null);
     }
     setInputLocked(false);

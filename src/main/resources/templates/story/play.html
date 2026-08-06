@@ -117,12 +117,17 @@
             </div></section>
             <section class="card"><div class="card-body">
                 <h2>아이템</h2>
-                <div class="stack">
-                    <form th:each="item : ${items}" th:action="@{/sessions/{sid}/items/{iid}/drop(sid=${storySession.id},iid=${item.id})}" method="post">
+                <div class="stack" data-inventory-list>
+                    <form th:each="item : ${items}"
+                          th:action="@{/sessions/{sid}/items/{iid}/drop(sid=${storySession.id},iid=${item.id})}"
+                          method="post"
+                          data-inventory-item
+                          th:attr="data-item-id=${item.id}">
                         <strong th:text="${item.itemName}">아이템</strong>
                         <p class="muted" th:text="${item.itemDescription}">설명</p>
                         <button class="btn secondary small" type="submit">버리기</button>
                     </form>
+                    <p class="muted" data-inventory-empty th:style="${#lists.isEmpty(items)} ? '' : 'display:none'">획득한 아이템이 없습니다.</p>
                 </div>
             </div></section>
         </aside>
