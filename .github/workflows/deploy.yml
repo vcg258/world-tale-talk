@@ -1,0 +1,68 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+  # 수동으로도 실행할 수 있게 (Actions 탭에서 "Run workflow" 버튼)
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 저장소 코드 가져오기
+      - name: 소스코드 체크아웃
+        uses: actions/checkout@v4
+
+      # 2. build.gradle의 languageVersion(21)과 동일한 JDK 설치
+      - name: JDK 21(Corretto) 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: '21'
+
+      # 3. Gradle 의존성 캐싱 (매번 새로 안 받도록, 빌드 시간 단축용)
+      - name: Gradle 캐시 설정
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: gradlew 실행 권한 부여
+        run: chmod +x gradlew
+
+      # 4. 프로젝트 빌드 (jar 생성)
+      #    -x test 로 테스트는 건너뜀: CI 환경에 DB/Redis가 없어서
+      #    통합 테스트가 실패할 수 있음. 추후 Testcontainers 등으로
+      #    CI에서도 테스트 가능해지면 이 옵션은 빼는 걸 권장.
+      - name: 프로젝트 빌드 (bootJar)
+        run: ./gradlew clean bootJar -x test
+
+      # 5. EB가 요구하는 형태로 압축 (jar + Procfile을 최상위 경로에)
+      - name: 배포 패키지 준비
+        run: |
+          mkdir deploy
+          cp build/libs/*.jar deploy/
+          cp Procfile deploy/
+          cd deploy && zip -r ../deploy.zip .
+
+      # 6. Elastic Beanstalk에 새 버전 배포
+      #    application_name / environment_name은 EB 콘솔에 실제 등록된
+      #    이름과 대소문자까지 정확히 일치해야 함
+      - name: Elastic Beanstalk 배포
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: world-tale-talk
+          environment_name: World-tale-talk-env
+          region: ap-northeast-2
+          version_label: "gh-${{ github.run_number }}-${{ github.sha }}"
+          deployment_package: deploy.zip
+          use_existing_version_if_available: true

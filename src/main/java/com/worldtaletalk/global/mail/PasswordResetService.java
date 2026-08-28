@@ -21,6 +21,8 @@ public class PasswordResetService {
 
     @Value("${spring.mail.username}")
     private String from;
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     /**
      * 비밀번호 재설정 메일 발송 (비밀번호 찾기 기능)
@@ -40,7 +42,7 @@ public class PasswordResetService {
         String token = UUID.randomUUID().toString();
         passwordResetRedisRepository.saveToken(token, user.getId());
 
-        String resetUrl = "http://localhost:8080/auth/reset-password?token=" + token; // TODO 도메인 설정시 변경 필요
+        String resetUrl = baseUrl + "/auth/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());

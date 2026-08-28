@@ -426,20 +426,21 @@ sequenceDiagram
 
 ## 기술 스택
 
-| 분류      | 기술                                                                |
-|-----------|---------------------------------------------------------------------|
-| Language  | Java 21                                                             |
-| Framework | Spring Boot 3.5.14                                                  |
-| View      | Thymeleaf (SSR)                                                     |
-| ORM       | Spring Data JPA (QueryDSL 5.0.0은 설정만 돼있고 현재 실사용처 없음) |
-| Migration | Flyway                                                              |
-| Security  | Spring Security (세션 기반), OAuth2 Client (Google/Naver/Kakao)     |
-| Real-time | Spring WebSocket (STOMP + SockJS)                                   |
-| Batch     | Spring Batch                                                        |
-| AI        | Spring AI 1.1.6 (OpenAI, pgvector, RAG)                             |
-| Mapping   | MapStruct 1.5.5                                                     |
-| Mail      | JavaMailSender (SMTP)                                               |
-| Build     | Gradle                                                              |
+| 분류      | 기술                                                            |
+|-----------|-----------------------------------------------------------------|
+| Language  | Java 21                                                         |
+| Framework | Spring Boot 3.5.14                                              |
+| RDB       | PostgreSQL 17.9-3                                               |
+| View      | Thymeleaf (SSR)                                                 |
+| ORM       | Spring Data JPA                                                 |
+| Migration | Flyway                                                          |
+| Security  | Spring Security (세션 기반), OAuth2 Client (Google/Naver/Kakao) |
+| Real-time | Spring WebSocket (STOMP + SockJS)                               |
+| Batch     | Spring Batch                                                    |
+| AI        | Spring AI 1.1.6 (OpenAI, pgvector, RAG)                         |
+| Mapping   | MapStruct 1.5.5                                                 |
+| Mail      | JavaMailSender (SMTP)                                           |
+| Build     | Gradle                                                          |
 
 ### Database
 
@@ -564,8 +565,15 @@ sequenceDiagram
 `application.yaml`이 참조하는 값 기준입니다.
 
 ```env (env.exmaple 참고)
+DB_HOST=
+DB_PORT=
+DB_NAME=
 DB_USERNAME=
 DB_PASSWORD=
+
+REDIS_HOST=
+REDIS_PORT=
+
 OPENAI_API_KEY=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -573,21 +581,38 @@ NAVER_CLIENT_ID=
 NAVER_CLIENT_SECRET=
 KAKAO_CLIENT_ID=
 KAKAO_CLIENT_SECRET=
+
 #네이버 smtp 설정
 MAIL_USERNAME=
 MAIL_PASSWORD=
+
+# 비밀번호 재설정 링크 등에 사용, 미설정 시 http://localhost:8080 사용
+APP_BASE_URL=
 ```
 
-`application.yaml` 주요 설정:
+로컬 개발 시 예시 값:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=world_tale_talk
+REDIS_HOST=localhost
+REDIS_PORT=6379
+APP_BASE_URL=http://localhost:8080
+```
+
+`application.yaml` 주요 설정 (실제로는 위 `.env` 값을 `${...}`로 참조하도록 externalize 되어 있음):
 
 ```yaml
 datasource:
-  url: jdbc:postgresql://localhost:5432/world_tale_talk?currentSchema=public
+  url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}?currentSchema=public
 
 data:
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT:6379}
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
 
 ai:
   openai:
