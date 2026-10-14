@@ -10,6 +10,7 @@ import com.worldtaletalk.stat.repository.SessionStatSnapshotsRepository;
 import com.worldtaletalk.stat.service.SessionStatsService;
 import com.worldtaletalk.story.cache.StoryCacheService;
 import com.worldtaletalk.story.dto.LlmTurnResult;
+import com.worldtaletalk.story.rag.WorldSettingRetriever;
 import com.worldtaletalk.world.domain.WorldsEntity;
 import com.worldtaletalk.world.repository.WorldsRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,11 +49,13 @@ public class StoryAiServiceImpl implements StoryAiService {
     private final SessionItemsService sessionItemsService;
     private final SessionStatSnapshotsRepository sessionStatSnapshotsRepository;
     private final StoryCacheService storyCacheService;
+    private final WorldSettingRetriever worldSettingRetriever;
 
     public StoryAiServiceImpl(
             @Qualifier("chatClient") ChatClient chatClient,
             @Qualifier("summaryChatClient") ChatClient summaryChatClient,
             VectorStore vectorStore,
+            WorldSettingRetriever worldSettingRetriever,
             WorldsRepository worldsRepository,
             StorySessionsRepository storySessionsRepository,
             SessionStatsService sessionStatsService,
@@ -64,6 +67,7 @@ public class StoryAiServiceImpl implements StoryAiService {
         this.chatClient = chatClient;
         this.summaryChatClient = summaryChatClient;
         this.vectorStore = vectorStore;
+        this.worldSettingRetriever = worldSettingRetriever;
         this.worldsRepository = worldsRepository;
         this.storySessionsRepository = storySessionsRepository;
         this.sessionStatsService = sessionStatsService;
@@ -570,21 +574,9 @@ public class StoryAiServiceImpl implements StoryAiService {
      * @return 유사도 높은 세계관 설정 텍스트 청크 (개행 구분)
      */
     private String worldFilterOrChunk(Long worldId, String userInput) {
-        FilterExpressionBuilder b = new FilterExpressionBuilder();
-        Filter.Expression worldFilter = b.and(
-                        b.eq("sourceType", "WORLD_SETTING"),
-                        b.eq("sourceId", worldId.toString()))
-                .build();
-
-        List<Document> worldDoc = vectorStore.similaritySearch(
-                SearchRequest.builder()
-                        .query(userInput)
-                        .topK(5)
-                        .filterExpression(worldFilter)
-                        .build()
-        );
-
-        return worldDoc.stream()
+        return worldSettingRetriever
+                .retrieve(worldId, userInput, WorldSettingRetriever.DEFAULT_TOP_K)
+                .stream()
                 .map(Document::getText)
                 .collect(Collectors.joining("\n"));
     }
