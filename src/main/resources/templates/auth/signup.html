@@ -56,6 +56,12 @@
                     <p class="field-guide">위에 입력한 비밀번호와 같은 값을 입력해주세요.</p>
                     <p class="field-hint" data-feedback-for="confirmPassword">비밀번호와 같은 값을 입력하면 통과됩니다.</p>
                 </div>
+                <div class="field consent">
+                    <label class="consent-all"><input type="checkbox" data-consent-all> 전체 동의</label>
+                    <label><input type="checkbox" name="agreeTerms" value="true" required data-consent> <span>[필수] <a th:href="@{/terms}" target="_blank" rel="noopener">이용약관</a>에 동의합니다.</span></label>
+                    <label><input type="checkbox" name="agreePrivacy" value="true" required data-consent> <span>[필수] <a th:href="@{/privacy}" target="_blank" rel="noopener">개인정보 수집·이용</a>에 동의합니다.</span></label>
+                    <p class="field-hint">필수 항목에 모두 동의해야 가입할 수 있습니다.</p>
+                </div>
                 <button class="btn" type="submit" data-submit>가입하기</button>
             </form>
         </div>

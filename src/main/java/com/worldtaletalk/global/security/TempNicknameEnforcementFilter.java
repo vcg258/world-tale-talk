@@ -18,6 +18,7 @@ public class TempNicknameEnforcementFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PATHS = List.of(
             "/auth/nickname",
             "/auth/logout",
+            "/terms", "/privacy", // 이용약관, 개인정보처리방침 확인용
             "/css/", "/js/", "/images/"
     );
 

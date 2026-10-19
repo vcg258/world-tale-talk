@@ -14,8 +14,10 @@ import com.worldtaletalk.user.service.UserService;
 import com.worldtaletalk.user.service.UserSuspensionsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class AuthController {
     // 닉네임 설정 요청 폼 - 닉네임 단일 필드를 레코드로 처리함
     private record NicknameForm(@NotBlank(message = "닉네임을 입력해주세요.") String nickname) {}
 
-    // 회원가입 요청 폼 - 아이디, 닉네임, 이메일, 비밀번호, 비밀번호 확인을 레코드로 처리
+    // 회원가입 요청 폼 - 아이디, 닉네임, 이메일, 비밀번호, 비밀번호 확인, 약관/개인정보 수집 동의 여부를 레코드로 처리
     private record SignupForm(
             @NotBlank(message = "아이디를 입력해주세요.")
             @Pattern(regexp = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{4,30}$", message = "아이디는 영문/숫자 4~30자로 입력해주세요.")
@@ -60,7 +62,15 @@ public class AuthController {
             String password,
 
             @NotBlank(message = "비밀번호 확인을 입력해주세요.")
-            String confirmPassword
+            String confirmPassword,
+
+            @NotNull(message = "이용약관에 동의해주세요.")
+            @AssertTrue(message = "이용약관에 동의해주세요.")
+            Boolean agreeTerms,
+
+            @NotNull(message = "개인정보 수집·이용에 동의해주세요.")
+            @AssertTrue(message = "개인정보 수집·이용에 동의해주세요.")
+            Boolean agreePrivacy
     ) {}
 
     // 비밀번호 찾기 요청 폼 - 아이디와 이메일을 받아 레코드로 처리

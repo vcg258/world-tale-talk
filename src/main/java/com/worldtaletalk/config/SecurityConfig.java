@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/auth/find-id", // 아이디 찾기
                                 "/auth/find-password", "/auth/reset-password", // 비밀번호 찾기
                                 "/auth/dormant", // 휴면 안내
+                                "/terms", "/privacy", // 이용약관, 개인정보처리방침
                                 "/css/**", "/js/**", "/images/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 시작 관리자 권한 아니면 접근 불가

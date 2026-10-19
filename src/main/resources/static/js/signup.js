@@ -12,6 +12,8 @@
   const password = form.querySelector('[data-password]');
   const confirmPassword = form.querySelector('[data-confirm-password]');
   const submit = form.querySelector('[data-submit]');
+  const consentAll = form.querySelector('[data-consent-all]');
+  const consents = Array.from(form.querySelectorAll('[data-consent]'));
   const state = new Map();
   const timers = new Map();
   let submitting = false;
@@ -261,7 +263,8 @@
     const duplicateOk = checkedInputs.every((input) => state.get(input.name) === true);
     sendOtp.disabled = otpRequestPending || emailVerified || resendRemaining > 0 || state.get(email.name) !== true;
     verifyOtp.disabled = otpRequestPending || emailVerified || otpExpired || otpField.hidden;
-    submit.disabled = !(duplicateOk && emailVerified && password.validity.valid && confirmPassword.validity.valid);
+    const consentOk = consents.every((box) => box.checked);
+    submit.disabled = !(duplicateOk && emailVerified && password.validity.valid && confirmPassword.validity.valid && consentOk);
   }
 
   checkedInputs.forEach((input) => {
@@ -288,6 +291,16 @@
   verifyOtp.addEventListener('click', verifyEmailOtp);
   password.addEventListener('input', validatePassword);
   confirmPassword.addEventListener('input', validateConfirmPassword);
+  consents.forEach((box) => box.addEventListener('change', () => {
+    if (consentAll) consentAll.checked = consents.every((item) => item.checked);
+    updateSubmitState();
+  }));
+  if (consentAll) {
+    consentAll.addEventListener('change', () => {
+      consents.forEach((box) => { box.checked = consentAll.checked; });
+      updateSubmitState();
+    });
+  }
 
   form.addEventListener('submit', async (event) => {
     if (submitting) return;

@@ -71,6 +71,13 @@
     </div>
 </aside>
 
-<footer class="footer" th:fragment="footer">World Tale Talk</footer>
+<footer class="footer" th:fragment="footer">
+    <div class="footer-links">
+        <a th:href="@{/terms}">이용약관</a>
+        <span aria-hidden="true">·</span>
+        <a th:href="@{/privacy}">개인정보처리방침</a>
+    </div>
+    <div>World Tale Talk</div>
+</footer>
 </body>
 </html>
