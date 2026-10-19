@@ -23,7 +23,7 @@ spring:
     properties:
       hibernate:
         format_sql: true # 쿼리문 보여주는 설정
-    show-sql: true # 쿼리문 보여주는 설정
+    show-sql: false # 쿼리문 보여주는 설정
 
 # Migration 설정
   flyway:
