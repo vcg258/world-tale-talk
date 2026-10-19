@@ -85,7 +85,7 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       ssl:
-        enabled: true
+        enabled: ${REDIS_SSL:true} # Redis TLS 사용 여부, 미설정 시 true (TLS 없는 Redis는 false)
       repositories:
         enabled: false # 레디스 로그 때문에 잠시 끔
 
@@ -167,3 +167,7 @@ logging:
       worldtaletalk: INFO
   pattern:
     console: "%clr(%-5level){green} %clr(%logger{36}.%M\\(\\)){cyan}: %msg%n"
+
+# 리버스 프록시 설정
+server:
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none} # 프록시 헤더(X-Forwarded-*) 해석, 미설정 시 none (프록시 뒤에서는 framework)
