@@ -15,6 +15,7 @@ public final class RetrievalMetrics {
      * @return 청크의 순위 (1부터), 없으면 0
      */
     static int firstRelevantRank(List<String> retrieved, List<String> anchors) {
+        requireValidAnchors(anchors);
         for (int i = 0; i < retrieved.size(); i++) {
             String chunk = retrieved.get(i);
             if (anchors.stream().anyMatch(a -> contains(chunk, a))) {
@@ -33,10 +34,8 @@ public final class RetrievalMetrics {
      * @return 정답 문구 중 상위 k개 안에서 찾은 비율
      */
     static double recallAtK(List<String> retrieved, List<String> anchors, int k){
+        requireValidAnchors(anchors);
         List<String> topK = retrieved.subList(0, Math.min(k, retrieved.size()));
-        if (anchors.isEmpty()) {
-            throw new IllegalArgumentException("anchors list is empty");
-        }
         long found = anchors.stream()
                 .filter(a -> topK.stream().anyMatch(chunk -> contains(chunk, a)))
                 .count();
@@ -75,5 +74,19 @@ public final class RetrievalMetrics {
             throw new IllegalArgumentException("anchor must not be empty");
         }
         return normalize(chunk).contains(normalize(anchor));
+    }
+
+    /**
+     * 정답 근거 목록이 비어있거나 공백일 경우 예외발생 하기 위한 헬퍼 메서드
+     *
+     * @param anchors 정답 근거 목록
+     */
+    private static void requireValidAnchors(List<String> anchors) {
+        if (anchors.isEmpty()) {
+            throw new IllegalArgumentException("anchors list is empty");
+        }
+        if (anchors.stream().anyMatch(String::isBlank)) {
+            throw new IllegalArgumentException("anchors must not be blank");
+        }
     }
 }

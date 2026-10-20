@@ -1,6 +1,5 @@
 package com.worldtaletalk.story.rag;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,14 +7,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 public class RetrievalMetricsTest {
     @Test
     @DisplayName("정답이 1번째에 있는 경우 Rank = 1")
     void firstRelevantRankTestIsOne() {
         List<String> retrieved = List.of("무관한 청크", "나는 왕이다.", "내이름은 김철수이고 직업은 백수");
         int rank = RetrievalMetrics.firstRelevantRank(retrieved, List.of("무관한 청크"));
-        log.info("Rank: {}", rank);
 
         assertEquals(1, rank);
     }
@@ -48,6 +45,15 @@ public class RetrievalMetricsTest {
     }
 
     @Test
+    @DisplayName("anchors에 앞문구가 빈문구가 아니고 뒷문구가 빈문자라면 예외")
+    void firstRelevantRankTestIsFive() {
+        List<String> retrieved = List.of("무관한 청크", "나는 왕이다.");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> RetrievalMetrics.firstRelevantRank(retrieved, List.of("무관한 청크", "")));
+    }
+
+    @Test
     @DisplayName("상위 1개 안에 정답 문구 비율 atk = 0.0")
     void recallAtKTestIsOne() {
         List<String> retrieved = List.of("무관한 청크", "나는 왕이다.", "내이름은 김철수이고 직업은 백수");
@@ -70,7 +76,6 @@ public class RetrievalMetricsTest {
     void recallAtKTestIsThree() {
         List<String> retrieved = List.of("무관한 청크", "나는 왕이다.", "내이름은 김철수이고 직업은 백수");
         double atK = RetrievalMetrics.recallAtK(retrieved, List.of("내이름은 김철수", "왕"), 3);
-        log.info("AtK: {}", atK);
 
         assertEquals(1.0, atK);
     }
@@ -88,7 +93,7 @@ public class RetrievalMetricsTest {
     @DisplayName("anchor에 빈값일 경우 나눌 수 없으므로 예외")
     void recallAtKTestIsFive() {
         List<String> retrieved = List.of("무관한 청크", "나는 왕이다.", "내이름은 김철수이고 직업은 백수");
-        assertThrows(IllegalArgumentException.class, () -> RetrievalMetrics.recallAtK(retrieved, List.of(""), 3));
+        assertThrows(IllegalArgumentException.class, () -> RetrievalMetrics.recallAtK(retrieved, List.of("나는 왕이다.", ""), 3));
     }
 
     @Test
@@ -98,6 +103,13 @@ public class RetrievalMetricsTest {
         double atK = RetrievalMetrics.recallAtK(retrieved, List.of("내이름은 김철수", "왕"), 3);
 
         assertEquals(0.0, atK);
+    }
+
+    @Test
+    @DisplayName("anchors가 빈리스트일경우 예외 발생")
+    void recallAtKTestIsSeven() {
+        List<String> retrieved = List.of("무관한 청크", "나는 왕이다.", "내이름은 김철수이고 직업은 백수");
+        assertThrows(IllegalArgumentException.class, () -> RetrievalMetrics.recallAtK(retrieved, List.of(), 3));
     }
 
     @Test
