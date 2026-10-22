@@ -1,5 +1,7 @@
 package com.worldtaletalk.story.rag;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.ai.document.Document;
@@ -17,17 +19,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * 평가용 설정집(elfheim.txt)을 eval 전용 worldId로 인덱싱한 뒤, 운영과 같은 WorldSettingRetriever로 검색해서
+ * RAG 검색 품질을 확인하기 위한 평가 러너
+ * <p>
+ * 실제 세계관 청크를 건드리지 않기 위해 테스트마다 평가용 청크를 먼저 삭제하고 끝나면 다시 삭제함
+ * (이전 실행이 중간에 중단돼도 평가용 청크가 쌓이지 않게 하기 위함)
+ * OpenAI 임베딩 API를 호출하므로 일반 테스트와 구분하려고 rag-eval 태그를 붙임
+ */
 @Slf4j
 @Tag("rag-eval")
 @SpringBootTest
 public class WorldSettingRetrievalEvalTest {
     @Autowired private VectorStore vectorStore;
     @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired private WorldSettingRetriever worldSettingRetriever; // 운영과 같은 검색 경로로 평가하기 위해 주입
+    @Autowired private ObjectMapper objectMapper;
     private static final Long EVAL_WORLD_ID = -1L; // 실제 worldId와 겹치지 않게 음수로 지정(실제값 양수)
     private List<String> chunkTexts; // 청크 번호 리스트 (인덱스)
-    private int othersBefore;
+    private int othersBefore; // 테스트 전 기존(실제 세계관) 청크 수 (테스트 후 변화가 없는지 비교용)
 
     /**
      * 테스트를 시작할때 현재 프로젝트 루트 경로에 존재하는 elfheim.txt를 청킹해서 VectorStore에 넣음
@@ -36,16 +48,18 @@ public class WorldSettingRetrievalEvalTest {
      */
     @BeforeEach
     void indexEvalWorld() throws IOException {
-        deleteEvalIndex();
-        othersBefore = countOthers();
+        deleteEvalIndex(); // 이전 실행이 중간에 중단돼서 남은 평가용 청크가 있을 수 있어 먼저 삭제
+        othersBefore = countOthers(); // 평가용 청크를 넣기 전에 기존 청크 수를 기록
 
         String text;
         try (InputStream in = new ClassPathResource("rag-eval/worlds/elfheim.txt").getInputStream()) {
             text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
+        // 운영 indexWorld와 같은 기본 분할기(TokenTextSplitter)로 청킹
         List<Document> chunks = new TokenTextSplitter().apply(List.of(new Document(text)));
         chunkTexts = chunks.stream().map(Document::getText).toList();
 
+        // 운영 indexWorld와 같은 메타데이터 구조(sourceType, sourceId)로 저장
         List<Document> docs = chunks.stream()
                 .map(c -> new Document(c.getText(), Map.of(
                         "sourceType", "WORLD_SETTING",
@@ -67,16 +81,62 @@ public class WorldSettingRetrievalEvalTest {
     @Test
     @DisplayName("인덱싱하면 6개가 들어가고 삭제하면 0개가 되며 기존 데이터는 기대로")
     void indexAndCleanUp() {
-        assertEquals(6, countBySourceId(EVAL_WORLD_ID.toString()));
-        assertEquals(othersBefore, countOthers());
+        assertEquals(6, countBySourceId(EVAL_WORLD_ID.toString())); // 평가용 청크가 실제로 들어갔는지
+        assertEquals(othersBefore, countOthers()); // 넣는 과정에서 기존 청크가 변하지 않았는지
 
         deleteEvalIndex();
-        assertEquals(0, countBySourceId(EVAL_WORLD_ID.toString()));
-        assertEquals(othersBefore, countOthers());
+        assertEquals(0, countBySourceId(EVAL_WORLD_ID.toString())); // 평가용 청크만 삭제됐는지
+        assertEquals(othersBefore, countOthers()); // 삭제가 기존 청크를 건드리지 않았는지
+    }
+
+    /**
+     * 질문 1개로 검색해서 반환 순서, 유사도, 정답 문구의 순위를 확인
+     * (점수 평가 전에 검색 파이프라인이 정상 동작하는지 눈으로 확인하기 위함)
+     */
+    @Test
+    @DisplayName("질문 1개로 검색하면 청크가 유사도 순으로 반환된다")
+    void searchOrderForOneQuery() {
+        String query = "마정석 거래는 하나에 얼마인가?";
+        List<String> anchors = List.of("마정석 한 개는 시중에서 금화 두 닢"); // 설정집 원문과 글자까지 같아야 매칭됨
+
+        // 운영 topK(5)가 아니라 청크 수만큼 요청해서 전체 순위를 확인
+        List<Document> docs = worldSettingRetriever.retrieve(EVAL_WORLD_ID, query, chunkTexts.size());
+
+        log.info("질문: {} / 반환 {}개", query, docs.size());
+
+        for (int i = 0; i < docs.size(); i++) {
+            Document d = docs.get(i);
+            // 검색된 텍스트가 원래 몇 번째 청크인지 번호로 변환해서 출력
+            log.info("{}위 -> chunk {} (유사도 {})", i + 1, chunkNumberOf(d.getText()), d.getScore());
+        }
+
+        List<String> texts = docs.stream().map(Document::getText).toList();
+        int rank = RetrievalMetrics.firstRelevantRank(texts, anchors); // 정답 문구가 처음 나온 순위 (없으면 0)
+        log.info("정답 순위 {}", rank);
+
+        assertEquals(chunkTexts.size(), docs.size()); // 청크가 모두 반환되는지
+    }
+
+    @Test
+    @DisplayName("eval-set.json을 읽으면 31건이 불러와짐")
+    void loadEvalCasesReadsAllCases() throws IOException {
+        List<RagEvalCase> ragEvalCases = loadEvalCases();
+
+        assertAll(
+                () -> assertEquals(31, ragEvalCases.size()), // 현재 평가세트는 31개
+                // 첫번째 Id가 e-001로 순서가 정확히 나오는지 확인
+                () -> assertEquals("e-001", ragEvalCases.getFirst().id()),
+                // expectedAnchors빈값이 존재하는지 아닌지 확인
+                () -> assertTrue(ragEvalCases.stream().noneMatch(r -> r.expectedAnchors().isEmpty()),
+                        "expectedAnchors가 비어있는 질문 존재함")
+        );
     }
 
     /* Helper Method */
 
+    /**
+     * 평가용 청크만 삭제 (sourceType, sourceId 필터로 실제 세계관 청크는 건드리지 않음)
+     */
     private void deleteEvalIndex() {
         FilterExpressionBuilder b = new FilterExpressionBuilder();
         vectorStore.delete(b.and(
@@ -86,6 +146,12 @@ public class WorldSettingRetrievalEvalTest {
         );
     }
 
+    /**
+     * vector_store에서 해당 sourceId를 가진 청크 수 조회
+     *
+     * @param sourceId 세계관 PK (메타데이터에 문자열로 저장됨)
+     * @return 청크 수
+     */
     private int countBySourceId(String sourceId) {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM vector_store WHERE metadata->>'sourceId' = ?",
@@ -94,11 +160,45 @@ public class WorldSettingRetrievalEvalTest {
         return count == null ? 0 : count;
     }
 
+    /**
+     * 평가용 worldId를 제외한 기존 청크 수 조회
+     * (sourceId가 없는 행도 포함하기 위해 <>가 아닌 IS DISTINCT FROM 사용)
+     *
+     * @return 기존 청크 수
+     */
     private int countOthers() {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM vector_store WHERE metadata->>'sourceId' IS DISTINCT FROM ?",
                 Integer.class, EVAL_WORLD_ID.toString()
         );
         return count == null ? 0 : count;
+    }
+
+    /**
+     * 검색된 텍스트가 원본 청크 중 몇 번째인지 조회 (공백 차이는 정규화로 흡수)
+     *
+     * @param text 검색된 청크 텍스트
+     * @return 청크 번호 (0부터), 일치하는 청크가 없으면 -1
+     */
+    private int chunkNumberOf(String text) {
+        for (int i = 0; i < chunkTexts.size(); i++) {
+            if (RetrievalMetrics.normalize(chunkTexts.get(i)).equals(RetrievalMetrics.normalize(text))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 평가 세트 JSON 값을 모두 자바코드로 역직렬화
+     *
+     * @return 평가세트 질문 목록
+     * @throws IOException 파일 입출력 예외
+     */
+    private List<RagEvalCase> loadEvalCases() throws IOException {
+        try (InputStream in = new ClassPathResource("rag-eval/eval-set.json").getInputStream()) {
+            String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            return objectMapper.readValue(text, new TypeReference<List<RagEvalCase>>() {});
+        }
     }
 }

@@ -5,6 +5,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * RAG 검색 결과를 채점하는 지표 계산 유틸 (순위, recall@k, 역수 순위)
+ * <p>
+ * 정답은 청크 ID가 아니라 정답 근거 문구(anchor)가 청크에 포함되는지로 판단함
+ * (세계관을 다시 인덱싱하거나 청크 크기를 바꾸면 청크 ID와 경계가 달라지기 때문에,
+ * 문구 기준이어야 같은 평가 세트로 설정 변경 전후를 비교할 수 있음)
+ * <p>
+ * 유사도는 벡터 검색 단계에서 이미 계산되어 순서대로 들어오며, 이 클래스는 그 순서를 받아 채점만 함
+ * (정답 문구가 한 글자라도 다르거나 두 청크에 걸쳐 잘리면 검색이 맞아도 순위는 0이 됨)
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RetrievalMetrics {
     /**
@@ -78,6 +88,8 @@ public final class RetrievalMetrics {
 
     /**
      * 정답 근거 목록이 비어있거나 공백일 경우 예외발생 하기 위한 헬퍼 메서드
+     * (빈 문구는 어떤 청크에도 포함되는 것으로 판정돼 순위가 1위로 부풀려지고, 오류도 없이 지나가기 때문에
+     * 평가 세트의 오타나 누락을 조기에 발견하기 위해 입구에서 먼저 막음)
      *
      * @param anchors 정답 근거 목록
      */

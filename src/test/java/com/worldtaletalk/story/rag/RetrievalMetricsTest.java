@@ -7,6 +7,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * RetrievalMetrics(순위, recall@k, 역수 순위, 입력 검증) 계산이 맞는지 검증
+ * (채점 도구가 틀리면 평가 점수도 믿을 수 없기 때문에 검색 평가에 앞서 먼저 확인하기 위함)
+ */
 public class RetrievalMetricsTest {
     @Test
     @DisplayName("정답이 1번째에 있는 경우 Rank = 1")

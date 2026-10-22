@@ -10,7 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-// RAG 검색 품질 검사를 하기 위한 재사용으로 분리함
+/**
+ * 세계관 설정 청크 검색기 (해당 세계관의 WORLD_SETTING 청크만 대상)
+ * <p>
+ * StoryAiServiceImpl 안에 있던 검색 로직을 분리함. RAG 검색 품질 평가 코드가 운영과 같은 검색 경로를 호출하게 하기 위함
+ * (동작은 분리 전과 같음: 메타데이터 필터, 기본 topK 5, 유사도 임계값 미지정)
+ */
 @Component
 @RequiredArgsConstructor
 public class WorldSettingRetriever {
