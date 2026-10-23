@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -132,6 +133,31 @@ public class WorldSettingRetrievalEvalTest {
         );
     }
 
+    @Test
+    @DisplayName("청크에 평가세트JSON에 있는 정답 문구가 모두 들어있으므로 예외가 발생하지 않음")
+    void validateAnchorsPassesForEvalSet() throws IOException {
+        List<RagEvalCase> ragEvalCases = loadEvalCases();
+
+        assertDoesNotThrow(() -> validateAnchorsExistInChunks(ragEvalCases));
+    }
+
+    @Test
+    @DisplayName("청크에 평가세트JSON에 있는 정답 문구가 들어있지 않음 예외 발생")
+    void validateAnchorsFailsWhenAnchorIsMissing() {
+        RagEvalCase ragEvalCase = new RagEvalCase(
+                "f-001",
+                "321",
+                "546",
+                "존재하지 않음",
+                List.of("존", "재", "하", "지", "않", "음")
+        );
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> validateAnchorsExistInChunks(List.of(ragEvalCase)),
+                "평가세트에 정답 문구가 들어있음"
+        );
+        assertTrue(e.getMessage().contains(ragEvalCase.id()));
+    }
+
     /* Helper Method */
 
     /**
@@ -199,6 +225,26 @@ public class WorldSettingRetrievalEvalTest {
         try (InputStream in = new ClassPathResource("rag-eval/eval-set.json").getInputStream()) {
             String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
             return objectMapper.readValue(text, new TypeReference<List<RagEvalCase>>() {});
+        }
+    }
+
+
+    /**
+     * 평가세트 JSON의 정답 문구가 청크에도 있는지 없는지 구분하기 위한 헬퍼메서드
+     *
+     * @param ragEvalCases 평가세트
+     */
+    private void validateAnchorsExistInChunks(List<RagEvalCase> ragEvalCases) {
+        List<String> problems = new ArrayList<>();
+        ragEvalCases.forEach(rCase -> rCase.expectedAnchors().forEach(anchor -> {
+            boolean exists = chunkTexts.stream().anyMatch(chunk -> RetrievalMetrics.contains(chunk, anchor));
+            if (!exists) {
+                problems.add(rCase.id() + " : " + anchor);
+            }
+        }));
+
+        if (!problems.isEmpty()) {
+            throw new IllegalStateException("어떤 청크에도 없는 정답 문구가 있음:\n" + String.join("\n", problems));
         }
     }
 }
