@@ -153,7 +153,7 @@ public class WorldSettingRetrievalEvalTest {
         );
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> validateAnchorsExistInChunks(List.of(ragEvalCase)),
-                "평가세트에 정답 문구가 들어있음"
+                "청크에 없는 정답 문구가 있으면 예외가 발생해야 함"
         );
         assertTrue(e.getMessage().contains(ragEvalCase.id()));
     }
