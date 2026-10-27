@@ -34,10 +34,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("rag-eval")
 @SpringBootTest
 public class WorldSettingRetrievalEvalTest {
-    @Autowired private VectorStore vectorStore;
-    @Autowired private JdbcTemplate jdbcTemplate;
-    @Autowired private WorldSettingRetriever worldSettingRetriever; // 운영과 같은 검색 경로로 평가하기 위해 주입
-    @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private VectorStore vectorStore;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private WorldSettingRetriever worldSettingRetriever; // 운영과 같은 검색 경로로 평가하기 위해 주입
+    @Autowired
+    private ObjectMapper objectMapper;
     private static final Long EVAL_WORLD_ID = -1L; // 실제 worldId와 겹치지 않게 음수로 지정(실제값 양수)
     private List<String> chunkTexts; // 청크 번호 리스트 (인덱스)
     private int othersBefore; // 테스트 전 기존(실제 세계관) 청크 수 (테스트 후 변화가 없는지 비교용)
@@ -149,13 +153,33 @@ public class WorldSettingRetrievalEvalTest {
                 "321",
                 "546",
                 "존재하지 않음",
-                List.of("존", "재", "하", "지", "않", "음")
+                List.of("존재하지 않는 문구")
         );
 
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> validateAnchorsExistInChunks(List.of(ragEvalCase)),
                 "청크에 없는 정답 문구가 있으면 예외가 발생해야 함"
         );
         assertTrue(e.getMessage().contains(ragEvalCase.id()));
+    }
+
+    @Test
+    @DisplayName("질문 1건을 채점하면 id와 유형이 그대로 담기고 순위 범위와 recall 순서가 맞게 나옴")
+    void evaluateCaseReturnsConsistentMetrics() throws IOException {
+        RagEvalCase ragEvalCase = loadEvalCases().getFirst();
+
+        CaseResult caseResult = evaluateCase(ragEvalCase);
+
+        assertAll(
+                () -> assertEquals("e-001", caseResult.id()),
+                () -> assertEquals("DIRECT", caseResult.type()),
+                () -> assertTrue(caseResult.rank() >= 1),
+                () -> assertTrue(caseResult.rank() <= chunkTexts.size()),
+                () -> assertTrue(caseResult.recallAt1() >= 0.0 && caseResult.recallAt1() <= 1.0),
+                () -> assertTrue(caseResult.recallAt3() >= 0.0 && caseResult.recallAt3() <= 1.0),
+                () -> assertTrue(caseResult.recallAt5() >= 0.0 && caseResult.recallAt5() <= 1.0),
+                () -> assertTrue(caseResult.recallAt1() <= caseResult.recallAt3()),
+                () -> assertTrue(caseResult.recallAt3() <= caseResult.recallAt5())
+        );
     }
 
     /* Helper Method */
@@ -166,8 +190,8 @@ public class WorldSettingRetrievalEvalTest {
     private void deleteEvalIndex() {
         FilterExpressionBuilder b = new FilterExpressionBuilder();
         vectorStore.delete(b.and(
-                b.eq("sourceType", "WORLD_SETTING"),
-                b.eq("sourceId", EVAL_WORLD_ID.toString()))
+                        b.eq("sourceType", "WORLD_SETTING"),
+                        b.eq("sourceId", EVAL_WORLD_ID.toString()))
                 .build()
         );
     }
@@ -224,7 +248,8 @@ public class WorldSettingRetrievalEvalTest {
     private List<RagEvalCase> loadEvalCases() throws IOException {
         try (InputStream in = new ClassPathResource("rag-eval/eval-set.json").getInputStream()) {
             String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return objectMapper.readValue(text, new TypeReference<List<RagEvalCase>>() {});
+            return objectMapper.readValue(text, new TypeReference<List<RagEvalCase>>() {
+            });
         }
     }
 
@@ -246,5 +271,31 @@ public class WorldSettingRetrievalEvalTest {
         if (!problems.isEmpty()) {
             throw new IllegalStateException("어떤 청크에도 없는 정답 문구가 있음:\n" + String.join("\n", problems));
         }
+    }
+
+    /**
+     * 질문 1건을 실제로 검색해서 정답 문구의 순위와 recall(1, 3, 5)을 구하고 결과로 묶음
+     * (운영 topK(5)가 아니라 청크 수만큼 요청해서 전체 순위를 받음. 6위와 아예 못 찾은 경우(0)를 구분하기 위함)
+     *
+     * @param ragEvalCase 평가 세트 질문 1건
+     * @return 질문 id, 유형, 정답 문구가 처음 나온 순위, recall@1/3/5
+     */
+    private CaseResult evaluateCase(RagEvalCase ragEvalCase) {
+        List<String> anchors = ragEvalCase.expectedAnchors();
+        List<Document> docs = worldSettingRetriever.retrieve(EVAL_WORLD_ID, ragEvalCase.query(), chunkTexts.size());
+        List<String> texts = docs.stream().map(Document::getText).toList();
+        int rank = RetrievalMetrics.firstRelevantRank(texts, anchors);
+        double recall1 = RetrievalMetrics.recallAtK(texts, anchors, 1);
+        double recall3 = RetrievalMetrics.recallAtK(texts, anchors, 3);
+        double recall5 = RetrievalMetrics.recallAtK(texts, anchors, 5);
+
+        return new CaseResult(
+                ragEvalCase.id(),
+                ragEvalCase.type(),
+                rank,
+                recall1,
+                recall3,
+                recall5
+        );
     }
 }
