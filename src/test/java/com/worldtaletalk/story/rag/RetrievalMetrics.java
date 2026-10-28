@@ -53,13 +53,26 @@ public final class RetrievalMetrics {
     }
 
     /**
-     * 순위 -> 역수. 못 찾으면 0
+     * 순위 -> 역수. 못 찾으면 0 (순위는 낮을수록 좋고 점수는 높을 수 록 좋으니 역수로 계산)
      *
      * @param rank firstRelevantRank 결과 (1부터, 없으면 0)
      * @return 1/rank, 못 찾으면 0.0
      */
     static double reciprocalRank(int rank) {
         return rank == 0 ? 0.0 : 1.0 / rank;
+    }
+
+    /**
+     * 정답 순위가 1 ~ k위 안일 때만 역수 점수를 구함 (k위 밖이거나 못 찾은 경우(0)는 0.0)
+     * (운영은 topK 5개만 LLM에 전달하므로 6위부터는 찾지 못한 것과 같게 처리하기 위함)
+     * topK가 변경되면 수치가 변경될 수 있음
+     *
+     * @param rank 정답 문구가 처음 나온 순위 (1부터, 못 찾으면 0)
+     * @param k    인정할 순위 범위 (운영 topK)
+     * @return 1/rank, 범위 밖이면 0.0
+     */
+    static double reciprocalRankAtK(int rank, int k) {
+        return rank >= 1 && rank <= k ? reciprocalRank(rank) : 0.0;
     }
 
     /**

@@ -136,6 +136,41 @@ public class RetrievalMetricsTest {
     }
 
     @Test
+    @DisplayName("topK 5개 중 순위가 1위 일때는 MRR 점수는 1.0")
+    void reciprocalRankAtKIsOne() {
+        double atK = RetrievalMetrics.reciprocalRankAtK(1, 5);
+        assertEquals(1.0, atK);
+    }
+
+    @Test
+    @DisplayName("topK 5개 중 순위가 3위일 때는 MRR 점수 1/3")
+    void reciprocalRankAtKIsTwo() {
+        double atK = RetrievalMetrics.reciprocalRankAtK(3, 5);
+        assertEquals(0.33, atK, 0.01);
+    }
+
+    @Test
+    @DisplayName("topK 5개 중 순위가 5위 일때는 MRR 점수는 0.2")
+    void reciprocalRankAtKIsThree() {
+        double atK = RetrievalMetrics.reciprocalRankAtK(5, 5);
+        assertEquals(0.2, atK);
+    }
+
+    @Test
+    @DisplayName("topK 5개 중 순위가 6위 일때는 MRR 점수는 0.0")
+    void reciprocalRankAtKIsFour() {
+        double atK = RetrievalMetrics.reciprocalRankAtK(6, 5);
+        assertEquals(0.0, atK);
+    }
+
+    @Test
+    @DisplayName("topK 5개 중 순위가 0 일때는 MRR 점수는 0.0 (찾지 못했으니 당연히 0.0)")
+    void reciprocalRankAtKIsFive() {
+        double atK = RetrievalMetrics.reciprocalRankAtK(0, 5);
+        assertEquals(0.0, atK);
+    }
+
+    @Test
     @DisplayName("contains()에 빈값이나 공백이 들어있는 경우 예외")
     void containsTestIsOne() {
         assertThrows(IllegalArgumentException.class, () -> RetrievalMetrics.contains("무관한 청크", ""));

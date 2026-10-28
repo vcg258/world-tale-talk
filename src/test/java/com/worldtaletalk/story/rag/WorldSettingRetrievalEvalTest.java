@@ -178,8 +178,15 @@ public class WorldSettingRetrievalEvalTest {
                 () -> assertTrue(caseResult.recallAt3() >= 0.0 && caseResult.recallAt3() <= 1.0),
                 () -> assertTrue(caseResult.recallAt5() >= 0.0 && caseResult.recallAt5() <= 1.0),
                 () -> assertTrue(caseResult.recallAt1() <= caseResult.recallAt3()),
-                () -> assertTrue(caseResult.recallAt3() <= caseResult.recallAt5())
+                () -> assertTrue(caseResult.recallAt3() <= caseResult.recallAt5()),
+                () -> assertTrue(caseResult.mrrAt5() >= 0.0 && caseResult.mrrAt5() <= 1.0)
         );
+    }
+
+    @Test
+    @DisplayName("")
+    void runBaseline() {
+
     }
 
     /* Helper Method */
@@ -285,6 +292,7 @@ public class WorldSettingRetrievalEvalTest {
         List<Document> docs = worldSettingRetriever.retrieve(EVAL_WORLD_ID, ragEvalCase.query(), chunkTexts.size());
         List<String> texts = docs.stream().map(Document::getText).toList();
         int rank = RetrievalMetrics.firstRelevantRank(texts, anchors);
+        double mrrAt5 = RetrievalMetrics.reciprocalRankAtK(rank, WorldSettingRetriever.DEFAULT_TOP_K);
         double recall1 = RetrievalMetrics.recallAtK(texts, anchors, 1);
         double recall3 = RetrievalMetrics.recallAtK(texts, anchors, 3);
         double recall5 = RetrievalMetrics.recallAtK(texts, anchors, 5);
@@ -295,7 +303,8 @@ public class WorldSettingRetrievalEvalTest {
                 rank,
                 recall1,
                 recall3,
-                recall5
+                recall5,
+                mrrAt5
         );
     }
 }

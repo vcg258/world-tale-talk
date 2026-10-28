@@ -9,6 +9,7 @@ package com.worldtaletalk.story.rag;
  * @param recallAt1 상위 1개 안에서 찾은 정답 문구 비율
  * @param recallAt3 상위 3개 안에서 찾은 정답 문구 비율
  * @param recallAt5 상위 5개 안에서 찾은 정답 문구 비율
+ * @param mrrAt5    운영 topK(5) 기준 역수 순위 점수 (1~5위는 1/순위, 그 밖은 0.0)
  */
 public record CaseResult(
         String id,
@@ -16,5 +17,6 @@ public record CaseResult(
         int rank,
         double recallAt1,
         double recallAt3,
-        double recallAt5
+        double recallAt5,
+        double mrrAt5
 ) {}
