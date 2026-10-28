@@ -184,10 +184,26 @@ public class WorldSettingRetrievalEvalTest {
     }
 
     @Test
-    @DisplayName("")
-    void runBaseline() {
-
+    @DisplayName("평가 세트 전체를 채점해서 질문별 결과를 로그로 출력하고 결과 개수와 id 순서가 평가 세트와 같음")
+    void runBaseline() throws IOException {
+        List<RagEvalCase> ragEvalCases = loadEvalCases();
+        List<String> answerIdx = ragEvalCases.stream().map(RagEvalCase::id).toList();
+        validateAnchorsExistInChunks(ragEvalCases);
+        List<CaseResult> results = ragEvalCases.stream().map(r -> evaluateCase(r)).toList();
+        List<String> resultIdx = results.stream().map(CaseResult::id).toList();
+        results.forEach(c ->
+            log.info("id={} type={} rank={} r@1={} r@3={} r@5={} mrr@5={}",
+                    c.id(),
+                    c.type(),
+                    c.rank(),
+                    c.recallAt1(),
+                    c.recallAt3(),
+                    c.recallAt5(),
+                    c.mrrAt5()
+            ));
+        assertEquals(answerIdx, resultIdx);
     }
+
 
     /* Helper Method */
 
