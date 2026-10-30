@@ -186,11 +186,15 @@ public class WorldSettingRetrievalEvalTest {
     @Test
     @DisplayName("평가 세트 전체를 채점해서 질문별 결과를 로그로 출력하고 결과 개수와 id 순서가 평가 세트와 같음")
     void runBaseline() throws IOException {
+        // 평가 세트 불러오기
         List<RagEvalCase> ragEvalCases = loadEvalCases();
         List<String> answerIdx = ragEvalCases.stream().map(RagEvalCase::id).toList();
+        // 정답 문구 오타는 점수 계산 전에 먼저 걸러냄
         validateAnchorsExistInChunks(ragEvalCases);
+        // 질문별 채점
         List<CaseResult> results = ragEvalCases.stream().map(r -> evaluateCase(r)).toList();
         List<String> resultIdx = results.stream().map(CaseResult::id).toList();
+        // 질문별 rank, recall, mrr 로그
         results.forEach(c ->
             log.info("id={} type={} rank={} r@1={} r@3={} r@5={} mrr@5={}",
                     c.id(),
@@ -201,6 +205,19 @@ public class WorldSettingRetrievalEvalTest {
                     c.recallAt5(),
                     c.mrrAt5()
             ));
+
+        // 타입별 recall, mrr 평균
+        List<TypeSummary> summaries = EvalReport.averageByType(results);
+        summaries.forEach(s ->
+                log.info("name={}, queryCount={}, r@1={}, r@3={}, r@5={}, mrr@5={}",
+                        s.name(),
+                        s.queryCount(),
+                        s.recallAvg1(),
+                        s.recallAvg3(),
+                        s.recallAvg5(),
+                        s.mrrAvg5()
+                ));
+        // 결과 개수와 id 순서가 평가 세트와 같은지 검증
         assertEquals(answerIdx, resultIdx);
     }
 
