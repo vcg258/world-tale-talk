@@ -39,6 +39,27 @@ public final class EvalReport {
         return summaries;
     }
 
+    static CaseResult scoreCase(RagEvalCase ragEvalCase, List<String> rankedTexts) {
+        List<String> anchors = ragEvalCase.expectedAnchors();
+        int rank = RetrievalMetrics.firstRelevantRank(rankedTexts, anchors);
+        double mrrAt5 = RetrievalMetrics.reciprocalRankAtK(rank, WorldSettingRetriever.DEFAULT_TOP_K);
+        double recall1 = RetrievalMetrics.recallAtK(rankedTexts, anchors, 1);
+        double recall3 = RetrievalMetrics.recallAtK(rankedTexts, anchors, 3);
+        double recall5 = RetrievalMetrics.recallAtK(rankedTexts, anchors, 5);
+
+        return new CaseResult(
+                ragEvalCase.id(),
+                ragEvalCase.type(),
+                rank,
+                recall1,
+                recall3,
+                recall5,
+                mrrAt5
+        );
+    }
+
+    /* Helper Method */
+
     /**
      * 결과 목록 하나의 recall@1/3/5와 MRR@5 평균을 구해 한 줄(TypeSummary)로 만듦
      * (유형별 줄과 전체 줄을 같은 방식으로 계산하려고 분리함)

@@ -45,6 +45,8 @@ public class WorldSettingRetrievalEvalTest {
     private static final Long EVAL_WORLD_ID = -1L; // 실제 worldId와 겹치지 않게 음수로 지정(실제값 양수)
     private List<String> chunkTexts; // 청크 번호 리스트 (인덱스)
     private int othersBefore; // 테스트 전 기존(실제 세계관) 청크 수 (테스트 후 변화가 없는지 비교용)
+    private static final int RANDOM_TRIALS = 2000;
+    private static final long RANDOM_SEED = 42;
 
     /**
      * 테스트를 시작할때 현재 프로젝트 루트 경로에 존재하는 elfheim.txt를 청킹해서 VectorStore에 넣음
@@ -192,30 +194,44 @@ public class WorldSettingRetrievalEvalTest {
         // 정답 문구 오타는 점수 계산 전에 먼저 걸러냄
         validateAnchorsExistInChunks(ragEvalCases);
         // 질문별 채점
-        List<CaseResult> results = ragEvalCases.stream().map(r -> evaluateCase(r)).toList();
+        List<CaseResult> results = ragEvalCases.stream().map(result -> evaluateCase(result)).toList();
         List<String> resultIdx = results.stream().map(CaseResult::id).toList();
         // 질문별 rank, recall, mrr 로그
-        results.forEach(c ->
+        log.info("------ 질문별 rank, recall, mrr 로그 ------");
+        results.forEach(result ->
             log.info("id={} type={} rank={} r@1={} r@3={} r@5={} mrr@5={}",
-                    c.id(),
-                    c.type(),
-                    c.rank(),
-                    c.recallAt1(),
-                    c.recallAt3(),
-                    c.recallAt5(),
-                    c.mrrAt5()
+                    result.id(),
+                    result.type(),
+                    result.rank(),
+                    result.recallAt1(),
+                    result.recallAt3(),
+                    result.recallAt5(),
+                    result.mrrAt5()
             ));
 
         // 타입별 recall, mrr 평균
         List<TypeSummary> summaries = EvalReport.averageByType(results);
-        summaries.forEach(s ->
+        log.info("------ 타입별 recall, mrr 평균 ------");
+        summaries.forEach(summary ->
                 log.info("name={}, queryCount={}, r@1={}, r@3={}, r@5={}, mrr@5={}",
-                        s.name(),
-                        s.queryCount(),
-                        s.recallAvg1(),
-                        s.recallAvg3(),
-                        s.recallAvg5(),
-                        s.mrrAvg5()
+                        summary.name(),
+                        summary.queryCount(),
+                        summary.recallAvg1(),
+                        summary.recallAvg3(),
+                        summary.recallAvg5(),
+                        summary.mrrAvg5()
+                ));
+
+        List<TypeSummary> randomBaseline = RandomBaseline.simulate(ragEvalCases, chunkTexts, RANDOM_TRIALS, RANDOM_SEED);
+        log.info("------ 질문마다 청크순서를 무작위로 섞은 후 평균 ------");
+        randomBaseline.forEach(random ->
+                log.info("name={}, queryCount={}, r@1={}, r@3={}, r@5={}, mrr@5={}",
+                        random.name(),
+                        random.queryCount(),
+                        random.recallAvg1(),
+                        random.recallAvg3(),
+                        random.recallAvg5(),
+                        random.mrrAvg5()
                 ));
         // 결과 개수와 id 순서가 평가 세트와 같은지 검증
         assertEquals(answerIdx, resultIdx);
@@ -321,23 +337,8 @@ public class WorldSettingRetrievalEvalTest {
      * @return 질문 id, 유형, 정답 문구가 처음 나온 순위, recall@1/3/5
      */
     private CaseResult evaluateCase(RagEvalCase ragEvalCase) {
-        List<String> anchors = ragEvalCase.expectedAnchors();
         List<Document> docs = worldSettingRetriever.retrieve(EVAL_WORLD_ID, ragEvalCase.query(), chunkTexts.size());
         List<String> texts = docs.stream().map(Document::getText).toList();
-        int rank = RetrievalMetrics.firstRelevantRank(texts, anchors);
-        double mrrAt5 = RetrievalMetrics.reciprocalRankAtK(rank, WorldSettingRetriever.DEFAULT_TOP_K);
-        double recall1 = RetrievalMetrics.recallAtK(texts, anchors, 1);
-        double recall3 = RetrievalMetrics.recallAtK(texts, anchors, 3);
-        double recall5 = RetrievalMetrics.recallAtK(texts, anchors, 5);
-
-        return new CaseResult(
-                ragEvalCase.id(),
-                ragEvalCase.type(),
-                rank,
-                recall1,
-                recall3,
-                recall5,
-                mrrAt5
-        );
+        return EvalReport.scoreCase(ragEvalCase, texts);
     }
 }
