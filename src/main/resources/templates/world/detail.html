@@ -17,13 +17,6 @@
             <a class="btn" th:href="@{/worlds/{id}/personas(id=${world.id})}">페르소나 선택</a>
         </div>
     </section>
-    <section class="card">
-        <div class="card-body">
-            <h2>세계관 설정</h2>
-            <p class="muted" th:text="${world.settingText}">설정 텍스트</p>
-        </div>
-    </section>
-
     <section class="section world-review-section">
         <div class="page-title compact-title">
             <h2>리뷰</h2>
