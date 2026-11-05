@@ -53,6 +53,9 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
     private static final int GOOD_THRESHOLD = 20;   // 델타 합산 +20 이상 -> GOOD
     private static final int BAD_THRESHOLD = -20;   // 델타 합산 -20 이하 -> BAD
 
+    // 엔딩 허용 최소 진행도 % (유저가 입력으로 클라이막스를 서술해 엔딩을 앞당기는 것 방지) TODO 밸런스 조정 필요시 수정
+    private static final int MIN_ENDING_PROGRESS_PERCENT = 50;
+
     /**
      * 턴 시작 처리 (세션 검증, 턴 증가, 선택지 스텟 로그 저장)
      *
@@ -124,6 +127,22 @@ public class StoryTurnTransactionServiceImpl implements StoryTurnTransactionServ
                     .itemEvent(llmTurnResult.getItemEvent())
                     .endingFlag(true)
                     .hiddenEventFlag(llmTurnResult.isHiddenEventFlag())
+                    .build();
+        }
+
+        // 진행도가 낮은 상태에서 LLM이 엔딩을 요청해도 무시 (히든 이벤트는 진행도와 상관없이 허용)
+        if (llmTurnResult.isEndingFlag() && !llmTurnResult.isHiddenEventFlag()
+                && progressPercent < MIN_ENDING_PROGRESS_PERCENT) {
+            log.info("진행도 부족으로 엔딩 요청 무시 sessionId: {}, turn: {}/{}, progress: {}%",
+                    sessionId, state.getCurrentTurn(), worlds.getTargetTurn(), progressPercent);
+            llmTurnResult = LlmTurnResult.builder()
+                    .story(llmTurnResult.getStory())
+                    .choices(llmTurnResult.getChoices())
+                    .statChanges(llmTurnResult.getStatChanges())
+                    .statChangesByChoice(llmTurnResult.getStatChangesByChoice())
+                    .itemEvent(llmTurnResult.getItemEvent())
+                    .endingFlag(false)
+                    .hiddenEventFlag(false)
                     .build();
         }
 
