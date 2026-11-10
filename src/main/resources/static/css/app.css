@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500&family=Nanum+Gothic+Coding&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Jua&family=Noto+Serif+KR:wght@400;500&family=Nanum+Gothic+Coding&display=swap");
 
 :root {
   --bg: #f6f7fb;
@@ -2342,4 +2342,29 @@ body:has(.admin-layout, .admin-tabs, .admin-content) .alert {
 body:has(.admin-layout, .admin-tabs, .admin-content) .modal-header {
   background: var(--surface);
   border-bottom-color: var(--line);
+}
+
+/* =====================================================================
+   글꼴 (제목, 로고, 버튼에만 적용)
+   - 사용자 화면: IBM Plex Sans KR / 관리자 화면: Jua
+   - 서사 본문(Noto Serif KR)과 표, 폼 안의 글자는 가독성을 위해 기존 글꼴 유지
+   - Jua는 굵기가 하나뿐이라 font-weight를 400으로 고정 (가짜 굵게 방지)
+   ===================================================================== */
+body:not(:has(.admin-layout, .admin-tabs, .admin-content)) h1,
+body:not(:has(.admin-layout, .admin-tabs, .admin-content)) h2,
+body:not(:has(.admin-layout, .admin-tabs, .admin-content)) h3,
+body:not(:has(.admin-layout, .admin-tabs, .admin-content)) .brand,
+body:not(:has(.admin-layout, .admin-tabs, .admin-content)) .btn {
+  font-family: "IBM Plex Sans KR", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+}
+
+body:has(.admin-layout, .admin-tabs, .admin-content) h1,
+body:has(.admin-layout, .admin-tabs, .admin-content) h2,
+body:has(.admin-layout, .admin-tabs, .admin-content) h3,
+body:has(.admin-layout, .admin-tabs, .admin-content) .brand,
+body:has(.admin-layout, .admin-tabs, .admin-content) .btn,
+body:has(.admin-layout, .admin-tabs, .admin-content) .admin-tabs a,
+body:has(.admin-layout, .admin-tabs, .admin-content) .admin-menu-group h2 {
+  font-family: "Jua", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  font-weight: 400;
 }
