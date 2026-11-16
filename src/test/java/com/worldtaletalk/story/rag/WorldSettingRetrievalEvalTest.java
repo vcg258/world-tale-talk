@@ -125,12 +125,12 @@ public class WorldSettingRetrievalEvalTest {
     }
 
     @Test
-    @DisplayName("eval-set.json을 읽으면 31건이 불러와짐")
+    @DisplayName("eval-set.json을 읽으면 43건이 불러와짐")
     void loadEvalCasesReadsAllCases() throws IOException {
         List<RagEvalCase> ragEvalCases = loadEvalCases();
 
         assertAll(
-                () -> assertEquals(31, ragEvalCases.size()), // 현재 평가세트는 31개
+                () -> assertEquals(43, ragEvalCases.size()), // 현재 평가세트는 43개
                 // 첫번째 Id가 e-001로 순서가 정확히 나오는지 확인
                 () -> assertEquals("e-001", ragEvalCases.getFirst().id()),
                 // expectedAnchors빈값이 존재하는지 아닌지 확인
