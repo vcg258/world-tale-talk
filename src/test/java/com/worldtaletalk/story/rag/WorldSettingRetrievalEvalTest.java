@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,6 +49,9 @@ public class WorldSettingRetrievalEvalTest {
     private int othersBefore; // 테스트 전 기존(실제 세계관) 청크 수 (테스트 후 변화가 없는지 비교용)
     private static final int RANDOM_TRIALS = 2000;
     private static final long RANDOM_SEED = 42;
+    // 운영 indexWorld의 TokenTextSplitter 기본값(800토큰, 350자)과 같은 값 (운영 쪽 상수가 private이라 직접 맞춤)
+    private static final int DEFAULT_CHUNK_SIZE = 800;
+    private static final int DEFAULT_MIN_CHUNK_SIZE = 350;
 
     /**
      * 테스트를 시작할때 현재 프로젝트 루트 경로에 존재하는 elfheim.txt를 청킹해서 VectorStore에 넣음
@@ -58,12 +63,7 @@ public class WorldSettingRetrievalEvalTest {
         deleteEvalIndex(); // 이전 실행이 중간에 중단돼서 남은 평가용 청크가 있을 수 있어 먼저 삭제
         othersBefore = countOthers(); // 평가용 청크를 넣기 전에 기존 청크 수를 기록
 
-        String text;
-        try (InputStream in = new ClassPathResource("rag-eval/worlds/elfheim.txt").getInputStream()) {
-            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-        // 운영 indexWorld와 같은 기본 분할기(TokenTextSplitter)로 청킹
-        List<Document> chunks = new TokenTextSplitter().apply(List.of(new Document(text)));
+        List<Document> chunks = splitEvalWorld(DEFAULT_CHUNK_SIZE, DEFAULT_MIN_CHUNK_SIZE);
         chunkTexts = chunks.stream().map(Document::getText).toList();
 
         // 운영 indexWorld와 같은 메타데이터 구조(sourceType, sourceId)로 저장
@@ -241,6 +241,29 @@ public class WorldSettingRetrievalEvalTest {
     /* Helper Method */
 
     /**
+     * 평가용 설정집(elfheim.txt)을 인자로 받은 크기로 청킹해서 반환
+     * (청크 크기를 바꿔서 비교하려고 분할 설정을 인자로 뺌, 필드 갱신과 메타데이터 입히기는 호출하는 쪽에서 처리함)
+     *
+     * @param chunkSize         청크 크기 (토큰)
+     * @param minChunkSizeChars 문장 끝에서 자르기 시작하는 최소 글자 수 (청크 크기를 줄일 때 같이 줄여야 문장 단위로 잘림)
+     * @return 자른 청크 목록 (메타데이터는 아직 없음)
+     * @throws IOException 설정집 파일을 읽지 못한 경우
+     */
+    private List<Document> splitEvalWorld(int chunkSize, int minChunkSizeChars) throws IOException {
+        TokenTextSplitter textSplitter = TokenTextSplitter.builder()
+                .withChunkSize(chunkSize)
+                .withMinChunkSizeChars(minChunkSizeChars)
+                .build();
+
+        String text;
+        try (InputStream in = new ClassPathResource("rag-eval/worlds/elfheim.txt").getInputStream()) {
+            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        // 인자로 받은 크기로 청킹 (800/350이 운영 기본값)
+        return textSplitter.apply(List.of(new Document(text)));
+    }
+
+    /**
      * 평가용 청크만 삭제 (sourceType, sourceId 필터로 실제 세계관 청크는 건드리지 않음)
      */
     private void deleteEvalIndex() {
@@ -309,23 +332,15 @@ public class WorldSettingRetrievalEvalTest {
         }
     }
 
-
     /**
      * 평가세트 JSON의 정답 문구가 청크에도 있는지 없는지 구분하기 위한 헬퍼메서드
      *
      * @param ragEvalCases 평가세트
      */
     private void validateAnchorsExistInChunks(List<RagEvalCase> ragEvalCases) {
-        List<String> problems = new ArrayList<>();
-        ragEvalCases.forEach(rCase -> rCase.expectedAnchors().forEach(anchor -> {
-            boolean exists = chunkTexts.stream().anyMatch(chunk -> RetrievalMetrics.contains(chunk, anchor));
-            if (!exists) {
-                problems.add(rCase.id() + " : " + anchor);
-            }
-        }));
-
-        if (!problems.isEmpty()) {
-            throw new IllegalStateException("어떤 청크에도 없는 정답 문구가 있음:\n" + String.join("\n", problems));
+        Map<String, List<String>> broken = EvalSetValidator.findBrokenCases(ragEvalCases, chunkTexts);
+        if (!broken.isEmpty()) {
+            throw new IllegalStateException("어떤 청크에도 없는 정답 문구가 있음:\n" + broken);
         }
     }
 
